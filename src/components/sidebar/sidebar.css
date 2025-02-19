@@ -1,0 +1,25 @@
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+
+.meta-ai {
+  padding: 15px;
+  background-color: #f0f2f5;
+  border-top: 1px solid #e9edef;
+}
+
+.load-older {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #008069;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  text-align: left;
+}
+
+

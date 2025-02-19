@@ -1,0 +1,38 @@
+.search {
+  display: flex;
+  align-items: center;
+}
+
+.searchBar {
+  flex: 1;
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 0px 10px;
+  border-radius: 10px;
+}
+
+.searchBar input {
+  width: inherit;
+  font-size: 16px;
+  padding: 5px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  flex: 1;
+}
+
+.searchBar svg {
+  width: 25px;
+  height: 25px;
+  margin-top: 8px;
+  color: #54656f;
+  cursor: pointer;
+}
+
+.searchBar button {
+  all: unset;
+  padding: 0;
+}

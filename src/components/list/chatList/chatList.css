@@ -1,0 +1,213 @@
+.chatList {
+  flex: 1;
+  overflow-y: auto;
+
+  .archived {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    cursor: pointer;
+    padding-left: 30px;
+
+    .archived-text {
+      padding-block: 14px;
+      border-bottom: 1px solid #dddddddd;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      p {
+        font-size: 16px;
+        font-weight: 400;
+      }
+
+      .archived-count {
+        font-size: 14px;
+        padding-right: 20px;
+        font-weight: 500;
+        color: #75d567;
+      }
+    }
+
+    svg {
+      width: 30px;
+      height: 30px;
+      fill: #00a884;
+    }
+  }
+
+  .chat-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 15px; /* Default gap */
+    background-color: #fff;
+
+    &:hover {
+      background-color: #f5f6f6 !important;
+    }
+
+    &.unread {
+      /* background-color: #f0f2f5; */
+      background-color: inherit;
+      font-weight: 500;
+    }
+
+    &.unread .chat-content .chat-info .chat-header .time {
+      color: #3cd373;
+    }
+
+    &.selected {
+      background-color: #f0f2f5 !important;
+    }
+
+    .chat-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 15px;
+
+        .avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
+
+      .chat-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 12px 12px 12px 0;
+        border-bottom: 1px solid #e9edef;
+        position: relative;
+
+        .chat-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+
+          h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #111b21;
+          }
+
+          .time {
+            font-size: 12px;
+            color: #667781;
+          }
+
+          
+        }
+
+        .message-preview {
+          margin: 0;
+          font-size: 14px;
+          color: #667781;
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          svg{
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+            margin-bottom: -4px;
+          }
+        }
+
+        .message-count {
+          display: inline-block;
+          font-size: 12px;
+          font-weight: 500;
+          background-color: #3cd373;
+          position: absolute;
+          right: 20px;
+          bottom: 10px;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          color: #f7f7f7;
+        }
+
+      }
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #017561;
+      padding-left: 25px;
+    }
+
+    &.with-checkbox {
+      padding-left: 33px; /* Apply padding-left when checkbox is visible */
+
+      .avatar-container {
+        padding-left: 10px;
+      }
+    }
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #dddddddd;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      background-color: #f0f2f5 !important;
+      /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    }
+
+    &.selected {
+      background-color: #e4e4e4 !important;
+      /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .texts {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      span {
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      p {
+        font-size: 14px;
+        font-weight: 400;
+        color: #666;
+      }
+    }
+  }
+}

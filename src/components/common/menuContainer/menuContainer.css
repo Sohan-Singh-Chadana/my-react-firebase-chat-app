@@ -1,0 +1,51 @@
+.menu-container {
+  position: relative;
+
+  svg {
+    width: 50px;
+    height: 50px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  svg.active {
+    background: #e6e7e8;
+  }
+
+  .menu {
+    position: absolute;
+    top: 40px;
+    right: 0px;
+    width: 200px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    padding: 10px 0px;
+    z-index: 10;
+
+    button {
+      display: block;
+      background: none;
+      border: none;
+      padding: 8px 24px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 500;
+      color: #504f4f;
+      text-align: left;
+      transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -ms-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+  }
+}
