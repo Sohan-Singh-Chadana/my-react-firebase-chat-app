@@ -5,171 +5,217 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 import { MdCheck, MdDoneAll } from "react-icons/md";
 import React from "react";
 
-// Helper function to mark messages with the given status
-const updateMessageStatus = async (chatId, status, targetStatus) => {
+
+export const listenForDeliveredMessages = (chatId, currentUserId) => {
+  if (!chatId || !currentUserId) return;
+
   const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(messagesRef, where("status", "==", status));
+  const q = query(
+    messagesRef,
+    where("status", "==", "sent"),
+    where("receiverId", "==", currentUserId)
+  );
+
+  const unsubscribe = onSnapshot(q, async (snapshot) => {
+    const batch = writeBatch(db);
+    snapshot.docChanges().forEach(({ type, doc }) => {
+      if (type === "added") {
+        batch.update(doc.ref, { status: "delivered" });
+      }
+    });
+    await batch.commit();
+  });
+
+  return unsubscribe;
+};
+
+export const listenAndMarkMessagesAsRead = (chatId, currentUserId) => {
+  if (!chatId || !currentUserId) return;
+
+  const messagesRef = collection(db, "chats", chatId, "messages");
+  const q = query(
+    messagesRef,
+    where("status", "in", ["sent", "delivered"]),
+    where("receiverId", "==", currentUserId)
+  );
+
+  const unsubscribe = onSnapshot(q, async (snapshot) => {
+    const batch = writeBatch(db);
+    snapshot.docChanges().forEach(({ type, doc }) => {
+      if (type === "added") {
+        batch.update(doc.ref, { status: "read" });
+      }
+    });
+    await batch.commit();
+  });
+
+  return unsubscribe;
+};
+
+export const markMessagesAsDelivered = async (chatId, receiverId) => {
+  if (!chatId || !receiverId) return;
+
+  const messagesRef = collection(db, "chats", chatId, "messages");
+  const q = query(
+    messagesRef,
+    where("status", "==", "sent"),
+    where("receiverId", "==", receiverId) // Only mark messages for the current user
+  );
 
   try {
     const messagesSnap = await getDocs(q);
 
     if (messagesSnap.empty) {
-      console.log(`No ${status} messages found in the chat.`);
+      // console.log("No sent messages found to mark as delivered.");
       return;
     }
 
     const batch = writeBatch(db);
-
     messagesSnap.forEach((doc) => {
-      batch.update(doc.ref, { status: targetStatus });
-    });
-
-    await batch.commit();
-    console.log(`${status} messages marked as ${targetStatus} successfully`);
-  } catch (err) {
-    console.error(`Failed to update messages to ${targetStatus}:`, err);
-  }
-};
-
-// ✅ Automatically mark incoming messages as "delivered" (even if the chat is not open)
-export const listenForDeliveredMessages = (chatId) => {
-  if (!chatId) return;
-
-  console.log("🔔 Listening for new messages to mark as delivered...");
-
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(messagesRef, where("status", "==", "sent"));
-
-  // Listen for new messages and mark them as delivered
-  const unsubscribe = onSnapshot(q, async (snapshot) => {
-    if (snapshot.empty) return;
-
-    const batch = writeBatch(db);
-
-    snapshot.docs.forEach((doc) => {
       batch.update(doc.ref, { status: "delivered" });
     });
 
-    try {
-      await batch.commit();
-      console.log("✅ New messages marked as delivered!");
-    } catch (err) {
-      console.error("❌ Failed to mark messages as delivered:", err);
-    }
-  });
-
-  return unsubscribe; // Call this when the chat is deselected to stop listening
+    await batch.commit();
+    // console.log("Messages marked as delivered successfully.");
+  } catch (err) {
+    console.error("Failed to mark messages as delivered:", err);
+  }
 };
 
-// ✅ Mark messages as "read" when chat is open
-export const listenAndMarkMessagesAsRead = (chatId, receiverId) => {
+export const markMessagesAsRead = async (chatId, receiverId) => {
   if (!chatId || !receiverId) return;
 
-  console.log("👀 Listening to mark messages as read...");
-
   const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(messagesRef, where("status", "==", "delivered"));
+  const q = query(
+    messagesRef,
+    where("status", "==", "delivered"),
+    where("receiverId", "==", receiverId) // Only mark messages for the current user
+  );
 
-  // Listen for "delivered" messages and mark them as "read" in real-time
-  const unsubscribe = onSnapshot(q, async (snapshot) => {
-    if (snapshot.empty) return;
+  try {
+    const messagesSnap = await getDocs(q);
+
+    if (messagesSnap.empty) {
+      // console.log("No delivered messages found to mark as read.");
+      return;
+    }
 
     const batch = writeBatch(db);
-
-    snapshot.docs.forEach((doc) => {
+    messagesSnap.forEach((doc) => {
       batch.update(doc.ref, { status: "read" });
     });
 
-    try {
-      await batch.commit();
-      console.log("✅ Messages marked as read!");
-    } catch (err) {
-      console.error("❌ Failed to mark messages as read:", err);
+    await batch.commit();
+    // console.log("Messages marked as read successfully.");
+  } catch (err) {
+    console.error("Failed to mark messages as read:", err);
+  }
+};
+
+// ✅ Mark all existing messages as delivered when the app is open and the user is online
+export const markAllMessagesAsDelivered = async (userId) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const chatList = userSnap.data()?.chatList || [];
+
+    for (const chat of chatList) {
+      await markMessagesAsDelivered(chat.chatId, userId);
+      // console.log("✅ Messages marked as delivered for chat:", chat.chatId);
     }
+  } catch (error) {
+    console.error("❌ Failed to mark messages as delivered:", error);
+  }
+};
+
+// ✅ Listen for new messages in real-time **for each chat the user is a part of**
+export const listenForNewMessages = async (userId) => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  const chatList = userSnap.data()?.chatList || [];
+
+  let chatListeners = [];
+
+  chatList.forEach((chat) => {
+    const messagesRef = collection(db, "chats", chat.chatId, "messages");
+    const q = query(messagesRef, where("status", "==", "sent"));
+
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (!snapshot.empty) {
+        // console.log("🔄 New messages detected in chat:", chat.chatId);
+        await markMessagesAsDelivered(chat.chatId, userId);
+      }
+    });
+
+    chatListeners.push(unsubscribe);
   });
 
-  return unsubscribe; // Call this when the chat is deselected to stop listening
+  // ✅ Return an array of unsubscribe functions to clean up later
+  return chatListeners;
 };
 
-// ✅ Manually mark messages as "delivered"
-export const markMessagesAsDelivered = async (chatId) => {
-  await updateMessageStatus(chatId, "sent", "delivered");
+
+export const markAndListenForDeliveredMessages = async (userId) => {
+  try {
+    const chatsRef = collection(db, "chats");
+    const q = query(chatsRef, where("participants", "array-contains", userId));
+    const chatsSnap = await getDocs(q);
+
+    if (chatsSnap.empty) return null;
+
+    const batch = writeBatch(db);
+    let unsubscribes = [];
+
+    // Loop through all chats
+    for (const chatDoc of chatsSnap.docs) {
+      const messagesRef = collection(db, "chats", chatDoc.id, "messages");
+
+      // ✅ Mark existing "sent" messages as "delivered"
+      const messagesSnap = await getDocs(
+        query(messagesRef, where("status", "==", "sent"))
+      );
+      messagesSnap.forEach((doc) => {
+        batch.update(doc.ref, { status: "delivered" });
+      });
+
+      // ✅ Listen for new "sent" messages and mark them as "delivered"
+      const unsubscribe = onSnapshot(
+        query(messagesRef, where("status", "==", "sent")),
+        async (snapshot) => {
+          if (snapshot.empty) return;
+
+          const liveBatch = writeBatch(db);
+          snapshot.docs.forEach((doc) => {
+            liveBatch.update(doc.ref, { status: "delivered" });
+          });
+
+          await liveBatch.commit();
+        }
+      );
+
+      // 🔥 Store all unsubscribe functions
+      unsubscribes.push(unsubscribe);
+    }
+
+    await batch.commit();
+
+    // ✅ Return a function that unsubscribes all listeners
+    return () => unsubscribes.forEach((unsub) => unsub());
+  } catch (err) {
+    console.error(
+      "Failed to mark messages as delivered and listen for new messages:",
+      err
+    );
+    return null;
+  }
 };
-
-// ✅ Manually mark messages as "read"
-export const markMessagesAsRead = async (receiverId, chatId) => {
-  await updateMessageStatus(chatId, "delivered", "read");
-};
-
-// // Helper function to mark messages with the given status
-// const updateMessageStatus = async (chatId, status, targetStatus) => {
-//   const messagesRef = collection(db, "chats", chatId, "messages");
-//   const messagesSnap = await getDocs(messagesRef);
-
-//   if (messagesSnap.empty) {
-//     console.log("No messages found in the chat.");
-//     return;
-//   }
-
-//   const batch = writeBatch(db);
-
-//   messagesSnap.forEach((doc) => {
-//     const message = doc.data();
-//     if (message.status === status) {
-//       batch.update(doc.ref, { status: targetStatus });
-//     }
-//   });
-
-//   try {
-//     await batch.commit();
-//     // console.log(`${targetStatus} messages marked successfully`);
-//   } catch (err) {
-//     console.error(`Failed to update messages to ${targetStatus}:`, err);
-//   }
-// };
-
-// // Mark messages as delivered
-// export const markMessagesAsDelivered = async (chatId) => {
-//   await updateMessageStatus(chatId, "sent", "delivered");
-// };
-
-// // Mark messages as read
-// export const markMessagesAsRead = async (receiverId, chatId) => {
-//   await updateMessageStatus(chatId, "delivered", "read");
-// };
-
-// // Listen for new messages and mark them as "read" when chat is selected
-// export const listenAndMarkMessagesAsRead = (chatId, receiverId) => {
-//   if (!chatId || !receiverId) return;
-
-//   console.log("listenAndMarkMessagesAsRead function call")
-
-//   const messagesRef = collection(db, "chats", chatId, "messages");
-//   const q = query(messagesRef, where("status", "==", "delivered"));
-
-//   const unsubscribe = onSnapshot(q, async (snapshot) => {
-//     if (snapshot.empty) return;
-
-//     const batch = writeBatch(db);
-
-//     snapshot.docs.forEach((doc) => {
-//       batch.update(doc.ref, { status: "read" });
-//     });
-
-//     try {
-//       await batch.commit();
-//     } catch (err) {
-//       console.error("Failed to mark messages as read:", err);
-//     }
-//   });
-
-//   return unsubscribe; // Call this when the chat is deselected to stop listening
-// };
 
 export const getStatusIcon = (message) => {
   switch (message.status) {

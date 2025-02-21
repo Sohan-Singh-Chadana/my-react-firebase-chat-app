@@ -1,0 +1,88 @@
+.input-box {
+  flex: 1;
+  background-color: #fff;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #1a1a1a;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+
+  .message-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #1a1a1a;
+    resize: none;
+    overflow: auto;
+    max-height: 200px;
+    min-height: 30px;
+    padding: 8px 0;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  /* svg {
+      margin-bottom: -8px;
+    } */
+
+  .emoji {
+    position: relative;
+
+    .picker {
+      position: absolute;
+      bottom: 60px;
+      left: 0px;
+    }
+  }
+}
+
+.image-preview .input-box {
+  margin-top: 48px;
+  width: 90%;
+  padding: 0 12px;
+  margin-inline: auto;
+  align-items: center;
+
+  .message-input {
+    width: 100%;
+  }
+}
+
+.bottom .input-box {
+  align-items: center;
+  /* overflow: hidden; */
+  padding: 0 12px;
+
+  .emoji {
+    align-self: flex-end;
+    margin-top: 5px;
+    position: relative;
+
+    svg {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  .message-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #1a1a1a;
+    resize: none;
+    overflow: auto;
+    max-height: 200px;
+    min-height: 30px;
+    padding: 8px 0;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+}

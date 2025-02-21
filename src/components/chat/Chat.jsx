@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
-import EmojiPicker, { Emoji } from "emoji-picker-react";
 import {
   addDoc,
   collection,
@@ -18,38 +17,39 @@ import { db } from "../../lib/firebase/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
 import upload from "../../lib/upload";
-import {
-  MdCameraAlt,
-  MdEmojiEmotions,
-  MdImage,
-  MdLocalPhone,
-  MdMic,
-  MdMoreVert,
-  MdOutlineAdd,
-  MdSend,
-  MdVideocam,
-  MdInsertDriveFile,
-  MdClose,
-} from "react-icons/md";
 import useGlobalStateStore from "../../lib/globalStateStore";
 import dayjs from "dayjs";
 import ChatMessages from "./ChatMessages";
 import {
   listenAndMarkMessagesAsRead,
+  listenForDeliveredMessages,
   markMessagesAsDelivered,
-  markMessagesAsRead,
 } from "../../utils/messageUtils";
 import useSelectChats from "../../lib/selectChats";
 import useMessagesStore from "../../lib/useMessageStore";
+import {
+  listenToUserStatus,
+  setUserOffline,
+  setUserOnline,
+} from "../../hooks/useUserStatus";
+
+import { setTypingStatus } from "../../hooks/useTypingStatus";
+import useTypingStatusListener from "../../hooks/useTypingStatusListener";
+import ImagePreviewPopup from "./ImagePreviewPopup";
+import ChatHeader from "./ChatHeader";
+import ChatFooter from "./ChatFooter";
+import { MdKeyboardArrowDown } from "react-icons/md";
 
 const Chat = () => {
   // const [messages, setMessages] = useState([]);
-  const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [img, setImg] = useState({ file: null, url: "" });
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [emoji, setEmoji] = useState("");
   const [imagePreview, setImagePreview] = useState(false);
+  const [showScrollToBottomBtn, setShowScrollToBottomBtn] = useState(false);
+  const [userStatus, setUserStatus] = useState({
+    status: "offline",
+    lastSeen: null,
+  });
 
   const { currentUser } = useUserStore();
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
@@ -58,93 +58,40 @@ const Chat = () => {
   const { chats } = useSelectChats();
   const { messages } = useMessagesStore();
   const chatMessages = messages[chatId] || [];
+  const typingStatus = useTypingStatusListener(user?.userId);
 
   const endRef = useRef(null);
-  const menuRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null); // Create ref for textarea
+  const topToBottomBtnRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
-  // console.log(currentUser);
-
-  // useEffect(() => {
-  //   if (!chatId || !currentUser?.userId) return;
-
-  //   const messagesRef = collection(db, "chats", chatId, "messages");
-  //   const q = query(messagesRef, orderBy("timestamp", "asc"));
-
-  //   const unSub = onSnapshot(q, async (snapshot) => {
-  //     // 🔥 Ensure karo ki snapshot sync ho raha hai
-  //     const msgs = await Promise.all(
-  //       snapshot.docs.map(async (doc) => {
-  //         const data = doc.data();
-  //         return {
-  //           id: doc.id,
-  //           ...data,
-  //         };
-  //       })
-  //     );
-
-  //     // ✅ Filter karo deleted messages ko
-  //     const filteredMessages = msgs.filter(
-  //       (msg) => !(msg.deletedBy && msg.deletedBy.includes(currentUser.userId))
-  //     );
-
-  //     setMessages(filteredMessages);
-  //     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   });
-
-  //   return () => unSub();
-  // }, [chatId, currentUser?.userId]);
-
-  //! main
-  // useEffect(() => {
-  //   if (!chatId || !currentUser?.userId) return;
-
-  //   const messagesRef = collection(db, "chats", chatId, "messages");
-  //   const q = query(messagesRef, orderBy("timestamp", "asc"));
-
-  //   const unSub = onSnapshot(q, (snapshot) => {
-  //     const msgs = snapshot.docs
-  //       .map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }))
-  //       .filter((msg) => !msg.deletedBy?.includes(currentUser.userId)); // Exclude deleted messages
-
-  //     setMessages(msgs);
-  //     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   });
-
-  //   return () => unSub();
-  // }, [chatId, currentUser?.userId]);
-
+  // In your Chat component
   useEffect(() => {
-    // Call `markMessagesAsDelivered` as soon as the chat app is opened (when `chatId` is set)
-    if (chatId) {
-      // console.log("Chat opened, marking messages as delivered");
-      markMessagesAsDelivered(chatId);
-    }
-  }, [chatId]); // This will be triggered whenever the `chatId` changes (when a new chat is opened)
+    if (chatId && currentUser?.uid) {
+      markMessagesAsDelivered(chatId, currentUser.uid);
+      const unsubscribeDelivered = listenForDeliveredMessages(
+        chatId,
+        currentUser.uid
+      );
+      const unsubscribeRead = listenAndMarkMessagesAsRead(
+        chatId,
+        currentUser.uid
+      );
 
-  useEffect(() => {
-    // Call `markMessagesAsRead` when the chat is selected by the user
-    if (chatId && currentUser?.userId) {
-      const selectedChat = chats.find((chat) => chat.chatId === chatId);
-      const receiverId = selectedChat?.user?.userId;
-
-      // Only mark messages as read if the chat is for the receiver (not the current user)
-      if (receiverId && receiverId !== currentUser.userId) {
-        // console.log("Chat selected, marking messages as read");
-        markMessagesAsRead(receiverId, chatId);
-      }
+      return () => {
+        unsubscribeDelivered();
+        unsubscribeRead();
+      };
     }
-  }, [chatId, chats, currentUser?.userId]);
+  }, [chatId, currentUser?.uid]);
 
   useEffect(() => {
     if (!chatId || !currentUser?.userId) return;
 
     const messagesRef = collection(db, "chats", chatId, "messages");
     const q = query(messagesRef, orderBy("timestamp", "asc"));
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const unSub = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs
@@ -158,47 +105,49 @@ const Chat = () => {
             (!msg.deletedAt || !msg.deletedAt[currentUser.userId]) // Deleted मैसेज चेक करें
         );
 
-      useMessagesStore.getState().setMessages(chatId, msgs); // ✅ Zustand स्टोर में अपडेट करें
       endRef.current?.scrollIntoView({ behavior: "smooth" });
+      useMessagesStore.getState().setMessages(chatId, msgs);
     });
 
     return () => unSub();
   }, [chatId, currentUser?.userId]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        if (!event.target.closest(".mdOutlineAdd")) {
-          setMenuOpen(false);
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // selected chat message automatically read
-  // useEffect(() => {
-  //   if (chatId && currentUser?.userId) {
-  //     const unsubscribe = listenAndMarkMessagesAsRead(
-  //       chatId,
-  //       currentUser?.userId
-  //     );
-  //     return () => unsubscribe(); // Cleanup on chat change
-  //   }
-  // }, [chatId, currentUser?.userId]);
-
-  const handleEmoji = (e) => setText((prev) => prev + e.emoji);
-
-  const handleImg = (e) => {
-    if (e.target.files[0]) {
-      setImg({
-        file: e.target.files[0],
-        url: URL.createObjectURL(e.target.files[0]),
-      });
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    if (endRef.current) {
+      endRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  // Handle Scroll event
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollHeight, scrollTop, clientHeight } =
+        chatContainerRef.current;
+      const scrollOffset = 100;
+
+      // Show button if user scrolls up slightly
+      if (scrollTop + clientHeight < scrollHeight - scrollOffset) {
+        setShowScrollToBottomBtn(true);
+      } else {
+        setShowScrollToBottomBtn(false);
+      }
+    }
+  };
+
+  // Attach scroll event listener
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   const handleSend = async () => {
     if ((!text && !img.file) || isCurrentUserBlocked || isReceiverBlocked)
@@ -240,8 +189,6 @@ const Chat = () => {
       await updateDoc(chatRef, {
         [`deletedAt.${currentUser.userId}`]: null, // ✅ Clear deleted timestamp
         [`deletedAt.${user.userId}`]: null, // ✅ Clear for the other user as well
-        // [`lastSeenAt.${currentUser.userId}`]: null, // ✅ Clear last seen timestamp
-        // [`lastSeenAt.${user.userId}`]: null, // ✅ Clear for other user too
       });
 
       // ✅ Function to update user's chatList while preserving all other fields
@@ -259,6 +206,7 @@ const Chat = () => {
                 ...chat,
                 lastMessage: text || "Image",
                 updatedAt: new Date(),
+                unreadCount: 0, // Reset unread count
               }
             : chat
         );
@@ -303,151 +251,102 @@ const Chat = () => {
     }
   };
 
-  // const formatTimestamp = (timestamp) => {
-  //   if (!timestamp) return "";
-  //   return dayjs(timestamp.toDate()).format("hh:mm A");
-  // };
-
-  // console.log(messages);
-  // console.log(imagePreview)
-
   const handleImagePreview = () => {
     fileInputRef.current.click();
-    setImagePreview((prev) => !prev);
+    setImagePreview(true);
   };
 
   const handleImageRemove = () => {
     setImg({ file: null, url: "" });
-    setImagePreview((prev) => !prev);
+    setImagePreview(false);
   };
+
+  useEffect(() => {
+    if (chatId && user?.userId) {
+      const unsubscribe = listenToUserStatus(user.userId, setUserStatus);
+      return () => unsubscribe(); // Cleanup on component unmount or chat change
+    }
+  }, [chatId, user?.userId]);
+
+  useEffect(() => {
+    if (!currentUser?.userId) return;
+
+    // Set user online when the component mounts
+    setUserOnline(currentUser.userId);
+
+    // Set user offline when the component unmounts
+    return () => {
+      setUserOffline(currentUser.userId);
+    };
+  }, [currentUser?.userId]);
+
+  // Track typing status
+  useEffect(() => {
+    let typingTimeout;
+
+    if (text.trim()) {
+      // User is typing
+      setTypingStatus(currentUser.userId, chatId, true);
+
+      // Clear typing status after 3 seconds of inactivity
+      typingTimeout = setTimeout(() => {
+        setTypingStatus(currentUser.userId, chatId, false);
+      }, 3000);
+    } else {
+      // User stopped typing
+      setTypingStatus(currentUser.userId, chatId, false);
+    }
+
+    return () => {
+      clearTimeout(typingTimeout);
+    };
+  }, [text, currentUser?.userId, chatId]);
 
   return (
     <div className="chat">
-      <div className="top" onClick={() => setShowDetail(true)}>
-        <div className="user">
-          <img src={user?.profilePic || "/avatar.png"} alt="" />
-          <div className="texts">
-            <span>{user?.name}</span>
-            <p>Active now</p>
-          </div>
-        </div>
-        <div className="icons">
-          <MdLocalPhone />
-          <MdVideocam />
-          <MdMoreVert />
-        </div>
-      </div>
+      <ChatHeader
+        user={user}
+        userStatus={userStatus}
+        typingStatus={typingStatus}
+        setShowDetail={setShowDetail}
+      />
 
       <div className="chat-container">
-        <div className="center">
+        <div className="center" ref={chatContainerRef}>
           <ChatMessages messages={chatMessages} currentUser={currentUser} />
-
           {imagePreview && img.url && (
-            <div className="image-preview">
-              <div className="image-preview-container">
-                <MdClose onClick={handleImageRemove} className="close" />
-                <div className="image">
-                  <img src={img.url} alt="" />
-                </div>
-                <div className="input-box">
-                  <div className="emoji">
-                    <MdEmojiEmotions onClick={() => setOpen((prev) => !prev)} />
-                    {open && (
-                      <div className="picker">
-                        <EmojiPicker open={open} onEmojiClick={handleEmoji} />
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Add a caption"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  className="MediaSendBtn"
-                  onClick={handleSend}
-                  disabled={isCurrentUserBlocked || isReceiverBlocked}
-                >
-                  {text || img.file ? <MdSend /> : <MdMic />}
-                </button>
-              </div>
-            </div>
+            <ImagePreviewPopup
+              img={img}
+              text={text}
+              setText={setText}
+              onSend={handleSend}
+              onRemove={handleImageRemove}
+              isCurrentUserBlocked={isCurrentUserBlocked}
+              isReceiverBlocked={isReceiverBlocked}
+            />
           )}
           <div ref={endRef}></div>
         </div>
 
-        <div className="bottom">
-          {!(isCurrentUserBlocked || isReceiverBlocked) ? (
-            <>
-              <div className="icons">
-                <MdOutlineAdd
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  className="mdOutlineAdd"
-                />
-                {menuOpen && (
-                  <div className="popup-menu" ref={menuRef}>
-                    <ul>
-                      <li>
-                        <MdInsertDriveFile /> <p>Document</p>
-                      </li>
-                      <li onClick={handleImagePreview}>
-                        <MdImage /> <p>Photos & Videos</p>
-                      </li>
-                      <li>
-                        <MdCameraAlt /> <p>Camera</p>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+        <ChatFooter
+          handleImagePreview={handleImagePreview}
+          fileInputRef={fileInputRef}
+          handleSend={handleSend}
+          text={text}
+          setText={setText}
+          img={img}
+          setImg={setImg}
+        />
 
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleImg}
-              />
-
-              <div className="input-box">
-                <div className="emoji">
-                  <MdEmojiEmotions onClick={() => setOpen((prev) => !prev)} />
-                  {open && (
-                    <div className="picker">
-                      <EmojiPicker open={open} onEmojiClick={handleEmoji} />
-                    </div>
-                  )}
-                </div>
-                <textarea
-                  className="message-input"
-                  rows="1"
-                  placeholder="Type a message..."
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  onInput={(e) => {
-                    e.target.style.height = "auto";
-                    e.target.style.height = e.target.scrollHeight + "px";
-                  }}
-                  ref={textareaRef}
-                />
-              </div>
-
-              <button
-                className="sendButton"
-                onClick={handleSend}
-                disabled={isCurrentUserBlocked || isReceiverBlocked}
-              >
-                {text || img.file ? <MdSend /> : <MdMic />}
-              </button>
-            </>
-          ) : (
-            <p className="block-text">
-              Can&apos;t send a message to blocked user {user?.username}.
-            </p>
-          )}
-        </div>
+        <button
+          className={
+            showScrollToBottomBtn ? " topToBottomBtn active" : "topToBottomBtn"
+          }
+          ref={topToBottomBtnRef}
+          onClick={scrollToBottom}
+        >
+          <MdKeyboardArrowDown />
+        </button>
       </div>
     </div>
   );

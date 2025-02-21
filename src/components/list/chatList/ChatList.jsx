@@ -12,6 +12,7 @@ import {
   query,
   orderBy,
   limit,
+  where,
 } from "firebase/firestore";
 import { useChatStore } from "../../../lib/chatStore";
 import useGlobalStateStore from "../../../lib/globalStateStore";
@@ -21,9 +22,12 @@ import dayjs from "dayjs";
 import { db } from "../../../lib/firebase/firebase";
 import {
   listenAndMarkMessagesAsRead,
+  listenForDeliveredMessages,
+  listenForNewMessages,
+  markAllMessagesAsDelivered,
+  // markAllMessagesAsDelivered,
+  markAndListenForDeliveredMessages,
   markMessagesAsDelivered,
-  markMessagesAsRead,
-  listenForDeliveredMessages
 } from "../../../utils/messageUtils";
 
 const ChatList = () => {
@@ -133,27 +137,14 @@ const ChatList = () => {
 
             unsubscribeListeners.push(unsubscribeLastMessage);
 
+            // Update unread count calculation
             const qUnreadCount = query(
               messagesRef,
-              orderBy("timestamp", "desc")
+              where("status", "in", ["sent", "delivered"]),
+              where("receiverId", "==", currentUser?.uid)
             );
             const messagesSnap = await getDocs(qUnreadCount);
-
-            // const unreadCount = messagesSnap.docs.filter(
-            //   (doc) =>
-            //     doc.data().status === "sent" &&
-            //     doc.data().receiverId === currentUser?.uid
-            // ).length;
-
-            // Agar selected chat open hai to unread count update mat karo
-            const unreadCount =
-              selectedChatId === chat.chatId
-                ? 0
-                : messagesSnap.docs.filter(
-                    (doc) =>
-                      doc.data().status === "sent" &&
-                      doc.data().receiverId === currentUser?.uid
-                  ).length;
+            const unreadCount = messagesSnap.size;
 
             return { ...chat, user, unreadCount };
           } catch (fetchError) {
@@ -186,45 +177,43 @@ const ChatList = () => {
     };
   }, [currentUser?.uid, setChats, selectedChatId]);
 
-  // useEffect(() => {
-  //   if (selectedChatId && currentUser?.userId) {
-  //     const unsubscribe = listenAndMarkMessagesAsRead(
-  //       selectedChatId,
-  //       currentUser?.userId
-  //     );
-  //     return () => unsubscribe(); // Cleanup on chat change
-  //   }
-  // }, [selectedChatId, currentUser?.userId]);
-
   useEffect(() => {
-    if (selectedChatId) {
-      const unsubscribeDelivered = listenForDeliveredMessages(selectedChatId);
+    let unsubscribeDelivered = null;
+    let unsubscribeRead = null;
+    let chatListeners = [];
+
+    if (currentUser?.uid) {
+      // 🔥 Mark all messages as delivered when the app opens
+      markAllMessagesAsDelivered(currentUser.uid);
+
+      // 🔥 Run again when user comes online
+      const handleOnline = () => markAllMessagesAsDelivered(currentUser.uid);
+      window.addEventListener("online", handleOnline);
+
+      // ✅ Start real-time listener for new messages
+      (async () => {
+        chatListeners = await listenForNewMessages(currentUser.uid);
+      })();
+
+      // ✅ Listen for delivered & read messages when a chat is open
+      if (chatId) {
+        unsubscribeDelivered = listenForDeliveredMessages(
+          chatId,
+          currentUser.uid
+        );
+        unsubscribeRead = listenAndMarkMessagesAsRead(chatId, currentUser.uid);
+      }
 
       return () => {
-        unsubscribeDelivered(); // Stop listening when the chat list changes
+        window.removeEventListener("online", handleOnline);
+        unsubscribeDelivered?.();
+        unsubscribeRead?.();
+
+        // ✅ Properly remove all real-time chat listeners
+        chatListeners.forEach((unsubscribe) => unsubscribe());
       };
     }
-  }, [selectedChatId]);
-
-  // useEffect(() => {
-  //   // Call `markMessagesAsDelivered` as soon as the chat app is opened (when `chatId` is set)
-  //   if (chatId) {
-  //     markMessagesAsDelivered(chatId);
-  //   }
-  // }, [chatId]); // This will be triggered whenever the `chatId` changes (when a new chat is opened)
-
-  // useEffect(() => {
-  //   // Call `markMessagesAsRead` when the chat is selected by the user
-  //   if (chatId && currentUser?.userId) {
-  //     const selectedChat = chats.find((chat) => chat.chatId === chatId);
-  //     const receiverId = selectedChat?.user?.userId;
-
-  //     // Only mark messages as read if the chat is for the receiver (not the current user)
-  //     if (receiverId && receiverId !== currentUser.userId) {
-  //       markMessagesAsRead(receiverId, chatId);
-  //     }
-  //   }
-  // }, [chatId, chats, currentUser?.userId]); // Triggered when `chatId`, `chats`, or `currentUser` changes
+  }, [chatId, currentUser?.uid]);
 
   // / Handle ChatList selection and reset unreadCount
   const handleChatSelect = async (chat, event) => {

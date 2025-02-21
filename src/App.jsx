@@ -11,6 +11,7 @@ import { useChatStore } from "./lib/chatStore";
 import useGlobalStateStore from "./lib/globalStateStore";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { auth } from "./lib/firebase/firebase";
+import { setUserOffline, setUserOnline } from "./hooks/useUserStatus";
 
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
@@ -26,28 +27,53 @@ const App = () => {
     return () => unSub && unSub(); // ✅ Proper cleanup
   }, []);
 
+  useEffect(() => {
+    if (currentUser?.userId) {
+      setUserOnline(currentUser.userId);
+    }
+
+    const handleBeforeUnload = () => {
+      if (currentUser?.userId) {
+        setUserOffline(currentUser.userId);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [currentUser?.userId]);
+
   if (isLoading) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="container">
-      {currentUser ? (
-        <div className={`chat-container ${showDetail ? "detail-open" : ""}`}>
-          <Sidebar />
+    <>
+      <div className="header-back"></div>
+      <div className="container-back"></div>
+      <main className="main">
+        <div className="container">
+          {currentUser ? (
+            <div
+              className={`chat-container ${showDetail ? "detail-open" : ""}`}
+            >
+              <Sidebar />
 
-          {chatId ? (
-            <>
-              <Chat />
-              <Detail />
-            </>
+              {chatId ? (
+                <>
+                  <Chat />
+                  <Detail />
+                </>
+              ) : (
+                <Home />
+              )}
+            </div>
           ) : (
-            <Home />
+            <Login />
           )}
+          <Notification />
         </div>
-      ) : (
-        <Login />
-      )}
-      <Notification />
-    </div>
+      </main>
+    </>
   );
 };
 

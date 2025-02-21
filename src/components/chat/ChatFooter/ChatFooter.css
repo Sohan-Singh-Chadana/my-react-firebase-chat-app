@@ -1,0 +1,59 @@
+.bottom {
+  padding: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  background-color: #f0f2f5;
+  color: #667781;
+  border-top: 1px solid #dddddd35;
+  gap: 10px;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  width: 100%;
+
+  svg {
+    margin-bottom: 0px;
+  }
+  svg {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    color: #54656f;
+    /* margin-bottom: -8px; */
+  }
+
+  .icons {
+    display: flex;
+    gap: 10px;
+    position: relative;
+
+    .mdOutlineAdd {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      color: #1a1a1a;
+      padding: 4px;
+    }
+
+    .mdOutlineAdd.active {
+      background-color: #d9dbde;
+      rotate: 135deg;
+    }
+  }
+
+  .block-text {
+    color: #667781;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}

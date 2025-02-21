@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { uploadAvatar } from "./storage";
+import { setUserOffline } from "../../hooks/useUserStatus";
 
 // 🔥 Register User
 export const registerUser = async (name, email, password, avatarFile) => {
@@ -61,9 +62,17 @@ export const loginUser = async (email, password) => {
 // 🔥 Logout User
 export const logoutUser = async () => {
   try {
+    // Set user offline before signing out
+    if (auth.currentUser?.uid) {
+      console.log(auth.currentUser?.uid, "is logging out");
+      await setUserOffline(auth.currentUser?.uid);
+    }
+
+    // Sign out the user
     await signOut(auth);
-    console.log("User Logged Out");
+
+    console.log("✅ User logged out successfully");
   } catch (error) {
-    console.error("Logout Error:", error);
+    console.error("❌ Logout Error:", error);
   }
 };

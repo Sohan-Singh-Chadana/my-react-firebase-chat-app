@@ -1,0 +1,145 @@
+.profile {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+  flex: 1;
+
+  .title {
+    width: 100%;
+    height: 65px;
+    padding: 0px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 24px;
+    font-weight: 700;
+    color: #504f4f;
+    background-color: #ffffff;
+  }
+  .profile-content {
+    .profile-image {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+
+      .img-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 200px;
+        height: 200px;
+        margin: 28px 0px;
+      }
+
+      label {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 14px;
+        color: #ffffff;
+        background-color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        opacity: 0;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        cursor: pointer;
+      }
+    }
+    .profile-details {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 25px;
+
+      .profile-edit {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: start;
+        flex-direction: column;
+        padding: 14px 30px 10px;
+        gap: 10px;
+        background-color: #ffffff;
+
+        .info-text {
+          font-size: 14px;
+          font-weight: 400;
+          color: #008069;
+        }
+
+        .input-container {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          gap: 10px;
+
+          svg {
+            width: 25px;
+            height: 25px;
+            color: #8696a0;
+            cursor: pointer;
+            margin-bottom: -5px;
+          }
+
+          input,
+          textarea {
+            width: 100%;
+            height: 30px;
+            border: 0;
+            outline: none;
+            font-size: 16px;
+            font-weight: 400;
+            color: #504f4f;
+            flex: 1;
+
+            &:disabled {
+              background-color: inherit;
+            }
+
+            &.editedActive {
+              border-bottom: 2px solid #00a884;
+            }
+          }
+          textarea {
+            resize: none;
+            padding: 5px 0px;
+            height: 40px;
+          }
+          p {
+            width: 100%;
+            flex: 1;
+          }
+          .edit-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+        }
+      }
+    }
+  }
+}

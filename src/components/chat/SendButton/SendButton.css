@@ -1,0 +1,24 @@
+.sendButton {
+  border: 0;
+
+  &:disabled svg {
+    cursor: not-allowed;
+  }
+}
+
+.MediaSendBtn {
+  all: unset;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #01a17b;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+  svg {
+    fill: white;
+    width: 30px;
+    height: 30px;
+  }
+}
