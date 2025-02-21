@@ -1,5 +1,5 @@
 import { MdCameraAlt, MdDone, MdEdit } from "react-icons/md";
-import "./profile.css";
+import "./Profile.css";
 import { useUserStore } from "../../../lib/userStore";
 import { useState } from "react";
 
