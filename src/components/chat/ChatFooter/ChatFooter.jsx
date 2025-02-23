@@ -58,11 +58,11 @@ const ChatFooter = ({
                 menuRef={menuRef}
               />
             )} */}
-             <PopupMenu
-                onImagePreview={handleImagePreview}
-                menuRef={menuRef}
-                menuOpen={menuOpen}
-              />
+            <PopupMenu
+              onImagePreview={handleImagePreview}
+              menuRef={menuRef}
+              menuOpen={menuOpen}
+            />
           </div>
 
           <input

@@ -1,0 +1,65 @@
+.profile-edit {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: start;
+  flex-direction: column;
+  padding: 14px 30px 10px;
+  gap: 10px;
+  background-color: #ffffff;
+
+  .info-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #008069;
+  }
+
+  .input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+
+    svg {
+      width: 25px;
+      height: 25px;
+      color: #8696a0;
+      cursor: pointer;
+      margin-bottom: -5px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      height: 30px;
+      border: 0;
+      outline: none;
+      font-size: 16px;
+      font-weight: 400;
+      color: #504f4f;
+      flex: 1;
+
+      &:disabled {
+        background-color: inherit;
+      }
+
+      &.editedActive {
+        border-bottom: 2px solid #00a884;
+      }
+    }
+    textarea {
+      resize: none;
+      padding: 5px 0px;
+      height: 40px;
+    }
+    p {
+      width: 100%;
+      flex: 1;
+    }
+    .edit-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+}

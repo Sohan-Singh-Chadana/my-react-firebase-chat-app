@@ -9,7 +9,7 @@ import Settings from "./Setting";
 import Profile from "./Profile";
 
 export const Sidebar = () => {
-  const { currentUser } = useUserStore();
+  const { currentUser, isLoading } = useUserStore();
   const [visibleComponent, setVisibleComponent] = useState({
     list: true,
     settings: false,
@@ -47,7 +47,10 @@ export const Sidebar = () => {
             className={`avatar ${profile ? "active" : ""}`}
             onClick={() => toggleComponent("profile")}
           >
-            <img src={currentUser?.profilePic || "/avatar.png"} alt="" />
+            <img
+              src={currentUser?.profilePic || "/default-avatar.png"}
+              alt=""
+            />
           </figure>
         </div>
       </div>

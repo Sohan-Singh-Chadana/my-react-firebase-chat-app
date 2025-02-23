@@ -24,7 +24,7 @@ import { db, storage } from "../../../lib/firebase/firebase";
 import { logoutUser } from "../../../lib/firebase/auth";
 import { deleteObject, ref } from "firebase/storage";
 import { useChatStore } from "../../../lib/chatStore";
-import useMenuStore from "../../store/menuStore";
+import useMenuStore from "../../../store/menuStore";
 
 const ChatListHeader = () => {
   const {

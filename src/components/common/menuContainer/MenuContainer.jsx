@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MdMoreVert } from "react-icons/md";
 import "./menuContainer.css";
-import useMenuStore from "../../store/menuStore";
+import useMenuStore from "../../../store/menuStore";
 
 const MenuContainer = ({
   menuId,

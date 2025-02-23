@@ -6,7 +6,7 @@ const Modal = ({
   isOpen,
   onClose,
   onConfirm,
-  title,
+  title = "",
   description,
   confirmText,
   cancelText,
@@ -29,11 +29,15 @@ const Modal = ({
   return createPortal(
     <div className="modal">
       <div className="modal-content" ref={modalRef}>
-        <p className="title">{title}</p>
+        {title && <p className="title">{title}</p>}
         <p className="description">{description}</p>
         <div className="actionBtns">
-          <button onClick={onClose} className="cancelBtn">{cancelText || "Cancel"}</button>
-          <button onClick={onConfirm} className="confirmBtn" >{confirmText || "Confirm"}</button>
+          <button onClick={onClose} className="cancelBtn">
+            {cancelText || "Cancel"}
+          </button>
+          <button onClick={onConfirm} className="confirmBtn">
+            {confirmText || "Confirm"}
+          </button>
         </div>
       </div>
     </div>,

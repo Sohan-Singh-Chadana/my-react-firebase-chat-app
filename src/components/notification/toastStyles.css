@@ -1,0 +1,5 @@
+.Toastify__toast-container {
+  position: absolute !important;
+  right: 2rem !important;
+  bottom: 1rem !important;
+}

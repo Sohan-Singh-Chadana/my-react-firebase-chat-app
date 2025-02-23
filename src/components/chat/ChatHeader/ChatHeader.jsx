@@ -5,7 +5,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import "dayjs/locale/en"; // English locale (optional)
 import { MdLocalPhone, MdVideocam } from "react-icons/md";
 import MenuContainer from "../../common/menuContainer/MenuContainer";
-import useMenuStore from "../../store/menuStore";
+import useMenuStore from "../../../store/menuStore";
 import "./ChatHeader.css";
 
 dayjs.extend(relativeTime);
