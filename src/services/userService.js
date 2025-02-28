@@ -1,12 +1,12 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, storage } from "./firebase/firebase";
+import { db, storage } from "../lib/firebase/firebase";
 import {
   deleteObject,
   getDownloadURL,
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { useUserStore } from "./userStore";
+import { useUserStore } from "../store/userStore";
 
 // Get User Data
 export async function getUserData(userId) {

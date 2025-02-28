@@ -1,22 +1,24 @@
-import List from "./components/list/List";
 import Chat from "./components/chat/Chat";
 import Detail from "./components/detail/Detail";
-import Login from "./components/login/Login";
+import Login from "./components/auth/login/Login";
 import Notification from "./components/notification/Notification";
 import Home from "./components/home/Home";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useUserStore } from "./lib/userStore";
-import { useChatStore } from "./lib/chatStore";
-import useGlobalStateStore from "./lib/globalStateStore";
+import { useUserStore } from "./store/userStore";
+import { useChatStore } from "./store/chatStore";
+import useGlobalStateStore from "./store/globalStateStore";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { auth } from "./lib/firebase/firebase";
 import { setUserOffline, setUserOnline } from "./hooks/useUserStatus";
+import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/WallpaperPreview";
+import useSettingStore from "./store/useSettingStore";
 
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
   const { chatId } = useChatStore();
   const { showDetail } = useGlobalStateStore();
+  const { activeSetting } = useSettingStore();
 
   // ✅ Firebase Authentication listener
   useEffect(() => {
@@ -63,6 +65,8 @@ const App = () => {
                   <Chat />
                   <Detail />
                 </>
+              ) : activeSetting === "wallpaper" ? (
+                <WallpaperPreview />
               ) : (
                 <Home />
               )}

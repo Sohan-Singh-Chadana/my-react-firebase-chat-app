@@ -1,5 +1,5 @@
 .addUser {
-  background-color: #fff;
+  background-color: var(--bg-color);
   position: absolute;
   top: 0;
   left: 0;
@@ -22,7 +22,7 @@
 .addUser .header {
   padding: 14px;
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--bg-color);
   position: sticky;
   left: 0;
   right: 0;
@@ -58,7 +58,7 @@
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: #f0f2f5;
+    background-color: var(--bg-secondary);
   }
 
   .addUser-detail {
@@ -78,16 +78,26 @@
     }
   }
   button {
-    padding: 10px;
-    border-radius: 10px;
-    background-color: #1a73e8;
-    color: white;
-    border: 0;
+    all: unset;
+    background-color: var(--bg-green);
+    color: var(--white-color);
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    /* padding: 5px 5px; */
+
     cursor: pointer;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
+
+    svg {
+      width: 25px;
+      height: 25px;
+      fill: var(--white-color);
+    }
   }
 }
 .addUser .error {

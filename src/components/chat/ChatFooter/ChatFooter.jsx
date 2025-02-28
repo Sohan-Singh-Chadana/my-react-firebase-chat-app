@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { MdOutlineAdd } from "react-icons/md";
 import PopupMenu from "../PopupMenu";
 import ChatInput from "../ChatInput";
 import SendButton from "../SendButton";
-import { useChatStore } from "../../../lib/chatStore";
+import { useChatStore } from "../../../store/chatStore";
+import { useOutsideClick } from "../../../hooks";
 import "./ChatFooter.css";
 
 const ChatFooter = ({
@@ -19,7 +20,11 @@ const ChatFooter = ({
   const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const menuRef = useRef(null);
+  const menuRef = useOutsideClick(
+    () => setMenuOpen(false),
+    menuOpen,
+    ".mdOutlineAdd"
+  );
 
   const handleImg = (e) => {
     if (e.target.files[0]) {
@@ -30,17 +35,6 @@ const ChatFooter = ({
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        if (!event.target.closest(".mdOutlineAdd")) {
-          setMenuOpen(false);
-        }
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <div className="bottom">
@@ -52,12 +46,6 @@ const ChatFooter = ({
               onClick={() => setMenuOpen(!menuOpen)}
             />
 
-            {/* {menuOpen && (
-              <PopupMenu
-                onImagePreview={handleImagePreview}
-                menuRef={menuRef}
-              />
-            )} */}
             <PopupMenu
               onImagePreview={handleImagePreview}
               menuRef={menuRef}

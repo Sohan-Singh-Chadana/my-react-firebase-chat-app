@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { updateUserProfile } from "../lib/userService";
+import { updateUserProfile } from "../services/userService";
 
 export const handleProfileUpdate = async ({
   field,

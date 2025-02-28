@@ -3,10 +3,9 @@ import { MdCameraAlt } from "react-icons/md";
 import Modal from "../../../common/modal/Modal";
 import ProfileMenu from "../ProfileMenu";
 import ProfilePreview from "../ProfilePreview";
-import { useUserStore } from "../../../../lib/userStore";
+import { useUserStore } from "../../../../store/userStore";
 import { useProfilePicture } from "../../../../utils/profilePictureUtils";
-import useAvatarHoverEffect from "../../../../hooks/useAvatarHoverEffect ";
-import useOutsideClick from "../../../../hooks/useOutsideClickProfilePrev";
+import { useAvatarHoverEffect, useOutsideClickProfilePrev } from "../../../../hooks";
 import "./ProfilePicture.css";
 
 const ProfilePicture = () => {
@@ -32,7 +31,7 @@ const ProfilePicture = () => {
   } = useProfilePicture(currentUser);
 
   useAvatarHoverEffect(avatarRef, avatar, currentUser);
-  useOutsideClick(avatarPreviewRef, profilePrvBoxRef, closeProfileMenu);
+  useOutsideClickProfilePrev(avatarPreviewRef, profilePrvBoxRef, closeProfileMenu);
 
   return (
     <div className="profile-image">

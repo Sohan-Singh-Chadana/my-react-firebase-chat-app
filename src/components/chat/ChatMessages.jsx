@@ -34,7 +34,6 @@ const ChatMessages = ({ messages, currentUser }) => {
             {showDate && (
               <span className="chatDay">{getChatDay(messageDate)}</span>
             )}
-
             <div
               className={
                 message.senderId === currentUser.userId
@@ -80,10 +79,10 @@ const ChatMessages = ({ messages, currentUser }) => {
                     style={{
                       color:
                         message.img && message.text
-                          ? "#667781"
+                          ? "var(--text-secondary)"
                           : message.img
                           ? "white"
-                          : "#667781",
+                          : "var(--text-secondary)",
                       position:
                         message.text.split(" ").length > 10
                           ? "absolute"

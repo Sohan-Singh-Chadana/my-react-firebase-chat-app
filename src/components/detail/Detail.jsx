@@ -5,8 +5,8 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { useChatStore } from "../../lib/chatStore";
-import { useUserStore } from "../../lib/userStore";
+import { useChatStore } from "../../store/chatStore";
+import { useUserStore } from "../../store/userStore";
 import { useState } from "react";
 import "./detail.css";
 import {
@@ -18,7 +18,7 @@ import {
   MdKeyboardArrowUp,
 } from "react-icons/md";
 import Modal from "../common/modal/Modal";
-import useGlobalStateStore from "../../lib/globalStateStore";
+import useGlobalStateStore from "../../store/globalStateStore";
 import { auth, db } from "../../lib/firebase/firebase";
 
 const Detail = () => {
@@ -26,8 +26,8 @@ const Detail = () => {
     useChatStore();
   const { currentUser } = useUserStore();
   const [openSection, setOpenSection] = useState(null);
-  const [showConfirm, setShowConfirm] = useState(false)
-  const { showDetail , setShowDetail } = useGlobalStateStore();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const { showDetail, setShowDetail } = useGlobalStateStore();
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -43,11 +43,13 @@ const Detail = () => {
 
   const confirmBlocked = async () => {
     if (!user) return;
-    const userDocRef = doc(db, "users", currentUser.id);
+    const userDocRef = doc(db, "users", currentUser.userId);
 
     try {
       await updateDoc(userDocRef, {
-        blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+        blockedUsers: isReceiverBlocked
+          ? arrayRemove(user.userId)
+          : arrayUnion(user.userId),
       });
       changeBlock();
     } catch (err) {
@@ -74,9 +76,13 @@ const Detail = () => {
         <p>Contact info</p>
       </div>
       <div className="user">
-        <img src={user?.avatar || "/avatar.png"} alt="" />
-        <h2>{user?.username}</h2>
-        <p>Lorem ipsum dolor sit amet.</p>
+        <img src={user?.profilePic || "/default-avatar.png"} alt="avatar" />
+        <h2>{isCurrentUserBlocked ? "Unknown User" : user?.name}</h2>
+        <p>
+          {isReceiverBlocked || isCurrentUserBlocked
+            ? ""
+            : user?.about || "No bio available"}
+        </p>
       </div>
       <div className="info">
         {/* Chat Settings */}
@@ -176,25 +182,27 @@ const Detail = () => {
         {/* Buttons */}
         <div className="btn-container">
           <button
-            onClick={handleBlock}
-            style={{ color: isReceiverBlocked ? "#419e51" : "red" }}
+            onClick={!isCurrentUserBlocked ? handleBlock : null} // Disable click if blocked
+            disabled={isCurrentUserBlocked} // Disable button for blocked users
+            style={{
+              color: isReceiverBlocked ? "#419e51" : "var(--red-color)",
+              cursor: isCurrentUserBlocked ? "not-allowed" : "pointer",
+              opacity: isCurrentUserBlocked ? 0.5 : 1, // Make it visually disabled
+            }}
           >
             <MdBlock />
             <span>
               {isCurrentUserBlocked
                 ? "You are Blocked!"
                 : isReceiverBlocked
-                ? `Unblock ${user?.username} `
-                : `Block ${user?.username}`}
+                ? `Unblock ${user?.name}`
+                : `Block ${user?.name}`}
             </span>
           </button>
           <button className="delete-chat" onClick={handleDeleteChat}>
             <MdDelete />
             <span>Delete Chat</span>
           </button>
-          {/* <button className="logout" onClick={() => auth.signOut()}>
-            Logout
-          </button> */}
         </div>
       </div>
       {showConfirm && (
@@ -204,10 +212,10 @@ const Detail = () => {
           onConfirm={confirmBlocked}
           title={`${
             !(isCurrentUserBlocked || isReceiverBlocked) ? "Block" : "Unblock"
-          }  ${user?.username}?`}
+          }  ${user?.name}?`}
           description={`Are you sure you want to ${
             !(isCurrentUserBlocked || isReceiverBlocked) ? "block" : "unblock"
-          } ${user?.username}? This action is irreversible.`}
+          } ${user?.name}? This action is irreversible.`}
           confirmText={`${
             !(isCurrentUserBlocked || isReceiverBlocked) ? "Block" : "Unblock"
           }`}

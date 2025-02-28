@@ -2,21 +2,41 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #f0f2f5;
+  background-color: var(--two-bg-color);
   flex: 1;
 
-  .title {
+  .profile-header {
     width: 100%;
     height: 65px;
     padding: 0px 16px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    font-size: 24px;
-    font-weight: 700;
-    color: #504f4f;
-    background-color: #ffffff;
+    gap: 36px;
+    background-color: var(--profileEdit-bg-color);
+
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--title-color);
+    }
+
+    .smallTitle {
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .back-button {
+      all: unset;
+      cursor: pointer;
+
+      svg {
+        fill: var(--text-color);
+        margin-bottom: -5px;
+      }
+    }
   }
+
   .profile-content {
     .rotate-icon {
       animation: spin 1s linear infinite;
@@ -39,14 +59,14 @@
       gap: 12px;
 
       .warn-text {
-        color: #504f4f;
+        color: var(--title-color);
         font-size: 14px;
         padding: 10px 30px;
 
         svg {
           margin-right: 5px;
           margin-bottom: -2px;
-          fill: #000;
+          fill: var(--text-color);
         }
       }
     }

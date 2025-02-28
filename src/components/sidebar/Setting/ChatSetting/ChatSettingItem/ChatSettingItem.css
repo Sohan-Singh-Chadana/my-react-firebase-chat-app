@@ -1,0 +1,24 @@
+.chat-setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-bottom-color);
+  cursor: pointer;
+
+  .chat-setting-status {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-setting-value {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  svg {
+    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+  }
+}

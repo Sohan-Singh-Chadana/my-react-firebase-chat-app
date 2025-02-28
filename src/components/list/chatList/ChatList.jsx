@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./chatList.css";
 import AddUser from "./addUser/AddUser";
-import { useUserStore } from "../../../lib/userStore";
+import { useUserStore } from "../../../store/userStore";
 import {
   doc,
   getDoc,
@@ -14,10 +14,10 @@ import {
   limit,
   where,
 } from "firebase/firestore";
-import { useChatStore } from "../../../lib/chatStore";
-import useGlobalStateStore from "../../../lib/globalStateStore";
+import { useChatStore } from "../../../store/chatStore";
+import useGlobalStateStore from "../../../store/globalStateStore";
 import { MdCheck, MdDoneAll, MdOutlineArchive } from "react-icons/md";
-import useSelectChats from "../../../lib/selectChats";
+import useSelectChats from "../../../store/chatSelectionStore";
 import dayjs from "dayjs";
 import { db } from "../../../lib/firebase/firebase";
 import {
@@ -25,9 +25,6 @@ import {
   listenForDeliveredMessages,
   listenForNewMessages,
   markAllMessagesAsDelivered,
-  // markAllMessagesAsDelivered,
-  markAndListenForDeliveredMessages,
-  markMessagesAsDelivered,
 } from "../../../utils/messageUtils";
 
 const ChatList = () => {
@@ -40,9 +37,8 @@ const ChatList = () => {
     setChats,
   } = useSelectChats();
   const { currentUser } = useUserStore();
-  const { chatId, changeChat } = useChatStore();
+  const { chatId, changeChat, resetChatId } = useChatStore();
   const [lastMessageData, setLastMessageData] = useState({});
-  const [selectedChatId, setSelectedChatId] = useState(null);
 
   useEffect(() => {
     if (!currentUser?.uid) {
@@ -175,7 +171,7 @@ const ChatList = () => {
       unSub();
       unsubscribeListeners.forEach((unsub) => unsub());
     };
-  }, [currentUser?.uid, setChats, selectedChatId]);
+  }, [currentUser?.uid, setChats, chatId]);
 
   useEffect(() => {
     let unsubscribeDelivered = null;
@@ -230,17 +226,10 @@ const ChatList = () => {
       return;
     }
 
-    setSelectedChatId(chat.chatId);
-
-    // Reset unreadCount to 0 for the selected chat in Firestore
-    // try {
-    //   const chatRef = doc(db, "chats", chat.chatId);
-    //   await updateDoc(chatRef, {
-    //     unreadCount: 0,
-    //   });
-    // } catch (error) {
-    //   console.error("Error resetting unreadCount in Firestore:", error);
-    // }
+    if (chatId === chat.chatId) {
+      resetChatId();
+      return;
+    }
 
     // Update `isSeen` and unreadCount to 0 for the selected chat in the chats state
     const updatedChats = chats.map((item) =>
@@ -257,8 +246,6 @@ const ChatList = () => {
         console.error("Invalid currentUser:", currentUser);
         return;
       }
-
-      // Convert `updatedChats` into a Firestore-compatible format
 
       const chatListToUpdate = updatedChats.map(({ user, ...rest }) => ({
         ...rest,
@@ -281,10 +268,10 @@ const ChatList = () => {
     }
   };
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "";
-    return dayjs(timestamp * 1000).format("hh:mm A");
-  };
+  // const formatTimestamp = (timestamp) => {
+  //   if (!timestamp) return "";
+  //   return dayjs(timestamp * 1000).format("hh:mm A");
+  // };
 
   // ✅ Fix `filteredChats` logic to handle `undefined` values
   const filteredChats = Array.isArray(chats)
@@ -310,6 +297,28 @@ const ChatList = () => {
     }
   };
 
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return "";
+
+    const date = dayjs(timestamp * 1000); // Convert Firestore timestamp to date
+    const today = dayjs();
+    const oneWeekAgo = today.subtract(7, "day");
+
+    if (date.isSame(today, "day")) {
+      return date.format("hh:mm A");
+    }
+
+    if (date.isSame(today.subtract(1, "day"), "day")) {
+      return "Yesterday";
+    }
+
+    if (date.isAfter(oneWeekAgo)) {
+      return date.format("dddd");
+    }
+
+    return date.format("DD/MM/YYYY"); // Show full date for older messages
+  };
+
   return (
     <>
       <div className="chatList">
@@ -321,79 +330,76 @@ const ChatList = () => {
           </div>
         </div>
 
-        {filteredChats.map((chat) => (
-          <div
-            key={chat.chatId}
-            onClick={(event) => handleChatSelect(chat, event)}
-            className={`chat-item ${chatId === chat.chatId ? "selected" : ""} ${
-              selectMode ? "with-checkbox" : ""
-            } ${chat.unreadCount > 0 ? "unread" : ""}`}
-          >
-            {selectMode && (
-              <input
-                type="checkbox"
-                className="custom-checkbox"
-                checked={selectedChats.some((c) => c.chatId === chat.chatId)}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  handleDeleteSelectedChat(chat);
-                }}
-              />
-            )}
+        {filteredChats.map((chat) => {
+          const lastMessageTime = formatTimestamp(chat.updatedAt?.seconds);
 
-            <div className="chat-content">
-              <div className="avatar-container">
-                <img
-                  src={
-                    chat.user?.blockedUsers?.includes(currentUser?.uid)
-                      ? "/avatar.png"
-                      : chat.user?.profilePic || "/avatar.png"
-                  }
-                  alt="User Avatar"
-                  className="avatar"
+          return (
+            <div
+              key={chat.chatId}
+              onClick={(event) => handleChatSelect(chat, event)}
+              className={`chat-item ${
+                chatId === chat.chatId ? "selected" : ""
+              } ${selectMode ? "with-checkbox" : ""} ${
+                chat.unreadCount > 0 ? "unread" : ""
+              }`}
+            >
+              {selectMode && (
+                <input
+                  type="checkbox"
+                  className="custom-checkbox"
+                  checked={selectedChats.some((c) => c.chatId === chat.chatId)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleDeleteSelectedChat(chat);
+                  }}
                 />
-              </div>
-              <div className="chat-info">
-                <div className="chat-header">
-                  <h4>
-                    {chat.user?.blockedUsers?.includes(currentUser?.uid)
-                      ? "User"
-                      : chat.user?.name || "Unknown"}
-                  </h4>
-                  <span className="time">
-                    {formatTimestamp(chat.updatedAt?.seconds)}
-                  </span>
+              )}
+
+              <div className="chat-content">
+                <div className="avatar-container">
+                  <img
+                    src={
+                      chat.user?.blockedUsers?.includes(currentUser?.uid)
+                        ? "/default-avatar.png"
+                        : chat.user?.profilePic || "/default-avatar.png"
+                    }
+                    alt="User Avatar"
+                    className="avatar"
+                  />
                 </div>
-                <p className="message-preview">
-                  {/* {
-                    chat.lastMessageStatus &&
-                      chatMessages
-                        ?.filter((msg) => msg.senderId === currentUser?.userId) // Only consider messages sent by the current user
-                        .at(-1) && // Get the last sent message from the sender
-                      getStatusIcon(chat.lastMessageStatus) // Show the status icon for the last sender's message
-                  } */}
-                  {lastMessageData?.[chat.chatId]?.senderId ===
-                    currentUser?.userId &&
-                    lastMessageData?.[chat.chatId]?.status &&
-                    getStatusIcon(lastMessageData?.[chat.chatId]?.status)}
-                  <span>
-                    {/[a-zA-Z]/.test(chat.lastMessage) // Check if message contains English
-                      ? chat.lastMessage.length > 40
-                        ? chat.lastMessage.slice(0, 40) + "..."
-                        : chat.lastMessage
-                      : chat.lastMessage.split(/\s+/).length > 10 // For Hindi, allow 10 words
-                      ? chat.lastMessage.split(/\s+/).slice(0, 15).join(" ") +
-                        "..."
-                      : chat.lastMessage}
-                  </span>
-                </p>
-                {chat.unreadCount > 0 && (
-                  <span className="message-count">{chat.unreadCount}</span>
-                )}
+                <div className="chat-info">
+                  <div className="chat-header">
+                    <h4>
+                      {chat.user?.blockedUsers?.includes(currentUser?.uid)
+                        ? "User"
+                        : chat.user?.name || "Unknown"}
+                    </h4>
+                    <span className="time">{lastMessageTime}</span>
+                  </div>
+                  <p className="message-preview">
+                    {lastMessageData?.[chat.chatId]?.senderId ===
+                      currentUser?.userId &&
+                      lastMessageData?.[chat.chatId]?.status &&
+                      getStatusIcon(lastMessageData?.[chat.chatId]?.status)}
+                    <span>
+                      {/[a-zA-Z]/.test(chat.lastMessage) // Check if message contains English
+                        ? chat.lastMessage.length > 40
+                          ? chat.lastMessage.slice(0, 40) + "..."
+                          : chat.lastMessage
+                        : chat.lastMessage.split(/\s+/).length > 10 // For Hindi, allow 10 words
+                        ? chat.lastMessage.split(/\s+/).slice(0, 15).join(" ") +
+                          "..."
+                        : chat.lastMessage}
+                    </span>
+                  </p>
+                  {chat.unreadCount > 0 && (
+                    <span className="message-count">{chat.unreadCount}</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <AddUser />

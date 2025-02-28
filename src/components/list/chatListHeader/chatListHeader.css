@@ -10,7 +10,7 @@
     .title {
       font-size: 24px;
       font-weight: 600;
-      color: #504f4f;
+      color: var(--title-color);
     }
 
     .icons {
@@ -36,12 +36,11 @@
     gap: 5px;
     padding: 10px;
     padding-top: 0;
-    /* border-bottom: 1px solid #e9edef; */
 
     button {
       border: none;
-      background: #f0f2f5;
-      color: #667781;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
       padding: 7px 15px;
       font-weight: 500;
       cursor: pointer;
@@ -50,13 +49,13 @@
       font-weight: 500;
 
       &:hover {
-        background: #e8ecf7d4;
+        background: var(--hover-filter-button-color);
       }
     }
 
     button.active {
-      background: #e6f9e3;
-      color: #318662;
+      background: var(--active-bg-color);
+      color: var(--active-filter-text);
     }
   }
 
@@ -65,9 +64,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 30px;
-    background-color: #f0f2f5;
+    background-color: var(--bg-secondary);
     margin-top: 10px;
-    border-bottom: 1px solid #dddddd35;
+    border-bottom: 1px solid var(--border-top-color);
 
     .select-info {
       display: flex;
@@ -77,7 +76,7 @@
       svg {
         width: 25px;
         height: 25px;
-        fill: #2d2d2e;
+        fill: var(--title-color);
         cursor: pointer;
       }
     }
@@ -95,8 +94,8 @@
       gap: 10px;
 
       button {
-        background-color: #017561;
-        color: white;
+        background-color: var(--bg-green);
+        color: var(--white-color);
         padding: 10px 20px;
         border: none;
         border-radius: 8px;
@@ -111,12 +110,12 @@
       }
 
       button:last-child {
-        background-color: #ffffff;
-        color: #333;
+        background-color: var(--bg-color);
+        color: var(--text-five);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 
         &:hover {
-          background-color: #f0f2f5;
+          background-color: var(--bg-secondary);
         }
       }
     }

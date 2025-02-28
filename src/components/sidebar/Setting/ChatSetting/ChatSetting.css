@@ -1,0 +1,25 @@
+.chats-setting {
+  color: var(--title-secondary);
+  font-size: 16px;
+  width: 100%;
+  height: 100%;
+  position: relative ;
+
+  .theme-container {
+    background-color: var(--sidebar-bg);
+    margin-block: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .display-text {
+      color: var(--custom-theme-radio-color);
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+}

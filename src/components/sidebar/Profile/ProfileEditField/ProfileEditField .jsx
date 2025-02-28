@@ -42,7 +42,7 @@ const ProfileEditField = ({
           <p>{value}</p>
         )}
         <div className="edit-btn">
-          <p>{isEditing && maxLength - value.length}</p>
+          <p>{isEditing && maxLength - (value?.length || 0)}</p>
           <div className="edit-icon" onClick={onEdit}>
             {isEditing ? (
               isLoading ? (

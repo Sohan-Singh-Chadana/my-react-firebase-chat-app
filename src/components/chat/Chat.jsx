@@ -3,21 +3,20 @@ import "./chat.css";
 import {
   addDoc,
   collection,
+  deleteField,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   updateDoc,
-  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase/firebase";
-import { useChatStore } from "../../lib/chatStore";
-import { useUserStore } from "../../lib/userStore";
-import upload from "../../lib/upload";
-import useGlobalStateStore from "../../lib/globalStateStore";
+import { useChatStore } from "../../store/chatStore.js";
+import { useUserStore } from "../../store/userStore.js";
+import upload from "../../utils/upload.js";
+import useGlobalStateStore from "../../store/globalStateStore.js";
 import dayjs from "dayjs";
 import ChatMessages from "./ChatMessages";
 import {
@@ -25,20 +24,21 @@ import {
   listenForDeliveredMessages,
   markMessagesAsDelivered,
 } from "../../utils/messageUtils";
-import useSelectChats from "../../lib/selectChats";
-import useMessagesStore from "../../lib/useMessageStore";
+import useMessagesStore from "../../store/messageStore.js";
 import {
   listenToUserStatus,
   setUserOffline,
   setUserOnline,
 } from "../../hooks/useUserStatus";
 
-import { setTypingStatus } from "../../hooks/useTypingStatus";
-import useTypingStatusListener from "../../hooks/useTypingStatusListener";
+import { useTypingStatusListener } from "../../hooks";
+import setTypingStatus from "./../../hooks/useTypingStatus.js";
 import ImagePreviewPopup from "./ImagePreviewPopup";
 import ChatHeader from "./ChatHeader";
 import ChatFooter from "./ChatFooter";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import getWallpaperColor from "../../utils/getWallpaperColor.js";
+import useWallpaperStore from "../../store/useWallpaperStore.js";
 
 const Chat = () => {
   // const [messages, setMessages] = useState([]);
@@ -55,10 +55,11 @@ const Chat = () => {
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
     useChatStore();
   const { setShowDetail } = useGlobalStateStore();
-  const { chats } = useSelectChats();
-  const { messages } = useMessagesStore();
+  const { messages, setMessages } = useMessagesStore();
   const chatMessages = messages[chatId] || [];
   const typingStatus = useTypingStatusListener(user?.userId);
+  const { hoveredWallpaper, selectedWallpaper, showWallpaperImage } =
+    useWallpaperStore();
 
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -102,11 +103,12 @@ const Chat = () => {
         .filter(
           (msg) =>
             !msg.deletedBy?.includes(currentUser.userId) &&
-            (!msg.deletedAt || !msg.deletedAt[currentUser.userId]) // Deleted मैसेज चेक करें
+            (!msg.deletedAt || !msg.deletedAt[currentUser.userId])
         );
 
       endRef.current?.scrollIntoView({ behavior: "smooth" });
-      useMessagesStore.getState().setMessages(chatId, msgs);
+      // useMessagesStore.getState().setMessages(chatId, msgs);
+      setMessages(chatId, msgs);
     });
 
     return () => unSub();
@@ -185,10 +187,15 @@ const Chat = () => {
 
       await addDoc(messagesRef, newMessage);
 
-      // ✅ Reset `deletedAt` & `lastSeenAt` when a new message is sent
+      // // ✅ Reset `deletedAt` & `lastSeenAt` when a new message is sent
+      // await updateDoc(chatRef, {
+      //   [`deletedAt.${currentUser.userId}`]: null, // ✅ Clear deleted timestamp
+      //   [`deletedAt.${user.userId}`]: null, // ✅ Clear for the other user as well
+      // });
+
       await updateDoc(chatRef, {
-        [`deletedAt.${currentUser.userId}`]: null, // ✅ Clear deleted timestamp
-        [`deletedAt.${user.userId}`]: null, // ✅ Clear for the other user as well
+        [`deletedAt.${currentUser.userId}`]: deleteField(), // 🔥 Key will be removed
+        [`deletedAt.${user.userId}`]: deleteField(), // 🔥 Removes from Firestore
       });
 
       // ✅ Function to update user's chatList while preserving all other fields
@@ -312,7 +319,15 @@ const Chat = () => {
       />
 
       <div className="chat-container">
-        <div className="center" ref={chatContainerRef}>
+        <div
+          className="center"
+          ref={chatContainerRef}
+          style={getWallpaperColor(
+            hoveredWallpaper,
+            selectedWallpaper,
+            showWallpaperImage
+          )}
+        >
           <ChatMessages messages={chatMessages} currentUser={currentUser} />
           {imagePreview && img.url && (
             <ImagePreviewPopup

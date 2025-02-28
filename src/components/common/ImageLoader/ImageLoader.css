@@ -13,13 +13,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--loading-spinner-color);
   position: absolute;
 }
 
 .spinner {
-  border: 3px solid #ddd;
-  border-top: 3px solid #007bff;
+  border: 3px solid var(--border-bottom-color);
+  border-top: 3px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

@@ -1,11 +1,11 @@
 .input-box {
   flex: 1;
-  background-color: #fff;
+  background-color: var(--chatInput-bg);
+  color: var(--text-color);
   padding: 6px 12px;
   border-radius: 10px;
   font-size: 16px;
-  color: #1a1a1a;
-  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-color);
   display: flex;
   align-items: flex-end;
   gap: 10px;
@@ -15,7 +15,8 @@
     border: none;
     outline: none;
     font-size: 16px;
-    color: #1a1a1a;
+    background-color: transparent;
+    color: var(--text-color);
     resize: none;
     overflow: auto;
     max-height: 200px;
@@ -28,10 +29,6 @@
       cursor: not-allowed;
     }
   }
-
-  /* svg {
-      margin-bottom: -8px;
-    } */
 
   .emoji {
     position: relative;
@@ -53,12 +50,12 @@
 
   .message-input {
     width: 100%;
+    color: var(--text-color);
   }
 }
 
 .bottom .input-box {
   align-items: center;
-  /* overflow: hidden; */
   padding: 0 12px;
 
   .emoji {
@@ -76,7 +73,7 @@
     border: none;
     outline: none;
     font-size: 16px;
-    color: #1a1a1a;
+    color: var(--text-color);
     resize: none;
     overflow: auto;
     max-height: 200px;
@@ -84,5 +81,8 @@
     padding: 8px 0;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+  }
+  .message-input::placeholder {
+    color: var(--text-five);
   }
 }

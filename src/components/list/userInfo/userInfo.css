@@ -24,7 +24,7 @@
       p {
         font-size: 14px;
         font-weight: 500;
-        color: #504f4f;
+        color: var(--title-color);
       }
     }
   }

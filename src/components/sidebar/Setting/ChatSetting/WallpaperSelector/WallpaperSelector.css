@@ -1,0 +1,79 @@
+.chats-setting {
+  .wallpaper-container {
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: var(--sidebar-bg);
+    transition: right 0.3s ease-in-out;
+    z-index: 3;
+  }
+
+  .wallpaper-container.show {
+    right: 0;
+  }
+
+  .wallpaper-option {
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .wallpaper-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0px;
+
+    span {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--bg-green);
+      padding-left: 25px;
+    }
+  }
+
+  .color-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 8px;
+    
+  }
+
+  .color-list-item {
+    width: 85px;
+    height: 85px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .color-list-item:hover {
+    transform: scale(0.9);
+  }
+
+  .color-list-item.default {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: capitalize;
+    color: #111;
+    background-color: var(--default-chat-bg-color);
+  }
+
+  .color-list-item.selected {
+    border: 4px solid #7d9fe3;
+  }
+}

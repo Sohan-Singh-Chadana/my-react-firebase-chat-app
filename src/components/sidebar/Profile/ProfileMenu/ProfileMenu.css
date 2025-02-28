@@ -3,7 +3,7 @@
 
   .menu {
     z-index: 10;
-    background: #ffffff;
+    background: var(--bg-color);
     border-radius: 4px;
     padding: 5px 0px;
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
@@ -38,7 +38,7 @@
         width: 100%;
         font-size: 16px;
         font-weight: 500;
-        color: #504f4f;
+        color: var(--title-color);
         text-align: left;
         transition: all 0.3s ease;
 
@@ -52,11 +52,11 @@
         svg {
           width: 25px;
           height: 25px;
-          fill: #504f4f !important;
+          fill: var(--title-color) !important;
         }
       }
       li:hover {
-        background: #f0f0f0;
+        background: var(--hover-menu);
       }
     }
   }

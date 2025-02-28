@@ -3,9 +3,9 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  background-color: #f0f2f5;
-  color: #667781;
-  border-top: 1px solid #dddddd35;
+  background-color: var(--bg-common-color);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-top-color);
   gap: 10px;
   margin-top: auto;
   position: sticky;
@@ -22,7 +22,7 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    color: #54656f;
+    color: var(--text-secondary);
     /* margin-bottom: -8px; */
   }
 
@@ -37,18 +37,18 @@
       cursor: pointer;
       border-radius: 50%;
       transition: all 0.3s ease;
-      color: #1a1a1a;
+      color: var(--title-secondary);
       padding: 4px;
     }
 
     .mdOutlineAdd.active {
-      background-color: #d9dbde;
+      background-color: var(--active-icon-color);
       rotate: 135deg;
     }
   }
 
   .block-text {
-    color: #667781;
+    color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
     display: flex;

@@ -5,8 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { auth, db } from "../../lib/firebase/firebase";
-import { registerUser } from "../../lib/firebase/auth";
+import { auth, db } from "../../../lib/firebase/firebase";
+import { registerUser } from "../../../lib/firebase/auth";
 
 const Login = () => {
   const [avatar, setAvatar] = useState({

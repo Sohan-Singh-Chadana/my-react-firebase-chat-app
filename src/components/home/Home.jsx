@@ -1,5 +1,5 @@
 import React from "react";
-import useGlobalStateStore from "../../lib/globalStateStore";
+import useGlobalStateStore from "../../store/globalStateStore";
 import "./home.css";
 
 const Home = () => {
@@ -13,12 +13,6 @@ const Home = () => {
     <div className="home">
       <div className="home-content">
         <div className="home-left">
-          {/* <div className="home-image">
-            <img
-              src="https://static-00.iconduck.com/assets.00/chat-icon-2048x2048-i7er18st.png"
-              alt="Welcome"
-            />
-          </div> */}
           <span
             aria-hidden="true"
             data-icon="intro-md-beta-logo-light"

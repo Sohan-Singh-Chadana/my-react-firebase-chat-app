@@ -3,27 +3,15 @@ import List from "../list/List";
 import "./sidebar.css";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BsChatLeftText } from "react-icons/bs";
-import { useUserStore } from "../../lib/userStore";
-import { useState } from "react";
+import { useUserStore } from "../../store/userStore";
 import Settings from "./Setting";
 import Profile from "./Profile";
+import useVisibleComponentStore from "../../store/useVisibleComponentStore";
 
 export const Sidebar = () => {
-  const { currentUser, isLoading } = useUserStore();
-  const [visibleComponent, setVisibleComponent] = useState({
-    list: true,
-    settings: false,
-    profile: false,
-  });
+  const { currentUser } = useUserStore();
+  const { visibleComponent, toggleComponent } = useVisibleComponentStore();
   const { list, settings, profile } = visibleComponent;
-
-  const toggleComponent = (component) => {
-    setVisibleComponent({
-      list: component === "list",
-      settings: component === "settings",
-      profile: component === "profile",
-    });
-  };
 
   return (
     <div className="sidebar">

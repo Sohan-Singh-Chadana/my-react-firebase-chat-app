@@ -15,6 +15,123 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
+:root {
+  --primary-color: #00a884;
+  --secondary-color: #2a3942;
+  --white-color: #ffffff;
+  --bg-common-gray: #f0f2f5;
+  --archived-color: #75d567;
+  --unread-color: #3cd373;
+  --custom-theme-radio-color: #408169;
+  --background-bg-color: #0b1e27;
+  --bg-menu-common-color: #293238;
+  --bg-blue-common-color: #202c33;
+  --one-common-color: #111b21;
+  --two-gray-common-color: #e9edef;
+  --three-lightgray-common-color: #8696a0;
+  --text-common-color: #1a1a1a;
+  --red-color: #e24848;
+  --default-chat-bg-color: #eee9e1;
+
+  --bg-color: var(--white-color);
+  --bg-secondary: var(--bg-common-gray);
+  --bg-common-color: var(--bg-common-gray);
+  --bg-green: #017561;
+  --detail-bg-color: var(--white-color);
+  --active-bg-color: #e6f9e3;
+  --sidebar-bg: var(--white-color);
+  --profile-bg-color: #fdfcfbb7;
+  --active-icon-color: #d9dbde;
+  --pro-prev-bg-color: #77757e;
+  --chatInput-bg: var(--white-color);
+  --chat-bg-color: #f2eee8;
+  --message-own-color: #d9fdd3;
+  --before-color: rgba(0, 0, 0, 0);
+  --modal-color: rgba(249, 248, 248, 0.841);
+  --icon-color: var(--three-lightgray-common-color);
+  --photo-content-color: #f9f9f9;
+  --two-bg-color: var(--bg-common-gray);
+  --profileEdit-bg-color: var(--white-color);
+
+  --menu-bg-color: var(--white-color);
+  --menu-active-color: #d9dcdf;
+  --image-preview-modal: var(--two-gray-common-color);
+  --loading-spinner-color: rgba(255, 255, 255, 0.8);
+  --side-menu-icon-color: #54656f;
+  --emoji-bg-color: var(--white-color);
+  --detail-list-bg: var(--bg-common-gray);
+  --header-back-bg: var(--primary-color);
+  --container-back-bg: #dbd8d4;
+
+  --text-color: var(--text-common-color);
+  --text-secondary: #667781;
+  --text-chatList: var(--one-common-color);
+  --text-four: #666;
+  --text-five: #333;
+  --text-six: #54656f;
+  --title-color: #504f4f;
+  --title-secondary: #3b4a54;
+  --active-filter-text: #318662;
+  --info-text: #008069;
+
+  --border-color: #d1d7db;
+  --border-top-color: #dddddd35;
+  --border-bottom-color: #ddd;
+
+  --hover-chatList: #f5f6f6;
+  --hover-menu: #f0f0f0;
+  --hover-content-p: #ededed;
+  --hover-filter-button-color: #e8ecf7d4;
+
+  --shadow-color: 0px 0px 2px 1px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg-color: var(--background-bg-color);
+  --bg-secondary: var(--secondary-color);
+  --bg-common-color: var(--bg-blue-common-color);
+  --detail-bg-color: var(--one-common-color);
+  --active-bg-color: #15332c;
+  --active-icon-color: #364148;
+  --chat-bg-color: var(--background-bg-color);
+  --chatInput-bg: var(--secondary-color);
+  --message-own-color: #2c5d4c;
+  --before-color: rgba(0, 0, 0, 0.6);
+  --modal-color: rgba(0, 0, 0, 0.8);
+  --photo-content-color: #060610;
+  --menu-bg-color: #233138;
+  --menu-active-color: var(--bg-menu-common-color);
+  --profile-bg-color: #101010a4;
+  --pro-prev-bg-color: var(--bg-menu-common-color);
+  --image-preview-modal: #101a20;
+  --loading-spinner-color: rgba(0, 0, 0, 0.8);
+  --two-bg-color: var(--one-common-color);
+  --profileEdit-bg-color: var(--one-common-color);
+  --side-menu-icon-color: #aebac1;
+  --emoji-bg-color: #222e36;
+  --detail-list-bg: #0c1317;
+  --header-back-bg: #262524;
+  --container-back-bg: #262524;
+
+  --text-color: var(--white-color);
+  --text-secondary: var(--three-lightgray-common-color);
+  --text-chatList: var(--white-color);
+  --text-four: var(--white-color);
+  --text-five: var(--white-color);
+  --text-six: #798287;
+  --title-color: var(--two-gray-common-color);
+  --title-secondary: #efefef;
+
+  --border-color: #2f3b43;
+  --border-bottom-color: #222d34;
+
+  --sidebar-bg: var(--one-common-color);
+  --hover-chatList: var(--bg-blue-common-color);
+  --hover-menu: #182229;
+  --hover-content-p: var(--bg-blue-common-color);
+  --hover-filter-button-color: #26353d;
+}
+
 body {
   position: relative;
   display: flex;
@@ -22,12 +139,14 @@ body {
   justify-content: center;
   height: 100vh;
   width: 100vw;
-  background-color: #f0f0f0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease-in-out;
 }
 
 /* header style */
 .header-back {
-  background-color: #00a884;
+  background-color: var(--header-back-bg);
   height: 130px;
   width: 100%;
   position: fixed;
@@ -44,15 +163,15 @@ body {
   bottom: 0;
   width: 100%;
   z-index: -10;
-  background-color: #dbd8d4;
+  background-color: var(--container-back-bg);
 }
 
 .loading {
   padding: 25px;
   font-size: 36px;
   border-radius: 10px;
-  background-color: #00a884;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white-color);
 }
 
 .main {
@@ -67,7 +186,7 @@ body {
 .container {
   width: 95vw;
   height: 95vh;
-  background-color: white;
+  background-color: var(--bg-color);
   display: flex;
   position: relative;
   transition: all 0.3s ease-in-out;
@@ -83,7 +202,7 @@ body {
 
 .sidebar {
   width: 35%;
-  border-right: 1px solid #d1d7db;
+  border-right: 1px solid var(--border-color);
   display: flex;
 
   .miniSidebar {
@@ -94,7 +213,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: var(--sidebar-bg);
     transition: all 0.3s ease-in-out;
     overflow-y: auto;
     position: relative;
@@ -109,7 +228,6 @@ body {
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease-in-out;
-  /* overflow-y: auto; */
 }
 
 /* Show Detail Panel */

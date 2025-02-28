@@ -1,28 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import "./modal.css";
 import { createPortal } from "react-dom";
+import { useOutsideClick } from "../../../hooks";
+import "./modal.css";
 
 const Modal = ({
   isOpen,
   onClose,
   onConfirm,
   title = "",
-  description,
+  description = "",
   confirmText,
   cancelText,
+  children,
 }) => {
-  const modalRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+  const modalRef = useOutsideClick(onClose, isOpen);
 
   if (!isOpen) return null;
 
@@ -30,7 +20,9 @@ const Modal = ({
     <div className="modal">
       <div className="modal-content" ref={modalRef}>
         {title && <p className="title">{title}</p>}
-        <p className="description">{description}</p>
+        {description && <p className="description">{description}</p>}
+        {children && children}
+
         <div className="actionBtns">
           <button onClick={onClose} className="cancelBtn">
             {cancelText || "Cancel"}

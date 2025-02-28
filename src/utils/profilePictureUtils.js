@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { deleteProfilePicture, updateProfilePicture } from "../lib/userService";
+import { deleteProfilePicture, updateProfilePicture } from "../services/userService";
 import { toast } from "react-toastify";
 
 export const useProfilePicture = (currentUser) => {

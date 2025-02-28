@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { MdEmojiEmotions } from "react-icons/md";
 import EmojiPicker from "emoji-picker-react";
 import "./ChatInput.css";
+import { useOutsideClick } from "../../../hooks";
 
-const ChatInput = ({ onSend, text, setText , placeholder = "" }) => {
+const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
   //   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
 
-  const emojiRef = useRef(null);
+  // const emojiRef = useRef(null);
   const textareaRef = useRef(null);
 
   const handleEmoji = (e) => {
@@ -35,18 +36,7 @@ const ChatInput = ({ onSend, text, setText , placeholder = "" }) => {
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
-        if (!event.target.closest(".emoji")) {
-          setOpen(false);
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const emojiRef = useOutsideClick(() => setOpen(false), open, ".emoji");
 
   return (
     <div className="input-box">
@@ -57,7 +47,11 @@ const ChatInput = ({ onSend, text, setText , placeholder = "" }) => {
             <EmojiPicker
               open={open}
               onEmojiClick={handleEmoji}
-              style={{ width: "500px" }}
+              style={{
+                width: "500px",
+                backgroundColor: "var(--emoji-bg-color)",
+                borderColor: "var(--emoji-bg-color)",
+              }}
             />
           </div>
         )}

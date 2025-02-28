@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { MdWarningAmber } from "react-icons/md";
-import "./Profile.css";
-import { useUserStore } from "../../../lib/userStore";
 import ProfileEditField from "./ProfileEditField";
 import ProfilePicture from "./ProfilePicture";
 import { handleProfileUpdate } from "../../../utils/profileUtils";
+import { useUserStore } from "../../../store/userStore";
+import "./Profile.css";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
-const Profile = () => {
+const Profile = ({ showBackButton = false, onBack = () => {} }) => {
   const { currentUser } = useUserStore();
   const [isLoadingName, setIsLoadingName] = useState(false);
   const [isLoadingAbout, setIsLoadingAbout] = useState(false);
@@ -36,7 +37,19 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <h2 className="title">Profile</h2>
+      <header className="profile-header">
+        {showBackButton && (
+          <button onClick={onBack} className="back-button">
+            <FaArrowLeftLong size={20} />
+          </button>
+        )}
+        <h2
+          className={`${showBackButton ? "smallTitle" : "title"}`}
+        >
+          Profile
+        </h2>
+      </header>
+
       <div className="profile-content">
         <ProfilePicture />
         <div className="profile-details">

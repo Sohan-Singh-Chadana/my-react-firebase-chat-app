@@ -5,7 +5,7 @@
 
 .searchBar {
   flex: 1;
-  background-color: #f0f2f5;
+  background-color: var(--bg-secondary);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -19,6 +19,7 @@
   font-size: 16px;
   padding: 5px;
   background: transparent;
+  color: var(--text-color);
   border: 0;
   outline: 0;
   flex: 1;
@@ -27,12 +28,15 @@
 .searchBar svg {
   width: 25px;
   height: 25px;
-  margin-top: 8px;
-  color: #54656f;
+  color: var(--text-six);
   cursor: pointer;
 }
 
 .searchBar button {
   all: unset;
   padding: 0;
+
+  svg{
+    margin-bottom: -8px;
+  }
 }

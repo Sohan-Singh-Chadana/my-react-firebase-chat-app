@@ -51,7 +51,7 @@
           -ms-border-radius: 10px;
           -o-border-radius: 10px;
         }
-        span{
+        span {
           width: 50%;
           text-align: center;
         }
@@ -80,6 +80,6 @@
   .separator {
     height: 80%;
     width: 2px;
-    background-color: #dddddd35;
+    background-color: var(--border-top-color);
   }
 }
