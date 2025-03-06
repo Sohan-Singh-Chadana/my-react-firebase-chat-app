@@ -8,9 +8,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase/firebase";
-import dayjs from "dayjs";
 import { useChatStore, useUserStore } from "../../store";
-import { updateUnreadCount, upload } from "../../utils";
+import { getFormattedDate, updateUnreadCount, upload } from "../../utils";
 
 export const useMessageSender = () => {
   const [text, setText] = useState("");
@@ -39,7 +38,7 @@ export const useMessageSender = () => {
       const chatRef = doc(db, "chats", chatId);
 
       const timestamp = serverTimestamp();
-      const formattedDate = dayjs().format("YYYY-MM-DD");
+      const formattedDate = getFormattedDate();
 
       const newMessage = {
         senderId: currentUserId,

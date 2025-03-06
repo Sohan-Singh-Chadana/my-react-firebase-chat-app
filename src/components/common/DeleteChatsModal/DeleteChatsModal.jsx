@@ -15,7 +15,7 @@ const DeleteChatsModal = ({ isOpen, setIsOpen, onConfirm, isSingle = true }) => 
       isOpen={isOpen}
       onClose={handleCancel}
       onConfirm={handleConfirm}
-      title="Delete Chats?"
+      title={isSingle ? "Delete Chat?" : "Delete Chats?"}
       description={
         isSingle
           ? "Are you sure you want to delete this chat?"

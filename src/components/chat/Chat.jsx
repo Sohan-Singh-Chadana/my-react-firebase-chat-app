@@ -39,11 +39,11 @@ const Chat = () => {
 
   const { chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const { messages } = useMessagesStore();
-  const chatMessages = messages[chatId] || [];
   const { sendMessage, text, setText, img, setImg } = useMessageSender();
   const { showCheckboxes } = useMessageSelectionStore();
   const { hoveredWallpaper, selectedWallpaper, showWallpaperImage } =
     useWallpaperStore();
+  const chatMessages = messages[chatId] || [];
 
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null); // Create ref for textarea

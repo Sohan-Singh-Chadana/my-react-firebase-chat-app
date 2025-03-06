@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 import { useLastMessageStore, useUserStore } from "../store";

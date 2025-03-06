@@ -1,5 +1,5 @@
 import { useLastMessageStore } from "../../../../../store";
-import { formatTimestamp } from "../../../../../utils/chatList";
+import { formatTimestamp } from "../../../../../utils";
 import { getStatusIcon } from "../../../../../utils/messages";
 import "./ChatInfo.css";
 
