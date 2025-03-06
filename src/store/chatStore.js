@@ -1,9 +1,15 @@
-import { doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 import { create } from "zustand";
-import { useUserStore } from "./userStore";
+import useUserStore from "./userStore";
 
-export const useChatStore = create((set) => ({
+const useChatStore = create((set) => ({
   chatId: null,
   user: null,
   isCurrentUserBlocked: false,
@@ -92,4 +98,35 @@ export const useChatStore = create((set) => ({
   changeBlock: () => {
     set((state) => ({ ...state, isReceiverBlocked: !state.isReceiverBlocked }));
   },
+
+  clearChatForMe: async () => {
+    const { chatId } = useChatStore.getState();
+    const { currentUser } = useUserStore.getState();
+    const userId = currentUser.uid;
+
+    if (!userId || !chatId) return;
+
+    try {
+      const messagesRef = collection(db, "chats", chatId, "messages");
+      const messagesSnap = await getDocs(messagesRef);
+
+      const batch = writeBatch(db);
+
+      messagesSnap.forEach((docSnap) => {
+        const messageData = docSnap.data();
+        const messageRef = doc(db, "chats", chatId, "messages", docSnap.id);
+
+        batch.update(messageRef, {
+          deletedFor: [...(messageData.deletedFor || []), userId],
+        });
+      });
+
+      await batch.commit();
+      console.log("Chat cleared successfully for current user.");
+    } catch (error) {
+      console.error("Clear Chat Error:", error);
+    }
+  },
 }));
+
+export default useChatStore;

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import PropTypes from "prop-types";
 import { MdOutlineAdd } from "react-icons/md";
 import PopupMenu from "../PopupMenu";
 import ChatInput from "../ChatInput";
 import SendButton from "../SendButton";
-import { useChatStore } from "../../../store/chatStore";
+import { useChatStore } from "../../../store";
 import { useOutsideClick } from "../../../hooks";
 import "./ChatFooter.css";
 
@@ -34,7 +34,6 @@ const ChatFooter = ({
       });
     }
   };
-
 
   return (
     <div className="bottom">
@@ -91,4 +90,4 @@ ChatFooter.propTypes = {
   setImg: PropTypes.func.isRequired,
 };
 
-export default ChatFooter;
+export default memo(ChatFooter);

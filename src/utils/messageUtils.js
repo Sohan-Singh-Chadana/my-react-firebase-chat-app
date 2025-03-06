@@ -9,115 +9,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
-import { MdCheck, MdDoneAll } from "react-icons/md";
-import React from "react";
-
-
-export const listenForDeliveredMessages = (chatId, currentUserId) => {
-  if (!chatId || !currentUserId) return;
-
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(
-    messagesRef,
-    where("status", "==", "sent"),
-    where("receiverId", "==", currentUserId)
-  );
-
-  const unsubscribe = onSnapshot(q, async (snapshot) => {
-    const batch = writeBatch(db);
-    snapshot.docChanges().forEach(({ type, doc }) => {
-      if (type === "added") {
-        batch.update(doc.ref, { status: "delivered" });
-      }
-    });
-    await batch.commit();
-  });
-
-  return unsubscribe;
-};
-
-export const listenAndMarkMessagesAsRead = (chatId, currentUserId) => {
-  if (!chatId || !currentUserId) return;
-
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(
-    messagesRef,
-    where("status", "in", ["sent", "delivered"]),
-    where("receiverId", "==", currentUserId)
-  );
-
-  const unsubscribe = onSnapshot(q, async (snapshot) => {
-    const batch = writeBatch(db);
-    snapshot.docChanges().forEach(({ type, doc }) => {
-      if (type === "added") {
-        batch.update(doc.ref, { status: "read" });
-      }
-    });
-    await batch.commit();
-  });
-
-  return unsubscribe;
-};
-
-export const markMessagesAsDelivered = async (chatId, receiverId) => {
-  if (!chatId || !receiverId) return;
-
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(
-    messagesRef,
-    where("status", "==", "sent"),
-    where("receiverId", "==", receiverId) // Only mark messages for the current user
-  );
-
-  try {
-    const messagesSnap = await getDocs(q);
-
-    if (messagesSnap.empty) {
-      // console.log("No sent messages found to mark as delivered.");
-      return;
-    }
-
-    const batch = writeBatch(db);
-    messagesSnap.forEach((doc) => {
-      batch.update(doc.ref, { status: "delivered" });
-    });
-
-    await batch.commit();
-    // console.log("Messages marked as delivered successfully.");
-  } catch (err) {
-    console.error("Failed to mark messages as delivered:", err);
-  }
-};
-
-export const markMessagesAsRead = async (chatId, receiverId) => {
-  if (!chatId || !receiverId) return;
-
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const q = query(
-    messagesRef,
-    where("status", "==", "delivered"),
-    where("receiverId", "==", receiverId) // Only mark messages for the current user
-  );
-
-  try {
-    const messagesSnap = await getDocs(q);
-
-    if (messagesSnap.empty) {
-      // console.log("No delivered messages found to mark as read.");
-      return;
-    }
-
-    const batch = writeBatch(db);
-    messagesSnap.forEach((doc) => {
-      batch.update(doc.ref, { status: "read" });
-    });
-
-    await batch.commit();
-    // console.log("Messages marked as read successfully.");
-  } catch (err) {
-    console.error("Failed to mark messages as read:", err);
-  }
-};
+import { markMessagesAsDelivered } from "./messages/messageActions";
 
 // ✅ Mark all existing messages as delivered when the app is open and the user is online
 export const markAllMessagesAsDelivered = async (userId) => {
@@ -160,7 +52,6 @@ export const listenForNewMessages = async (userId) => {
   // ✅ Return an array of unsubscribe functions to clean up later
   return chatListeners;
 };
-
 
 export const markAndListenForDeliveredMessages = async (userId) => {
   try {
@@ -217,20 +108,3 @@ export const markAndListenForDeliveredMessages = async (userId) => {
   }
 };
 
-export const getStatusIcon = (message) => {
-  switch (message.status) {
-    case "sent":
-      return MdCheck; // Return component reference
-    case "delivered":
-      return MdDoneAll;
-    case "read":
-      // eslint-disable-next-line react/display-name
-      return (props) =>
-        React.createElement(MdDoneAll, {
-          ...props,
-          style: { color: "#66b7dc" },
-        });
-    default:
-      return null;
-  }
-};

@@ -1,14 +1,4 @@
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
-import { useChatStore } from "../../store/chatStore";
-import { useUserStore } from "../../store/userStore";
 import { useState } from "react";
-import "./detail.css";
 import {
   MdBlock,
   MdClose,
@@ -17,56 +7,28 @@ import {
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
 } from "react-icons/md";
-import Modal from "../common/modal/Modal";
-import useGlobalStateStore from "../../store/globalStateStore";
-import { auth, db } from "../../lib/firebase/firebase";
+
+import { deleteSingleChat } from "../../utils";
+import { useChatStore, useGlobalStateStore } from "../../store";
+
+import DeleteChatsModal from "../common/DeleteChatsModal";
+import BlockAction from "../common/BlockAction";
+import "./detail.css";
 
 const Detail = () => {
-  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
-    useChatStore();
-  const { currentUser } = useUserStore();
+  const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const [openSection, setOpenSection] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const { showDetail, setShowDetail } = useGlobalStateStore();
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
   };
 
-  const handleBlock = () => {
-    setShowConfirm(true);
-  };
-
-  const cancelBlocked = () => {
-    setShowConfirm(false);
-  };
-
-  const confirmBlocked = async () => {
-    if (!user) return;
-    const userDocRef = doc(db, "users", currentUser.userId);
-
-    try {
-      await updateDoc(userDocRef, {
-        blockedUsers: isReceiverBlocked
-          ? arrayRemove(user.userId)
-          : arrayUnion(user.userId),
-      });
-      changeBlock();
-    } catch (err) {
-      console.log(err);
-    }
-    setShowConfirm(false);
-  };
-
-  const handleDeleteChat = async () => {
-    // if (!chatId) return;
-    // try {
-    //   await deleteDoc(doc(db, "chats", chatId));
-    //   alert("Chat deleted successfully!");
-    //   onClose();
-    // } catch (err) {
-    //   console.log("Error deleting chat:", err);
-    // }
+  const handleDeleteChat = () => {
+    deleteSingleChat();
+    setShowDelete(false);
   };
 
   return (
@@ -182,7 +144,7 @@ const Detail = () => {
         {/* Buttons */}
         <div className="btn-container">
           <button
-            onClick={!isCurrentUserBlocked ? handleBlock : null} // Disable click if blocked
+            onClick={!isCurrentUserBlocked ? () => setShowConfirm(true) : null} // Disable click if blocked
             disabled={isCurrentUserBlocked} // Disable button for blocked users
             style={{
               color: isReceiverBlocked ? "#419e51" : "var(--red-color)",
@@ -199,27 +161,25 @@ const Detail = () => {
                 : `Block ${user?.name}`}
             </span>
           </button>
-          <button className="delete-chat" onClick={handleDeleteChat}>
+          <button className="delete-chat" onClick={() => setShowDelete(true)}>
             <MdDelete />
             <span>Delete Chat</span>
           </button>
         </div>
       </div>
+
       {showConfirm && (
-        <Modal
-          isOpen={showConfirm}
-          onClose={cancelBlocked}
-          onConfirm={confirmBlocked}
-          title={`${
-            !(isCurrentUserBlocked || isReceiverBlocked) ? "Block" : "Unblock"
-          }  ${user?.name}?`}
-          description={`Are you sure you want to ${
-            !(isCurrentUserBlocked || isReceiverBlocked) ? "block" : "unblock"
-          } ${user?.name}? This action is irreversible.`}
-          confirmText={`${
-            !(isCurrentUserBlocked || isReceiverBlocked) ? "Block" : "Unblock"
-          }`}
-          cancelText="Cancel"
+        <BlockAction
+          showConfirm={showConfirm}
+          setShowConfirm={setShowConfirm}
+        />
+      )}
+
+      {showDelete && (
+        <DeleteChatsModal
+          isOpen={showDelete}
+          setIsOpen={setShowDelete}
+          onConfirm={handleDeleteChat}
         />
       )}
     </div>

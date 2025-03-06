@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import {
   collection,
   doc,
@@ -9,10 +10,9 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
 import { db } from "../lib/firebase/firebase";
-import { useUserStore } from "../store/userStore";
-import useSelectChats from "../store/chatSelectionStore";
+import { useSelectChats, useUserStore } from "../store";
+
 
 const useAddUser = () => {
   const [allUsers, setAllUsers] = useState([]); // ✅ Store all users
@@ -152,13 +152,10 @@ const useAddUser = () => {
     if (!chatList.find((chat) => chat.chatId === chatId)) {
       updatedChatList.push({
         chatId,
-        isSeen: false,
         lastMessage,
+        updatedAt: new Date(),
         receiverId: targetUser.userId,
         senderId: currentUser.userId,
-        updatedAt: new Date(),
-        userId: targetUser.userId,
-        userName: targetUser.name,
       });
     }
 
@@ -204,4 +201,4 @@ const useAddUser = () => {
   };
 };
 
-export default useAddUser
+export default useAddUser;

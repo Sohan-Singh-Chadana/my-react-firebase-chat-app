@@ -5,8 +5,8 @@ import SettingsHeader from "../../../common/SettingsHeader";
 import ChatSettingItem from "./ChatSettingItem";
 import "./ChatSetting.css";
 import WallpaperSelector from "./WallpaperSelector";
-import useSettingStore from "../../../../store/useSettingStore";
-import useWallpaperStore from "../../../../store/useWallpaperStore";
+import { useSettingStore, useWallpaperStore } from "../../../../store";
+
 
 const ChatSetting = ({ onBack }) => {
   const { theme } = useContext(ThemeContext);

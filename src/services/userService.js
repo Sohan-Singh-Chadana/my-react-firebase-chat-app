@@ -6,7 +6,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { useUserStore } from "../store/userStore";
+import { useUserStore } from "../store";
 
 // Get User Data
 export async function getUserData(userId) {

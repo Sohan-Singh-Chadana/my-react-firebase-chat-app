@@ -8,12 +8,12 @@ import {
   MdLogout,
   MdNotificationsActive,
 } from "react-icons/md";
-import { useUserStore } from "../../../store/userStore";
 import SearchBox from "../../common/searchBox/SearchBox";
 import Profile from "../Profile";
 import settingComponents from "./settingComponents";
 import { settingListData } from "./settingListData";
 import Logout from "../../common/Logout";
+import { useUserStore } from "../../../store";
 import "./Settings.css";
 
 const iconMap = {

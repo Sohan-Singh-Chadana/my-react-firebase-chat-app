@@ -5,14 +5,13 @@ import Notification from "./components/notification/Notification";
 import Home from "./components/home/Home";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { useUserStore } from "./store/userStore";
-import { useChatStore } from "./store/chatStore";
-import useGlobalStateStore from "./store/globalStateStore";
+
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { auth } from "./lib/firebase/firebase";
-import { setUserOffline, setUserOnline } from "./hooks/useUserStatus";
+import { setUserOffline, setUserOnline } from "./services/userStatusService";
 import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/WallpaperPreview";
-import useSettingStore from "./store/useSettingStore";
+import { useChatStore, useGlobalStateStore, useSettingStore, useUserStore } from "./store";
+
 
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
@@ -34,15 +33,18 @@ const App = () => {
       setUserOnline(currentUser.userId);
     }
 
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = (event) => {
       if (currentUser?.userId) {
         setUserOffline(currentUser.userId);
       }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleBeforeUnload); // Ensures it works across all browsers
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleBeforeUnload);
     };
   }, [currentUser?.userId]);
 

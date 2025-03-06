@@ -1,0 +1,55 @@
+.chat-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 15px; /* Default gap */
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--hover-chatList) !important;
+    }
+
+    &.unread {
+      background-color: inherit;
+      font-weight: 500;
+    }
+
+    &.unread .chat-content .chat-info .chat-header .time {
+      color: var(--unread-color);
+    }
+
+    &.selected {
+      background-color: var(--bg-secondary) !important;
+    }
+
+    .chat-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--bg-green);
+      padding-left: 25px;
+    }
+
+    &:hover .chat-info,
+    &.selected .chat-info {
+      border-bottom: 1px solid transparent;
+    }
+
+    &.with-checkbox {
+      padding-left: 33px;
+
+      .avatar-container {
+        padding-left: 10px;
+      }
+    }
+  }

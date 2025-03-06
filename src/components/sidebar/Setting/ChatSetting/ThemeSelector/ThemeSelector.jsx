@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { ThemeContext } from "../../../../../context/ThemeContext";
 import Modal from "../../../../common/modal/Modal";
 import ThemeOption from "../../../../common/ThemeOption";
-import useSettingStore from "../../../../../store/useSettingStore";
+import { useSettingStore } from "../../../../../store";
 
 const ThemeSelector = () => {
   const { theme, setTheme } = useContext(ThemeContext);

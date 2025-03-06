@@ -3,10 +3,10 @@ import List from "../list/List";
 import "./sidebar.css";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BsChatLeftText } from "react-icons/bs";
-import { useUserStore } from "../../store/userStore";
 import Settings from "./Setting";
 import Profile from "./Profile";
-import useVisibleComponentStore from "../../store/useVisibleComponentStore";
+import { useUserStore, useVisibleComponentStore } from "../../store";
+
 
 export const Sidebar = () => {
   const { currentUser } = useUserStore();

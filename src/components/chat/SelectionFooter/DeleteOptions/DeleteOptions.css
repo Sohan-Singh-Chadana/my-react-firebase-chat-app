@@ -1,0 +1,23 @@
+.delete-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  width: 100%;
+
+  .delete-option {
+    all: unset;
+    padding: 8px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    background: var(--bg-color);
+    color: var(--delete-modal-text);
+    border: 1px solid var(--modal-btn-border);
+    transition: all 0.2s ease;
+  }
+  .delete-option:hover {
+    box-shadow: var(--delete-option-hover-shadow);
+  }
+}

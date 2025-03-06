@@ -1,30 +1,45 @@
-import PropTypes from "prop-types";
+import { memo, useState } from "react";
 import { MdLocalPhone, MdVideocam } from "react-icons/md";
 
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import "dayjs/locale/en"; // English locale (optional)
-import "./ChatHeader.css";
 
-import MenuContainer from "../../common/menuContainer/MenuContainer";
-import useMenuStore from "../../../store/menuStore";
-import { useChatStore } from "../../../store/chatStore";
-import { useState } from "react";
 import DeleteChatsModal from "../../common/DeleteChatsModal";
-import { useUserStore } from "../../../store/userStore";
-import { deleteSingleChat } from "../../../utils/deleteSingleChat";
+import MenuContainer from "../../common/menuContainer/MenuContainer";
+
+import { useTypingStatusListener, useUserStatus } from "../../../hooks";
+
+import {
+  useChatStore,
+  useGlobalStateStore,
+  useMenuStore,
+  useMessageSelectionStore,
+  useUserStore,
+} from "../../../store";
+import { deleteSingleChat, resetUnreadCount } from "../../../utils";
+
+import "./ChatHeader.css";
+import BlockAction from "../../common/BlockAction";
+import Modal from "../../common/modal/Modal";
 
 dayjs.extend(relativeTime);
 dayjs.extend(localizedFormat);
 dayjs.locale("en"); // Set locale to English
 
-const ChatHeader = ({ user, userStatus, typingStatus, setShowDetail }) => {
+const ChatHeader = () => {
   const { setMenuOpen } = useMenuStore();
-  const { chatId, resetChatId } = useChatStore();
-  const { currentUser } = useUserStore.getState();
+  const { chatId, resetChatId, user, clearChatForMe } = useChatStore();
   const { isReceiverBlocked, isCurrentUserBlocked } = useChatStore();
+  const { currentUser } = useUserStore.getState();
+  const userStatus = useUserStatus();
+  const typingStatus = useTypingStatusListener();
+  const { setShowDetail } = useGlobalStateStore();
   const [isDeletedModalOpen, setIsDeletedModalOpen] = useState(false);
+  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
+  const [isClearChatModalOpen, setIsClearChatModalOpen] = useState(false);
+  const { showSelection } = useMessageSelectionStore();
 
   const formatLastSeen = (lastSeen) => {
     if (!lastSeen) return "Offline";
@@ -41,14 +56,20 @@ const ChatHeader = ({ user, userStatus, typingStatus, setShowDetail }) => {
     }
   };
 
+  const handleBlockShowModel = () => {
+    setIsBlockedModalOpen(true);
+    setMenuOpen("actionMenuInChatTop", false);
+  };
+
   // handle contact info
   const handleContactInfo = () => {
     setShowDetail(true);
     setMenuOpen("actionMenuInChatTop", false);
   };
 
-  const handleCloseChat = () => {
+  const handleCloseChat = async () => {
     resetChatId();
+    await resetUnreadCount(chatId, currentUser.uid);
     setMenuOpen("actionMenuInChatTop", false);
   };
 
@@ -56,6 +77,21 @@ const ChatHeader = ({ user, userStatus, typingStatus, setShowDetail }) => {
     deleteSingleChat();
     setIsDeletedModalOpen(false);
     setMenuOpen("actionMenuInChatTop", false);
+  };
+
+  const handleSelectMessages = () => {
+    showSelection();
+    setMenuOpen("actionMenuInChatTop", false);
+  };
+
+  const showClearChatModel = () => {
+    setIsClearChatModalOpen(true);
+    setMenuOpen("actionMenuInChatTop", false);
+  };
+
+  const handleClearChat = () => {
+    clearChatForMe();
+    setIsClearChatModalOpen(false);
   };
 
   return (
@@ -94,16 +130,41 @@ const ChatHeader = ({ user, userStatus, typingStatus, setShowDetail }) => {
           menuClass="modify-menu"
         >
           <button onClick={handleContactInfo}>Contact info</button>
-          <button>Select messages</button>
+          <button onClick={handleSelectMessages}>Select messages</button>
           <button>Add To favorites</button>
           <button onClick={handleCloseChat}>Close chat</button>
-          <button>Block</button>
-          <button>Clear chat</button>
+          <button onClick={handleBlockShowModel}>
+            {isCurrentUserBlocked
+              ? "You are Blocked!"
+              : isReceiverBlocked
+              ? `Unblock`
+              : `Block`}
+          </button>
+          <button onClick={showClearChatModel}>Clear chat</button>
           <button onClick={() => setIsDeletedModalOpen(true)}>
             Delete chat
           </button>
         </MenuContainer>
       </div>
+
+      {isBlockedModalOpen && (
+        <BlockAction
+          showConfirm={isBlockedModalOpen}
+          setShowConfirm={setIsBlockedModalOpen}
+        />
+      )}
+
+      {isClearChatModalOpen && (
+        <Modal
+          isOpen={isClearChatModalOpen}
+          onClose={() => setIsClearChatModalOpen(false)}
+          onConfirm={handleClearChat}
+          title={`Clear this chat?`}
+          description={`This chat will be cleared for you, but it will remain visible in your chat list.`}
+          confirmText={`Clear chat`}
+          cancelText="Cancel"
+        />
+      )}
 
       {isDeletedModalOpen && (
         <DeleteChatsModal
@@ -116,20 +177,4 @@ const ChatHeader = ({ user, userStatus, typingStatus, setShowDetail }) => {
   );
 };
 
-// Props validation
-ChatHeader.propTypes = {
-  user: PropTypes.shape({
-    profilePic: PropTypes.string,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-  userStatus: PropTypes.shape({
-    status: PropTypes.oneOf(["online", "offline"]).isRequired,
-    lastSeen: PropTypes.instanceOf(Date),
-  }).isRequired,
-  typingStatus: PropTypes.shape({
-    isTyping: PropTypes.bool,
-  }),
-  setShowDetail: PropTypes.func.isRequired,
-};
-
-export default ChatHeader;
+export default memo(ChatHeader);

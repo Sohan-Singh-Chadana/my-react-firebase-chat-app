@@ -49,12 +49,17 @@
         background: var(--bg-color);
         color: var(--text-color);
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 400;
+        letter-spacing: 1px;
       }
 
       .cancelBtn {
-        border: 1px solid #e5e1e1;
-        /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+        border: 1px solid var(--modal-btn-border);
+        transition: all 0.2s ease;
+      }
+
+      .cancelBtn:hover {
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
       }
 
       .confirmBtn {

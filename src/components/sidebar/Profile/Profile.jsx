@@ -2,10 +2,10 @@ import { useState } from "react";
 import { MdWarningAmber } from "react-icons/md";
 import ProfileEditField from "./ProfileEditField";
 import ProfilePicture from "./ProfilePicture";
-import { handleProfileUpdate } from "../../../utils/profileUtils";
-import { useUserStore } from "../../../store/userStore";
 import "./Profile.css";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { useUserStore } from "../../../store";
+import { handleProfileUpdate } from "../../../utils";
 
 const Profile = ({ showBackButton = false, onBack = () => {} }) => {
   const { currentUser } = useUserStore();

@@ -1,7 +1,7 @@
 import { MdMoreVert } from "react-icons/md";
 import "./menuContainer.css";
-import useMenuStore from "../../../store/menuStore";
 import { useOutsideClick } from "../../../hooks";
+import { useMenuStore } from "../../../store";
 
 const MenuContainer = ({
   menuId,

@@ -48,7 +48,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
     gap: 8px;
-    
   }
 
   .color-list-item {
@@ -69,7 +68,7 @@
     font-size: 14px;
     font-weight: 400;
     text-transform: capitalize;
-    color: #111;
+    color: var(--text-color);
     background-color: var(--default-chat-bg-color);
   }
 

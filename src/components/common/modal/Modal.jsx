@@ -4,13 +4,14 @@ import "./modal.css";
 
 const Modal = ({
   isOpen,
-  onClose,
-  onConfirm,
+  onClose = () => {},
+  onConfirm = () => {},
   title = "",
   description = "",
-  confirmText,
-  cancelText,
+  confirmText = "",
+  cancelText = "",
   children,
+  actionBtnShow = true,
 }) => {
   const modalRef = useOutsideClick(onClose, isOpen);
 
@@ -23,14 +24,16 @@ const Modal = ({
         {description && <p className="description">{description}</p>}
         {children && children}
 
-        <div className="actionBtns">
-          <button onClick={onClose} className="cancelBtn">
-            {cancelText || "Cancel"}
-          </button>
-          <button onClick={onConfirm} className="confirmBtn">
-            {confirmText || "Confirm"}
-          </button>
-        </div>
+        {actionBtnShow && (
+          <div className="actionBtns">
+            <button onClick={onClose} className="cancelBtn">
+              {cancelText || "Cancel"}
+            </button>
+            <button onClick={onConfirm} className="confirmBtn">
+              {confirmText || "Confirm"}
+            </button>
+          </div>
+        )}
       </div>
     </div>,
     document.getElementById("portal-root")

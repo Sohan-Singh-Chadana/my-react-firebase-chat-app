@@ -6,10 +6,13 @@ import DeleteChatsModal from "../../common/DeleteChatsModal";
 import SearchBox from "../../common/searchBox/SearchBox";
 import Logout from "../../common/Logout";
 
-import useMenuStore from "../../../store/menuStore";
-import useSelectChats from "../../../store/chatSelectionStore";
-import useGlobalStateStore from "../../../store/globalStateStore";
-import { chatDeletionUtils } from "../../../utils/chatDeletionUtils";
+import {
+  useGlobalStateStore,
+  useMenuStore,
+  useSelectChats,
+} from "../../../store";
+
+import { chatDeletionUtils } from "../../../utils";
 import "./chatListHeader.css";
 
 const ChatListHeader = () => {
@@ -99,6 +102,7 @@ const ChatListHeader = () => {
           isOpen={confirmDelete}
           setIsOpen={setConfirmDelete}
           onConfirm={handleDeleteChats}
+          isSingle={false}
         />
       )}
     </div>

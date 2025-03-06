@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { uploadAvatar } from "./storage";
-import { setUserOffline } from "../../hooks/useUserStatus";
+import { setUserOffline } from "../../services/userStatusService";
 
 // 🔥 Register User
 export const registerUser = async (name, email, password, avatarFile) => {

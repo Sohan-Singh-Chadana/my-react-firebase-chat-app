@@ -1,0 +1,47 @@
+.selectionFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-common-color);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-top-color);
+  padding: 14px;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  width: 100%;
+
+  .selection-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .selected-text {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--text-five);
+  }
+}
+
+.selectionFooter .close-btn,
+.selectionFooter .delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    color: var(--selection-footer-icon);
+    margin-bottom: -6px;
+  }
+}
+
+.selectionFooter .delete-btn:disabled svg {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

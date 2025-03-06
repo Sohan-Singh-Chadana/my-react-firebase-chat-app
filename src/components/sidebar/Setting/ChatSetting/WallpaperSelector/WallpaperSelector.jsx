@@ -1,8 +1,14 @@
+import { useContext } from "react";
 import { toast } from "react-toastify";
-import { WALLPAPER_COLORS } from "../../../../../constants/wallpaperColors";
-import useSettingStore from "../../../../../store/useSettingStore";
-import useWallpaperStore from "../../../../../store/useWallpaperStore";
+import { useSettingStore, useWallpaperStore } from "../../../../../store";
+
+import {
+  WALLPAPER_COLORS_DARK,
+  WALLPAPER_COLORS_LIGHT,
+} from "../../../../../constants/wallpaperColors";
+
 import SettingsHeader from "../../../../common/SettingsHeader";
+import { ThemeContext } from "../../../../../context/ThemeContext";
 import "./WallpaperSelector.css";
 
 const WallpaperSelector = () => {
@@ -14,11 +20,22 @@ const WallpaperSelector = () => {
     showWallpaperImage,
     setShowWallpaperImage,
   } = useWallpaperStore();
+  const { theme } = useContext(ThemeContext);
 
   const handleWallpaperClick = (wallpaper) => {
     setSelectedWallpaper(wallpaper);
     toast.success("Wallpaper changed successfully");
   };
+
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  const appliedTheme =
+    theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
+
+  const colorArray =
+    appliedTheme === "dark" ? WALLPAPER_COLORS_DARK : WALLPAPER_COLORS_LIGHT;
 
   return (
     <div
@@ -50,7 +67,7 @@ const WallpaperSelector = () => {
           >
             Default
           </li>
-          {WALLPAPER_COLORS.map((color, index) => (
+          {colorArray.map((color, index) => (
             <li
               key={index}
               className={`color-list-item ${

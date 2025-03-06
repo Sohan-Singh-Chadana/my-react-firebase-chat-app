@@ -8,10 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 import { deleteChatWithMessages } from "./deleteChatUtils";
-import useGlobalStateStore from "../store/globalStateStore";
-import useSelectChats from "../store/chatSelectionStore";
-import { useUserStore } from "../store/userStore";
-import { useChatStore } from "../store/chatStore";
+import { useChatStore, useGlobalStateStore, useSelectChats, useUserStore } from "../store";
 
 
 export const chatDeletionUtils = async () => {

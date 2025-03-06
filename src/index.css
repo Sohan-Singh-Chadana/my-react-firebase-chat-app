@@ -32,6 +32,7 @@
   --text-common-color: #1a1a1a;
   --red-color: #e24848;
   --default-chat-bg-color: #eee9e1;
+  --modal-btn-border: #e5e1e1;
 
   --bg-color: var(--white-color);
   --bg-secondary: var(--bg-common-gray);
@@ -62,6 +63,7 @@
   --detail-list-bg: var(--bg-common-gray);
   --header-back-bg: var(--primary-color);
   --container-back-bg: #dbd8d4;
+  --messageBox-bg: #e4e8e2;
 
   --text-color: var(--text-common-color);
   --text-secondary: #667781;
@@ -73,10 +75,13 @@
   --title-secondary: #3b4a54;
   --active-filter-text: #318662;
   --info-text: #008069;
+  --delete-modal-text: #3c7863;
+  --selection-footer-icon: #667781;
 
   --border-color: #d1d7db;
   --border-top-color: #dddddd35;
   --border-bottom-color: #ddd;
+  --addUser-bottom-color: #f2f2f2;
 
   --hover-chatList: #f5f6f6;
   --hover-menu: #f0f0f0;
@@ -84,6 +89,7 @@
   --hover-filter-button-color: #e8ecf7d4;
 
   --shadow-color: 0px 0px 2px 1px rgba(0, 0, 0, 0.1);
+  --delete-option-hover-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 [data-theme="dark"] {
@@ -112,6 +118,8 @@
   --detail-list-bg: #0c1317;
   --header-back-bg: #262524;
   --container-back-bg: #262524;
+  --messageBox-bg: #161f26c7;
+  --default-chat-bg-color: #0b141a;
 
   --text-color: var(--white-color);
   --text-secondary: var(--three-lightgray-common-color);
@@ -121,15 +129,20 @@
   --text-six: #798287;
   --title-color: var(--two-gray-common-color);
   --title-secondary: #efefef;
+  --delete-modal-text: #06cf9c;
+  --selection-footer-icon: var(--white-color);
 
   --border-color: #2f3b43;
   --border-bottom-color: #222d34;
+  --addUser-bottom-color: #3b3f4c;
 
   --sidebar-bg: var(--one-common-color);
   --hover-chatList: var(--bg-blue-common-color);
   --hover-menu: #182229;
   --hover-content-p: var(--bg-blue-common-color);
   --hover-filter-button-color: #26353d;
+
+  --delete-option-hover-shadow: rgba(59, 57, 57, 0.597) 0px 2px 8px 0px;
 }
 
 body {

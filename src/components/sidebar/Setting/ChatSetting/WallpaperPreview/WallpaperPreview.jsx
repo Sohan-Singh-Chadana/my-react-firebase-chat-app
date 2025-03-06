@@ -1,5 +1,5 @@
-import useWallpaperStore from "../../../../../store/useWallpaperStore";
-import getWallpaperColor from "../../../../../utils/getWallpaperColor";
+import { useWallpaperStore } from "../../../../../store";
+import { getWallpaperColor } from "../../../../../utils";
 import "./WallpaperPreview.css";
 
 const WallpaperPreview = () => {

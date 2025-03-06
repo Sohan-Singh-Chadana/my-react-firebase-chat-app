@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase"; // Adjust the path as per your project structure
-import { useChatStore } from "../store/chatStore";
+import { useChatStore } from "../store";
 
-const useTypingStatusListener = (userId) => {
+const useTypingStatusListener = () => {
   const [typingStatus, setTypingStatus] = useState(null);
-  const { chatId } = useChatStore();
+  const { chatId, user } = useChatStore();
+
+  const userId = user?.userId;
 
   useEffect(() => {
     if (!userId || !chatId) return;

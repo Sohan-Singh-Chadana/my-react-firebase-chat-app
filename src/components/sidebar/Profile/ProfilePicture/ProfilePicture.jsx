@@ -3,10 +3,10 @@ import { MdCameraAlt } from "react-icons/md";
 import Modal from "../../../common/modal/Modal";
 import ProfileMenu from "../ProfileMenu";
 import ProfilePreview from "../ProfilePreview";
-import { useUserStore } from "../../../../store/userStore";
-import { useProfilePicture } from "../../../../utils/profilePictureUtils";
 import { useAvatarHoverEffect, useOutsideClickProfilePrev } from "../../../../hooks";
 import "./ProfilePicture.css";
+import { useUserStore } from "../../../../store";
+import { useProfilePicture } from "../../../../utils";
 
 const ProfilePicture = () => {
   const { currentUser } = useUserStore();

@@ -3,7 +3,7 @@ import { FaCheckCircle, FaUserPlus } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
 import { toast } from "react-toastify";
 
-import useGlobalStateStore from "../../../../store/globalStateStore";
+import { useGlobalStateStore } from "../../../../store";
 import { useAddUser } from "../../../../hooks";
 
 import SearchBox from "../../../common/searchBox/SearchBox";

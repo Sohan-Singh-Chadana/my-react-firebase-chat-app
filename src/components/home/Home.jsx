@@ -1,5 +1,4 @@
-import React from "react";
-import useGlobalStateStore from "../../store/globalStateStore";
+import { useGlobalStateStore } from "../../store";
 import "./home.css";
 
 const Home = () => {
