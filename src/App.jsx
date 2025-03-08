@@ -10,11 +10,15 @@ import { Sidebar } from "./components/sidebar/Sidebar";
 import { auth } from "./lib/firebase/firebase";
 import { setUserOffline, setUserOnline } from "./services/userStatusService";
 import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/WallpaperPreview";
-import { useChatStore, useGlobalStateStore, useSettingStore, useUserStore } from "./store";
-
+import {
+  useChatStore,
+  useGlobalStateStore,
+  useSettingStore,
+  useUserStore,
+} from "./store";
 
 const App = () => {
-  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
+  const { currentUser, isLoading } = useUserStore();
   const { chatId } = useChatStore();
   const { showDetail } = useGlobalStateStore();
   const { activeSetting } = useSettingStore();
@@ -33,7 +37,7 @@ const App = () => {
       setUserOnline(currentUser.userId);
     }
 
-    const handleBeforeUnload = (event) => {
+    const handleBeforeUnload = () => {
       if (currentUser?.userId) {
         setUserOffline(currentUser.userId);
       }

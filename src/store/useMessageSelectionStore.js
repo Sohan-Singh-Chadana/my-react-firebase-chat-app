@@ -3,13 +3,13 @@ import { create } from "zustand";
 import { db } from "../lib/firebase/firebase";
 import useUserStore from "./userStore";
 import useChatStore from "./chatStore";
+import { updateLastMessageAfterDeletion } from "../utils";
 
 const useMessageSelectionStore = create((set) => ({
   showCheckboxes: false,
   selectedMessages: [],
   isDeleteForEveryoneAllowed: true,
   isLoading: false,
-  canDeleteForEveryone: false,
 
   // Show checkboxes
   showSelection: () => set({ showCheckboxes: true }),
@@ -28,18 +28,24 @@ const useMessageSelectionStore = create((set) => ({
   // Clear selection
   clearSelection: () => set({ selectedMessages: [] }),
 
-  // 🔥 Check if all selected messages are from current user
-  checkSenderForAllMessages: async () => {
+  checkDeleteForEveryoneAndSender: async () => {
     const { selectedMessages } = useMessageSelectionStore.getState();
-    const { chatId } = useChatStore.getState();
     const { currentUser } = useUserStore.getState();
+    const { chatId } = useChatStore.getState();
+    const userId = currentUser.uid;
 
-    if (!chatId || selectedMessages.length === 0) return;
+    if (!userId || !chatId || selectedMessages.length === 0) return;
 
-    set({ isLoading: true }); // ✅ Start loading
+    // ✅ Start loading
+    set({ isLoading: true });
 
     try {
-      let allMessagesAreFromUser = true; // ✅ यह चेक करेगा कि सारे मैसेज currentUser के ही हैं
+      // yah check karega ki selectedMessages me sabhi messages user ke hi hain
+      let allMessagesAreFromUser = true;
+      // yah check karega ki message 24 hours se pehle send hua hua hai
+      let allMessagesWithin24Hours = true;
+
+      const currentTime = Date.now();
 
       for (const messageId of selectedMessages) {
         const messageRef = doc(db, "chats", chatId, "messages", messageId);
@@ -47,18 +53,32 @@ const useMessageSelectionStore = create((set) => ({
 
         if (messageSnap.exists()) {
           const messageData = messageSnap.data();
+          const messageTime = messageData.timestamp.toMillis();
 
-          if (messageData.senderId !== currentUser.uid) {
+          // agar koi message dusre user ka hai, to delete for everyone band kar do
+          if (messageData.senderId !== userId) {
             allMessagesAreFromUser = false;
+            break;
+          }
+
+          // agar koi message 24 ghante se purana hai, to delete for everyone band kar do
+          if (currentTime - messageTime > 24 * 60 * 60 * 1000) {
+            allMessagesWithin24Hours = false;
             break;
           }
         }
       }
-      set({ canDeleteForEveryone: allMessagesAreFromUser });
+
+      // ✅ "Delete for Everyone" tabhi show honga jab dono condition sahi ho
+      set({
+        isDeleteForEveryoneAllowed:
+          allMessagesAreFromUser && allMessagesWithin24Hours,
+      });
     } catch (error) {
-      console.error("Error checking sender:", error);
+      console.error("Error checking delete permissions:", error);
+      set({ isDeleteForEveryoneAllowed: false });
     } finally {
-      set({ isLoading: false }); // ✅ Stop loading
+      set({ isLoading: false });
     }
   },
 
@@ -97,6 +117,10 @@ const useMessageSelectionStore = create((set) => ({
           }
         })
       );
+
+      // ✅ Sirf currentUser ka chatList update hoga
+      await updateLastMessageAfterDeletion(chatId, true);
+
       set({ selectedMessages: [] });
     } catch (error) {
       console.error("Delete for Me Error:", error);
@@ -135,72 +159,15 @@ const useMessageSelectionStore = create((set) => ({
           }
         })
       );
+
+      // ✅ Dono users ke chatList update honge
+      await updateLastMessageAfterDeletion(chatId, false);
+
       set({ selectedMessages: [] });
     } catch (error) {
       console.error("Delete for Everyone Error:", error);
     }
   },
-
-  // 🔥 Check if "Delete for Everyone" is allowed (24-hour limit & sender-only)
-  checkDeleteForEveryone: async () => {
-    const { selectedMessages } = useMessageSelectionStore.getState();
-    const { currentUser } = useUserStore.getState();
-    const userId = currentUser.uid;
-
-    if (!userId || selectedMessages.length === 0) return;
-
-    try {
-      const messageRef = doc(db, "messages", selectedMessages[0]);
-      const messageSnap = await getDoc(messageRef);
-
-      if (messageSnap.exists()) {
-        const messageData = messageSnap.data();
-        const messageTime = messageData.timestamp; // Firestore timestamp
-        const currentTime = Date.now();
-
-        // 🔥 Delete for Everyone is allowed only for sender & within 24 hours
-        if (
-          messageData.senderId === userId &&
-          currentTime - messageTime.toMillis() > 24 * 60 * 60 * 1000
-        ) {
-          set({ isDeleteForEveryoneAllowed: true });
-        } else {
-          set({ isDeleteForEveryoneAllowed: false });
-        }
-      }
-    } catch (error) {
-      console.error("Error checking delete time:", error);
-    }
-  },
 }));
 
 export default useMessageSelectionStore;
-
-//! 🚨 Important: This code is a simplified example and should be adapted to your specific use cas
-// deleteForMe: async () => {
-//   const { selectedMessages } = useMessageSelectionStore.getState();
-//   const { chatId } = useChatStore.getState();
-//   const { currentUser } = useUserStore.getState();
-//   const userId = currentUser.uid;
-
-//   if (!userId || !chatId || selectedMessages.length === 0) return;
-
-//   try {
-//     await Promise.all(
-//       selectedMessages.map(async (messageId) => {
-//         const messageRef = doc(db, "chats", chatId, "messages", messageId);
-//         const messageSnap = await getDoc(messageRef);
-
-//         if (messageSnap.exists()) {
-//           const messageData = messageSnap.data();
-//           await updateDoc(messageRef, {
-//             deletedFor: [...(messageData.deletedFor || []), userId],
-//           });
-//         }
-//       })
-//     );
-//     set({ selectedMessages: [] });
-//   } catch (error) {
-//     console.error("Delete for Me Error:", error);
-//   }
-// },

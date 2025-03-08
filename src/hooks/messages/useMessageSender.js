@@ -18,9 +18,7 @@ export const useMessageSender = () => {
   const { currentUser } = useUserStore.getState();
 
   const currentUserId = currentUser?.userId;
-  const senderName = currentUser?.name;
   const receiverId = user?.userId;
-  const receiverName = user?.name;
 
   const sendMessage = async () => {
     if (!text && !img.file) return false; // ✅ Return false if no message
@@ -43,15 +41,12 @@ export const useMessageSender = () => {
       const newMessage = {
         senderId: currentUserId,
         receiverId,
-        senderName,
-        receiverName,
         text: text || "",
-        img: imgUrl || "",
         timestamp,
         formattedDate,
         status: "sent",
-        deletedBy: [],
         deletedFor: [],
+        ...(imgUrl && { img: imgUrl }),
       };
 
       await addDoc(messagesRef, newMessage);
@@ -59,8 +54,8 @@ export const useMessageSender = () => {
       await updateUnreadCount(chatId, receiverId, currentUserId);
 
       await updateDoc(chatRef, {
-        [`deletedAt.${currentUserId}`]: deleteField(), // 🔥 Key will be removed
-        [`deletedAt.${receiverId}`]: deleteField(), // 🔥 Removes from Firestore
+        [`deletedAt.${currentUserId}`]: deleteField(), 
+        [`deletedAt.${receiverId}`]: deleteField(), 
       });
 
       setImg({ file: null, url: "" });

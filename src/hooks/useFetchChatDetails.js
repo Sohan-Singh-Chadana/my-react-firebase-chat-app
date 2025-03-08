@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
-import { useLastMessageStore, useUserStore } from "../store";
+import { useLastMessageStore, useUnreadStore, useUserStore } from "../store";
 import {
-  calculateUnreadCount,
   fetchUserData,
   handleDeletedByUpdates,
   listenForLastMessage,
@@ -12,6 +11,7 @@ import {
 const useFetchChatDetails = () => {
   const { currentUser } = useUserStore.getState();
   const { setLastMessageData } = useLastMessageStore();
+  const { startUnreadCountListener } = useUnreadStore(); // ✅ Zustand से function ले रहे हैं
 
   const fetchChatDetails = useCallback(
     async (chat, unsubscribeListeners) => {
@@ -29,15 +29,19 @@ const useFetchChatDetails = () => {
 
         const lastMessageUnSub = listenForLastMessage(
           chat.chatId,
-          setLastMessageData
+          setLastMessageData,
+          currentUser
         );
         unsubscribeListeners.push(lastMessageUnSub);
 
-        const unreadCount = await calculateUnreadCount(
+        // ✅ Unread Count के लिए Real-time Listener सेट करो
+        const unreadCountUnSub = startUnreadCountListener(
           chat.chatId,
           currentUser.uid
         );
-        return { ...chat, user, unreadCount };
+        unsubscribeListeners.push(unreadCountUnSub);
+
+        return { ...chat, user };
       } catch (fetchError) {
         console.error(
           "❌ [Error] Fetching chat document failed:",
@@ -47,7 +51,7 @@ const useFetchChatDetails = () => {
         return null;
       }
     },
-    [currentUser.uid, setLastMessageData]
+    [currentUser, setLastMessageData, startUnreadCountListener]
   );
 
   return fetchChatDetails;

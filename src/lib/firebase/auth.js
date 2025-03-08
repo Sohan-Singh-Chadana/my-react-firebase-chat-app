@@ -8,6 +8,7 @@ import {
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { uploadAvatar } from "./storage";
 import { setUserOffline } from "../../services/userStatusService";
+import { useUserStore } from "../../store";
 
 // 🔥 Register User
 export const registerUser = async (name, email, password, avatarFile) => {
@@ -37,6 +38,7 @@ export const registerUser = async (name, email, password, avatarFile) => {
 
     await setDoc(doc(db, "users", user.uid), userData);
     await updateProfile(user, { displayName: name, photoURL: profilePicUrl });
+    useUserStore.getState().fetchUserInfo(user?.uid);
     return user;
   } catch (error) {
     console.error("Registration Error:", error);

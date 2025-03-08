@@ -46,13 +46,7 @@ const ChatList = () => {
 
     const unSub = onSnapshot(userDocRef, async (res) => {
       const userData = res.data();
-      if (!userData) {
-        console.error(
-          "⛔ [Error] No user data found in Firestore for:",
-          currentUser.uid
-        );
-        return;
-      }
+      if (!userData) return;
 
       const chatList = userData.chatList || [];
       if (chatList.length === 0) return setChats([]);
@@ -64,7 +58,8 @@ const ChatList = () => {
       setChats(validChats.sort(sortChatsByTimestamp));
     });
 
-    const { clearSelection, hideSelection } = useMessageSelectionStore.getState();
+    const { clearSelection, hideSelection } =
+      useMessageSelectionStore.getState();
 
     clearSelection();
     hideSelection();

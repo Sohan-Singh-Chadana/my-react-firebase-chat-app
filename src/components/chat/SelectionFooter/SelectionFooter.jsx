@@ -13,10 +13,8 @@ const SelectionFooter = () => {
     hideSelection,
     deleteForMe,
     deleteForEveryone,
-    checkDeleteForEveryone,
     isDeleteForEveryoneAllowed,
-    checkSenderForAllMessages,
-    canDeleteForEveryone,
+    checkDeleteForEveryoneAndSender,
     isLoading,
   } = useMessageSelectionStore();
 
@@ -24,14 +22,8 @@ const SelectionFooter = () => {
   const { chatId } = useChatStore();
 
   useEffect(() => {
-    checkDeleteForEveryone();
-    checkSenderForAllMessages();
-  }, [
-    chatId,
-    selectedMessages,
-    checkDeleteForEveryone,
-    checkSenderForAllMessages,
-  ]);
+    checkDeleteForEveryoneAndSender();
+  }, [chatId, checkDeleteForEveryoneAndSender, selectedMessages]);
 
   const openDeleteModal = async () => {
     if (selectedMessages.length > 0) {
@@ -89,12 +81,11 @@ const SelectionFooter = () => {
           description={`Delete ${
             selectedMessages.length > 1 ? "messages" : "message"
           } ?`}
-          actionBtnShow={!canDeleteForEveryone}
+          actionBtnShow={!isDeleteForEveryoneAllowed}
           confirmText="Delete for Me"
         >
-          {canDeleteForEveryone && (
+          {isDeleteForEveryoneAllowed && (
             <DeleteOptions
-              isDeleteForEveryoneAllowed={isDeleteForEveryoneAllowed}
               onDeleteForEveryone={handleDeleteForEveryone}
               onDeleteForMe={handleDeleteForMe}
               onCancel={closeDeleteModal}

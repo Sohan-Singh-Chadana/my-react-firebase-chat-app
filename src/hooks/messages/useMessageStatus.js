@@ -1,8 +1,16 @@
 import { useEffect } from "react";
-
 import { useChatStore, useSelectChats, useUserStore } from "../../store";
-import { listenUnreadCount, resetUnreadCount, setUserActive, setUserInactive } from "../../utils";
-import { listenAndMarkMessagesAsRead, listenForDeliveredMessages, markMessagesAsDelivered } from "../../utils/messages";
+import {
+  listenUnreadCount,
+  resetUnreadCount,
+  setUserActive,
+  setUserInactive,
+} from "../../utils";
+import {
+  listenAndMarkMessagesAsRead,
+  listenForDeliveredMessages,
+  markMessagesAsDelivered,
+} from "../../utils/messages";
 
 export const useMessageStatus = (unreadCount, setUnreadCount) => {
   const { chatId } = useChatStore();

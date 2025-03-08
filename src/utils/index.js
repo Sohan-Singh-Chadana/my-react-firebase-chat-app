@@ -3,7 +3,6 @@ export {
   fetchUserData,
   handleDeletedByUpdates,
   listenForLastMessage,
-  calculateUnreadCount,
   sortChatsByTimestamp,
 } from "./chatListUtils";
 
@@ -27,6 +26,7 @@ export * from "./userStatusUtils";
 
 // ✅ Export date-related utilities
 export * from "./dateUtils";
+export * from "./updateLastMessageAfterDeletion";
 
 export { default as upload } from "./upload";
 export { default as getWallpaperColor } from "./getWallpaperColor";

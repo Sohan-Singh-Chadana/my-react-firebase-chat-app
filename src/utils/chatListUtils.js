@@ -2,13 +2,11 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   limit,
   onSnapshot,
   orderBy,
   query,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 
@@ -40,35 +38,39 @@ export const handleDeletedByUpdates = async (
   }
 };
 
-//* Listen for the last message in a chat
-export const listenForLastMessage = (chatId, setLastMessageData) => {
+//* Listen for the last message in a chat //* Calculate unread messages count
+export const listenForLastMessage = (
+  chatId,
+  setLastMessageData,
+  currentUser
+) => {
   const messagesRef = collection(db, "chats", chatId, "messages");
+
   const qLastMessage = query(
     messagesRef,
     orderBy("timestamp", "desc"),
-    limit(1)
+    limit(10) // Fetch more messages in case some are deleted
   );
 
   return onSnapshot(qLastMessage, (snapshot) => {
     if (!snapshot.empty) {
-      const lastMessage = snapshot.docs[0].data();
-      setLastMessageData(chatId, lastMessage);
+      let lastVisibleMessage = null;
+
+      for (const doc of snapshot.docs) {
+        const message = doc.data();
+
+        // 🔥 Skip messages deleted for the current user
+        if (!message.deletedFor?.includes(currentUser?.userId)) {
+          lastVisibleMessage = message;
+          break; // Stop at the first valid message
+        }
+      }
+
+      setLastMessageData(chatId, lastVisibleMessage);
     } else {
       setLastMessageData(chatId, null);
     }
   });
-};
-
-//* Calculate unread messages count
-export const calculateUnreadCount = async (chatId, currentUserId) => {
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  const qUnreadCount = query(
-    messagesRef,
-    where("status", "in", ["sent", "delivered"]),
-    where("receiverId", "==", currentUserId)
-  );
-  const messagesSnap = await getDocs(qUnreadCount);
-  return messagesSnap.size;
 };
 
 //*  Sort chats by timestamp
