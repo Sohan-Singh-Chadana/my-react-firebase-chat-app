@@ -1,10 +1,9 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase/firebase";
-import { useChatStore, useSelectChats, useUserStore } from "../../store";
+import { useChatStore, useUserStore } from "../../store";
 
 export const updateChatLists = async (text) => {
   const { chatId, user } = useChatStore.getState();
-  const { setChats } = useSelectChats.getState();
   const { currentUser } = useUserStore.getState();
 
   if (!chatId || !user || !currentUser) {

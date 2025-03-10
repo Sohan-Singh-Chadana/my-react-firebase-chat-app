@@ -1,14 +1,26 @@
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 
 // Function to mark user as active in chat
 export const setUserActive = async (chatId, userId) => {
   const chatRef = doc(db, "chats", chatId);
+
   try {
+    const chatSnap = await getDoc(chatRef);
+    if (!chatSnap.exists()) {
+      console.error(`❌ Chat document does not exist: ${chatId}`);
+      return;
+    }
+
     await updateDoc(chatRef, {
-      activeUsers: arrayUnion(userId), // User ko active list mein add karo
+      activeUsers: arrayUnion(userId),
     });
-    // await resetUnreadCount(chatId, userId); // Chat khulte hi unread count reset
   } catch (err) {
     console.error("❌ Error setting user active:", err);
   }
@@ -17,9 +29,16 @@ export const setUserActive = async (chatId, userId) => {
 // Function to mark user as inactive in chat
 export const setUserInactive = async (chatId, userId) => {
   const chatRef = doc(db, "chats", chatId);
+
   try {
+    const chatSnap = await getDoc(chatRef);
+    if (!chatSnap.exists()) {
+      console.error(`❌ Chat document does not exist: ${chatId}`);
+      return;
+    }
+
     await updateDoc(chatRef, {
-      activeUsers: arrayRemove(userId), // User ko active list se hatao
+      activeUsers: arrayRemove(userId),
     });
   } catch (err) {
     console.error("❌ Error setting user inactive:", err);

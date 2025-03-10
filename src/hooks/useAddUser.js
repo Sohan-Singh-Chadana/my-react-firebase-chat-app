@@ -13,7 +13,6 @@ import {
 import { db } from "../lib/firebase/firebase";
 import { useSelectChats, useUserStore } from "../store";
 
-
 const useAddUser = () => {
   const [allUsers, setAllUsers] = useState([]); // ✅ Store all users
   const [existingChats, setExistingChats] = useState(new Set());
@@ -127,13 +126,7 @@ const useAddUser = () => {
     const userData = userSnap.data();
     const chatList = userData.chatList || [];
 
-    const lastMessage = [
-      `Say hi to ${targetUser.name}! 👋`,
-      "Start a conversation!",
-      "Drop a message!",
-      "Hey there! 😊",
-      "Let's chat!",
-    ][Math.floor(Math.random() * 5)];
+    const lastMessage = "";
 
     const updatedChatList = chatList.map((chat) =>
       chat.chatId === chatId

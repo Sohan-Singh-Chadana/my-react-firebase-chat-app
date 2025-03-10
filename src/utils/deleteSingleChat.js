@@ -1,9 +1,11 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   serverTimestamp,
+  updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
@@ -51,12 +53,29 @@ export const deleteSingleChat = async () => {
 
     // ✅ Mark messages as deleted for the current user
     const messagesSnap = await getDocs(messagesRef);
-    messagesSnap.forEach((msgDoc) => {
-      if (!msgDoc.exists()) return;
-      batch.update(doc(db, "chats", chatId, "messages", msgDoc.id), {
-        deletedBy: updatedDeletedBy,
-      });
-    });
+    await Promise.all(
+      messagesSnap.docs.map(async (msgDoc) => {
+        if (!msgDoc.exists()) return;
+
+        const messageRef = doc(db, "chats", chatId, "messages", msgDoc.id);
+        const messageData = msgDoc.data();
+        const updatedDeletedFor = [
+          ...(messageData.deletedFor || []),
+          currentUser.userId,
+        ];
+
+        if (messageData.deletedFor?.includes(currentUser.userId)) return;
+
+        if (
+          updatedDeletedFor.includes(messageData.senderId) &&
+          updatedDeletedFor.includes(messageData.receiverId)
+        ) {
+          await deleteDoc(messageRef);
+        } else {
+          await updateDoc(messageRef, { deletedFor: updatedDeletedFor });
+        }
+      })
+    );
 
     // ✅ Update deletedAt timestamp for current user only
     const updatedDeletedAt = {

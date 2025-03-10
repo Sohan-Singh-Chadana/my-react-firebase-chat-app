@@ -1,8 +1,16 @@
 import { useEffect } from "react";
-
 import { useChatStore, useSelectChats, useUserStore } from "../../store";
-import { listenUnreadCount, resetUnreadCount, setUserActive, setUserInactive } from "../../utils";
-import { listenAndMarkMessagesAsRead, listenForDeliveredMessages, markMessagesAsDelivered } from "../../utils/messages";
+import {
+  listenUnreadCount,
+  resetUnreadCount,
+  setUserActive,
+  setUserInactive,
+} from "../../utils";
+import {
+  listenAndMarkMessagesAsRead,
+  listenForDeliveredMessages,
+  listenForPendingMessages,
+} from "../../utils/messages";
 
 export const useMessageStatus = (unreadCount, setUnreadCount) => {
   const { chatId } = useChatStore();
@@ -12,8 +20,6 @@ export const useMessageStatus = (unreadCount, setUnreadCount) => {
 
   useEffect(() => {
     if (chatId && currentUserId) {
-      markMessagesAsDelivered(chatId, currentUserId);
-
       // ✅ Listen to unread messages count
       const unsubscribeUnreadCount = listenUnreadCount(
         chatId,
@@ -21,6 +27,12 @@ export const useMessageStatus = (unreadCount, setUnreadCount) => {
         setUnreadCount
       );
       setUserActive(chatId, currentUserId);
+
+      // ✅ Listen for real-time message updates
+      const unsubscribePendingMessages = listenForPendingMessages(
+        chatId,
+        currentUserId
+      ); // 🔥 Listens for "pending" messages and marks them as "sent"
 
       const unsubscribeDelivered = listenForDeliveredMessages(
         chatId,
@@ -40,6 +52,7 @@ export const useMessageStatus = (unreadCount, setUnreadCount) => {
 
       return () => {
         unsubscribeUnreadCount();
+        unsubscribePendingMessages(); // ✅ Unsubscribe from pending messages listener
         unsubscribeDelivered();
         unsubscribeRead();
         setUserInactive(chatId, currentUserId); // Chat band hone par inactive

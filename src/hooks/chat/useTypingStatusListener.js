@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase/firebase"; // Adjust the path as per your project structure
-import { useChatStore } from "../store";
+import { db } from "../../lib/firebase/firebase"; // Adjust the path as per your project structure
+import { useChatStore } from "../../store";
 
 const useTypingStatusListener = () => {
   const [typingStatus, setTypingStatus] = useState(null);

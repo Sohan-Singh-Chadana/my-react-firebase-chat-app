@@ -8,9 +8,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase/firebase";
-import dayjs from "dayjs";
 import { useChatStore, useUserStore } from "../../store";
-import { updateUnreadCount, upload } from "../../utils";
+import { getFormattedDate, updateUnreadCount, upload } from "../../utils";
 
 export const useMessageSender = () => {
   const [text, setText] = useState("");
@@ -19,9 +18,7 @@ export const useMessageSender = () => {
   const { currentUser } = useUserStore.getState();
 
   const currentUserId = currentUser?.userId;
-  const senderName = currentUser?.name;
   const receiverId = user?.userId;
-  const receiverName = user?.name;
 
   const sendMessage = async () => {
     if (!text && !img.file) return false; // ✅ Return false if no message
@@ -38,21 +35,18 @@ export const useMessageSender = () => {
       const messagesRef = collection(db, "chats", chatId, "messages");
       const chatRef = doc(db, "chats", chatId);
 
-      const timestamp = serverTimestamp();
-      const formattedDate = dayjs().format("YYYY-MM-DD");
+      const timestamp = new Date();
+      const formattedDate = getFormattedDate();
 
       const newMessage = {
         senderId: currentUserId,
         receiverId,
-        senderName,
-        receiverName,
         text: text || "",
-        img: imgUrl || "",
         timestamp,
         formattedDate,
-        status: "sent",
-        deletedBy: [],
+        status: "pending",
         deletedFor: [],
+        ...(imgUrl && { img: imgUrl }),
       };
 
       await addDoc(messagesRef, newMessage);
@@ -60,8 +54,8 @@ export const useMessageSender = () => {
       await updateUnreadCount(chatId, receiverId, currentUserId);
 
       await updateDoc(chatRef, {
-        [`deletedAt.${currentUserId}`]: deleteField(), // 🔥 Key will be removed
-        [`deletedAt.${receiverId}`]: deleteField(), // 🔥 Removes from Firestore
+        [`deletedAt.${currentUserId}`]: deleteField(),
+        [`deletedAt.${receiverId}`]: deleteField(),
       });
 
       setImg({ file: null, url: "" });

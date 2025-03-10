@@ -1,15 +1,21 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   serverTimestamp,
+  updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
 import { deleteChatWithMessages } from "./deleteChatUtils";
-import { useChatStore, useGlobalStateStore, useSelectChats, useUserStore } from "../store";
-
+import {
+  useChatStore,
+  useGlobalStateStore,
+  useSelectChats,
+  useUserStore,
+} from "../store";
 
 export const chatDeletionUtils = async () => {
   const { currentUser } = useUserStore.getState();
@@ -63,19 +69,39 @@ export const chatDeletionUtils = async () => {
 
       // ✅ Check if messages exist before updating
       const messagesSnap = await getDocs(messagesRef);
-      messagesSnap.forEach((msgDoc) => {
-        if (!msgDoc.exists()) {
-          console.warn("⚠️ [Message] Skipping missing message:", msgDoc.id);
-          return;
-        }
 
-        batch.update(
-          doc(db, "chats", selectedChat.chatId, "messages", msgDoc.id),
-          {
-            deletedBy: updatedDeletedBy,
+
+      // 🔥 Run deleteForMe for all messages in this chat
+      await Promise.all(
+        messagesSnap.docs.map(async (msgDoc) => {
+          if (!msgDoc.exists()) return; // ✅ Skip if message does not exist
+
+          const messageRef = doc(
+            db,
+            "chats",
+            selectedChat.chatId,
+            "messages",
+            msgDoc.id
+          );
+          const messageData = msgDoc.data();
+          const updatedDeletedFor = [
+            ...(messageData.deletedFor || []),
+            currentUser.userId,
+          ];
+
+          // ✅ If message is already deleted, avoid updating
+          if (messageData.deletedFor?.includes(currentUser.userId)) return;
+
+          if (
+            updatedDeletedFor.includes(messageData.senderId) &&
+            updatedDeletedFor.includes(messageData.receiverId)
+          ) {
+            await deleteDoc(messageRef);
+          } else {
+            await updateDoc(messageRef, { deletedFor: updatedDeletedFor });
           }
-        );
-      });
+        })
+      );
 
       // ✅ Update deletedAt timestamp
       const updatedDeletedAt = {

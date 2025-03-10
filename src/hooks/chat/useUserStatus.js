@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { listenToUserStatus } from "../../services/userStatusService";
 import { useChatStore } from "../../store";
+import { listenToUserStatus } from "../../services/userStatusService";
 
 export const useUserStatus = () => {
   const [userStatus, setUserStatus] = useState({

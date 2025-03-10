@@ -1,7 +1,7 @@
 .chat-messages {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 
   .chatDay {
     font-size: 14px;

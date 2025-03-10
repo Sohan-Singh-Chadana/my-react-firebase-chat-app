@@ -1,7 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../lib/firebase/firebase"; // Adjust the path as per your project structure
+import { db } from "../lib/firebase/firebase";
 
- const setTypingStatus = async (userId, chatId, isTyping) => {
+const setTypingStatus = async (userId, chatId, isTyping) => {
   if (!userId || !chatId) return;
 
   try {
@@ -11,7 +11,6 @@ import { db } from "../lib/firebase/firebase"; // Adjust the path as per your pr
         isTyping,
       },
     });
-    // console.log(`✅ User ${userId} typing status updated`);
   } catch (err) {
     console.error("❌ Error updating typing status:", err);
   }

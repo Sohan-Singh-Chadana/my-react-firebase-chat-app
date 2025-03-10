@@ -115,14 +115,17 @@ const useChatStore = create((set) => ({
       messagesSnap.forEach((docSnap) => {
         const messageData = docSnap.data();
         const messageRef = doc(db, "chats", chatId, "messages", docSnap.id);
+        const updatedDeletedFor = [...(messageData.deletedFor || []), userId];
 
-        batch.update(messageRef, {
-          deletedFor: [...(messageData.deletedFor || []), userId],
-        });
+        if (updatedDeletedFor.length >= 2) {
+          batch.delete(messageRef);
+        } else {
+          batch.update(messageRef, { deletedFor: updatedDeletedFor });
+        }
       });
 
       await batch.commit();
-      console.log("Chat cleared successfully for current user.");
+      // console.log("Chat cleared successfully for current user.");
     } catch (error) {
       console.error("Clear Chat Error:", error);
     }
