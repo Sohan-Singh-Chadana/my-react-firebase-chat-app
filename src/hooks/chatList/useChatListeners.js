@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useChatStore, useUserStore } from "../../store";
 import { listenForNewMessages, markAllMessagesAsDelivered } from "../../utils";
-import { listenAndMarkMessagesAsRead, listenForDeliveredMessages } from "../../utils/messages";
+import {
+  listenAndMarkMessagesAsRead,
+  listenForDeliveredMessages,
+} from "../../utils/messages";
 
 const useChatListeners = () => {
   const { chatId } = useChatStore();
@@ -33,7 +36,7 @@ const useChatListeners = () => {
           chatId,
           currentUserId
         );
-        unsubscribeRead = listenAndMarkMessagesAsRead(chatId,currentUserId);
+        unsubscribeRead = listenAndMarkMessagesAsRead(chatId, currentUserId);
       }
 
       return () => {

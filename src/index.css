@@ -53,6 +53,9 @@
   --photo-content-color: #f9f9f9;
   --two-bg-color: var(--bg-common-gray);
   --profileEdit-bg-color: var(--white-color);
+  --offlineAlert-bg:#fbd279;
+  --offlineAlert-icon: var(--white-color);
+  --offlineAlert-icon-fill:var(--offlineAlert-bg);
 
   --menu-bg-color: var(--white-color);
   --menu-active-color: #d9dcdf;
@@ -77,6 +80,7 @@
   --info-text: #008069;
   --delete-modal-text: #3c7863;
   --selection-footer-icon: #667781;
+  --offlineAlert-text:var(--text-common-color);
 
   --border-color: #d1d7db;
   --border-top-color: #dddddd35;
@@ -120,6 +124,8 @@
   --container-back-bg: #262524;
   --messageBox-bg: #161f26c7;
   --default-chat-bg-color: #0b141a;
+  --offlineAlert-bg:#182229;
+  --offlineAlert-icon:#f7bb37;
 
   --text-color: var(--white-color);
   --text-secondary: var(--three-lightgray-common-color);
@@ -131,6 +137,7 @@
   --title-secondary: #efefef;
   --delete-modal-text: #06cf9c;
   --selection-footer-icon: var(--white-color);
+  --offlineAlert-text:var(--three-lightgray-common-color);
 
   --border-color: #2f3b43;
   --border-bottom-color: #222d34;

@@ -1,0 +1,42 @@
+.offlineAlert {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  background-color: var(--offlineAlert-bg);
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 20px;
+
+  .offlineIcon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--offlineAlert-icon);
+    padding: 0px 8px;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      fill: var(--offlineAlert-icon-fill);
+    }
+  }
+
+  .offlineText {
+    h4 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-chatList);
+    }
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--offlineAlert-text);
+    }
+  }
+}

@@ -58,7 +58,7 @@ export const formatTimestamp = (timestamp) => {
 
 // ✅ Format MessageTimeStamp to "hh:mm A" format (e.g., 10:30 PM)
 export const formatMessageTime = (timestamp) => {
-  if (!timestamp) return;
+  if (!timestamp) return "Invalid Date";
   return dayjs(timestamp * 1000).format("hh:mm A");
 };
 

@@ -35,7 +35,7 @@ export const useMessageSender = () => {
       const messagesRef = collection(db, "chats", chatId, "messages");
       const chatRef = doc(db, "chats", chatId);
 
-      const timestamp = serverTimestamp();
+      const timestamp = new Date();
       const formattedDate = getFormattedDate();
 
       const newMessage = {
@@ -44,7 +44,7 @@ export const useMessageSender = () => {
         text: text || "",
         timestamp,
         formattedDate,
-        status: "sent",
+        status: "pending",
         deletedFor: [],
         ...(imgUrl && { img: imgUrl }),
       };
@@ -54,8 +54,8 @@ export const useMessageSender = () => {
       await updateUnreadCount(chatId, receiverId, currentUserId);
 
       await updateDoc(chatRef, {
-        [`deletedAt.${currentUserId}`]: deleteField(), 
-        [`deletedAt.${receiverId}`]: deleteField(), 
+        [`deletedAt.${currentUserId}`]: deleteField(),
+        [`deletedAt.${receiverId}`]: deleteField(),
       });
 
       setImg({ file: null, url: "" });

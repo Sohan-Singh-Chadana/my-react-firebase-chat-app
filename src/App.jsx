@@ -13,9 +13,11 @@ import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/Wallpaper
 import {
   useChatStore,
   useGlobalStateStore,
+  useNetworkStore,
   useSettingStore,
   useUserStore,
 } from "./store";
+import { markAllMessagesAsSent } from "./utils";
 
 const App = () => {
   const { currentUser, isLoading } = useUserStore();
@@ -34,22 +36,60 @@ const App = () => {
 
   useEffect(() => {
     if (currentUser?.userId) {
-      setUserOnline(currentUser.userId);
-    }
+      setUserOnline(currentUser.userId); // Ensure user is online at start
 
-    const handleBeforeUnload = () => {
-      if (currentUser?.userId) {
-        setUserOffline(currentUser.userId);
+      const { setIsOnline } = useNetworkStore.getState();
+
+      const handleOnline = () => {
+        // console.log("🟢 User came online, retrying pending messages...");
+        setIsOnline(true);
+        setUserOnline(currentUser.userId); // Mark user online
+        markAllMessagesAsSent(currentUser.userId); // ✅ Retry marking messages as sent
+      };
+
+      const handleOffline = () => {
+        if (currentUser?.userId) {
+          // console.log("🔴 User went offline, marking as offline...");
+          setIsOnline(false);
+          setUserOffline(currentUser.userId);
+        }
+      };
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "hidden" && currentUser?.userId) {
+          // console.log("🔴 App hidden, marking user offline...");
+          setUserOffline(currentUser.userId);
+        } else if (
+          document.visibilityState === "visible" &&
+          currentUser?.userId
+        ) {
+          // console.log("🟢 App visible again, marking user online...");
+          setUserOnline(currentUser.userId); // ✅ Ensure user is online when they return
+          markAllMessagesAsSent(currentUser.userId); // ✅ Retry sending pending messages
+        }
+      };
+
+      // ✅ Initial check
+      setIsOnline(navigator.onLine);
+      // ✅ Initial execution when online
+      if (navigator.onLine) {
+        markAllMessagesAsSent(currentUser.userId);
       }
-    };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleBeforeUnload); // Ensures it works across all browsers
+      // ✅ Listen for online/offline status and visibility changes
+      window.addEventListener("online", handleOnline);
+      window.addEventListener("offline", handleOffline);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleBeforeUnload);
-    };
+      return () => {
+        window.removeEventListener("online", handleOnline);
+        window.removeEventListener("offline", handleOffline);
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange
+        );
+      };
+    }
   }, [currentUser?.userId]);
 
   if (isLoading) return <div className="loading">Loading...</div>;

@@ -1,39 +1,4 @@
 .chatList {
   flex: 1;
   overflow-y: auto;
-
-  .archived {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    cursor: pointer;
-    padding-left: 30px;
-
-    .archived-text {
-      padding-block: 14px;
-      border-bottom: 1px solid var(--border-bottom-color);
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      p {
-        font-size: 16px;
-        font-weight: 400;
-      }
-
-      .archived-count {
-        font-size: 14px;
-        padding-right: 20px;
-        font-weight: 500;
-        color: var(--archived-color);
-      }
-    }
-
-    svg {
-      width: 30px;
-      height: 30px;
-      fill: var(--primary-color);
-    }
-  }
 }

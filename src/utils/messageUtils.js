@@ -9,7 +9,26 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
-import { markMessagesAsDelivered } from "./messages/messageActions";
+import {
+  markMessagesAsDelivered,
+  markMessagesAsSent,
+} from "./messages/messageActions";
+
+export const markAllMessagesAsSent = async (userId) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const chatList = userSnap.data()?.chatList || [];
+
+    for (const chat of chatList) {
+      await markMessagesAsSent(chat.chatId, userId);
+    }
+
+    // console.log("✅ All pending messages marked as sent for user:", userId);
+  } catch (error) {
+    console.error("❌ Failed to mark messages as sent:", error);
+  }
+};
 
 // ✅ Mark all existing messages as delivered when the app is open and the user is online
 export const markAllMessagesAsDelivered = async (userId) => {
@@ -41,7 +60,6 @@ export const listenForNewMessages = async (userId) => {
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       if (!snapshot.empty) {
-        // console.log("🔄 New messages detected in chat:", chat.chatId);
         await markMessagesAsDelivered(chat.chatId, userId);
       }
     });
@@ -107,4 +125,3 @@ export const markAndListenForDeliveredMessages = async (userId) => {
     return null;
   }
 };
-

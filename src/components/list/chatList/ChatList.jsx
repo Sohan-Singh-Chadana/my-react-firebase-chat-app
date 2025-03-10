@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { MdOutlineArchive } from "react-icons/md"; // * Archive icon
+import { useEffect } from "react";
 
 // * Firebase Firestore instance
 import { doc, onSnapshot } from "firebase/firestore";
@@ -10,6 +9,7 @@ import {
   useChatStore,
   useGlobalStateStore,
   useMessageSelectionStore,
+  useNetworkStore,
   useSelectChats,
   useUserStore,
 } from "../../../store";
@@ -24,6 +24,8 @@ import { useChatListeners, useFetchChatDetails } from "../../../hooks";
 // * Components for chat list UI
 import AddUser from "./addUser/AddUser";
 import ChatItem from "./ChatItem";
+import OfflineAlert from "./OfflineAlert";
+import ArchivedChats from "./ArchivedChats";
 
 import "./chatList.css"; // * Chat list styling
 
@@ -32,6 +34,7 @@ const ChatList = () => {
   const { currentUser } = useUserStore();
   const { searchInput } = useGlobalStateStore();
   const { setChats } = useSelectChats();
+  const isOnline = useNetworkStore((state) => state.isOnline);
 
   const fetchChatDetails = useFetchChatDetails();
 
@@ -79,13 +82,11 @@ const ChatList = () => {
   return (
     <>
       <div className="chatList">
-        <div className="archived">
-          <MdOutlineArchive />
-          <div className="archived-text">
-            <p>Archived</p>
-            <p className="archived-count">0</p>
-          </div>
-        </div>
+        {/* 🔴 Show alert if offline */}
+        {!isOnline && <OfflineAlert />}
+
+        {/* Archived Chats */}
+        <ArchivedChats />
 
         {getFilteredChats.map((chat) => (
           <ChatItem key={chat.chatId} chat={chat} />
