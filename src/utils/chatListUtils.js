@@ -2,10 +2,12 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   limit,
   onSnapshot,
   orderBy,
   query,
+  startAfter,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
@@ -46,32 +48,137 @@ export const listenForLastMessage = (
 ) => {
   const messagesRef = collection(db, "chats", chatId, "messages");
 
-  const qLastMessage = query(
-    messagesRef,
-    orderBy("timestamp", "desc"),
-    limit(10) // Fetch more messages in case some are deleted
-  );
+  const fetchLastValidMessage = async (limitCount = 10, lastDoc = null) => {
+    let qLastMessage = query(
+      messagesRef,
+      orderBy("timestamp", "desc"),
+      limit(limitCount)
+    );
 
-  return onSnapshot(qLastMessage, (snapshot) => {
-    if (!snapshot.empty) {
-      let lastVisibleMessage = null;
+    // If lastDoc exists, start after it (for pagination)
+    if (lastDoc) {
+      qLastMessage = query(
+        messagesRef,
+        orderBy("timestamp", "desc"),
+        startAfter(lastDoc),
+        limit(limitCount)
+      );
+    }
 
-      for (const doc of snapshot.docs) {
-        const message = doc.data();
+    const snapshot = await getDocs(qLastMessage);
 
-        // 🔥 Skip messages deleted for the current user
-        if (!message.deletedFor?.includes(currentUser?.userId)) {
-          lastVisibleMessage = message;
-          break; // Stop at the first valid message
-        }
+    if (snapshot.empty) {
+      setLastMessageData(chatId, null); // No messages at all
+      return;
+    }
+
+    let lastVisibleMessage = null;
+    let lastDocFetched = snapshot.docs[snapshot.docs.length - 1]; // Store last doc for pagination
+
+    for (const doc of snapshot.docs) {
+      const message = doc.data();
+
+      // 🔥 Check if the message is deleted for the current user
+      if (!message.deletedFor?.includes(currentUser?.userId)) {
+        lastVisibleMessage = message;
+        break; // Found a valid message, exit loop
       }
+    }
 
+    if (lastVisibleMessage) {
       setLastMessageData(chatId, lastVisibleMessage);
     } else {
-      setLastMessageData(chatId, null);
+      // 🚀 No valid message found in this batch, fetch more messages recursively
+      fetchLastValidMessage(10, lastDocFetched);
     }
+  };
+
+  // Listen for message changes and fetch last valid message
+  return onSnapshot(messagesRef, () => {
+    fetchLastValidMessage();
   });
 };
+
+// export const listenForLastMessage = (
+//   chatId,
+//   setLastMessageData,
+//   currentUser
+// ) => {
+//   const messagesRef = collection(db, "chats", chatId, "messages");
+
+//   const fetchLastValidMessage = async (limit = 10, lastDoc = null) => {
+//     let qLastMessage = query(
+//       messagesRef,
+//       orderBy("timestamp", "desc"),
+//       limit(limit)
+//     );
+
+//     // If lastDoc exists, start after it (for pagination)
+//     if (lastDoc) {
+//       qLastMessage = query(
+//         messagesRef,
+//         orderBy("timestamp", "desc"),
+//         limit(limit)
+//       );
+//     }
+
+//     const snapshot = await getDocs(qLastMessage);
+
+//     if (snapshot.empty) {
+//       setLastMessageData(chatId, null);
+//       return;
+//     }
+
+//     let lastVisibleMessage = null;
+//     let lastDocFetched = snapshot.docs(snapshot.docs.length - 1);
+
+//     for (const doc of snapshot.docs) {
+//       const message = doc.data();
+
+//       if (!message.deletedFor?.includes(currentUser?.userId)) {
+//         lastVisibleMessage = message;
+//         break;
+//       }
+//     }
+
+//     if (lastVisibleMessage) {
+//       setLastMessageData(chatId, lastVisibleMessage);
+//     } else {
+//       fetchLastValidMessage(10, lastDocFetched);
+//     }
+//   };
+
+//   // Listen for message changes and fetch last valid message
+//   return onSnapshot(messagesRef, () => {
+//     fetchLastValidMessage();
+//   });
+
+//   // const qLastMessage = query(
+//   //   messagesRef,
+//   //   orderBy("timestamp", "desc"),
+//   //   limit(10) // Fetch more messages in case some are deleted
+//   // );
+
+//   // return onSnapshot(qLastMessage, (snapshot) => {
+//   //   if (!snapshot.empty) {
+//   //     let lastVisibleMessage = null;
+
+//   //     for (const doc of snapshot.docs) {
+//   //       const message = doc.data();
+
+//   //       // 🔥 Skip messages deleted for the current user
+//   //       if (!message.deletedFor?.includes(currentUser?.userId)) {
+//   //         lastVisibleMessage = message;
+//   //         break; // Stop at the first valid message
+//   //       }
+//   //     }
+
+//   //     setLastMessageData(chatId, lastVisibleMessage);
+//   //   } else {
+//   //     setLastMessageData(chatId, null);
+//   //   }
+//   // });
+// };
 
 //*  Sort chats by timestamp
 export const sortChatsByTimestamp = (a, b) =>

@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { toast } from "react-toastify";
 import { useSettingStore, useWallpaperStore } from "../../../../../store";
 
 import {
   WALLPAPER_COLORS_DARK,
   WALLPAPER_COLORS_LIGHT,
 } from "../../../../../constants/wallpaperColors";
+import { showSuccessToast } from "../../../../../utils";
 
 import SettingsHeader from "../../../../common/SettingsHeader";
 import { ThemeContext } from "../../../../../context/ThemeContext";
@@ -24,7 +24,7 @@ const WallpaperSelector = () => {
 
   const handleWallpaperClick = (wallpaper) => {
     setSelectedWallpaper(wallpaper);
-    toast.success("Wallpaper changed successfully");
+    showSuccessToast("Wallpaper changed successfully!");
   };
 
   const systemPrefersDark = window.matchMedia(

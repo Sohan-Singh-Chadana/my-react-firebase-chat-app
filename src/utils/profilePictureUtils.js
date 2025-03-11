@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
-import { deleteProfilePicture, updateProfilePicture } from "../services/userService";
-import { toast } from "react-toastify";
+import {
+  deleteProfilePicture,
+  updateProfilePicture,
+} from "../services/userService";
+import showSuccessToast from "./Notification/showSuccessToast";
 
 export const useProfilePicture = (currentUser) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,7 +47,7 @@ export const useProfilePicture = (currentUser) => {
     try {
       setIsLoading(true);
       await updateProfilePicture(currentUser.userId, avatar.file);
-      toast.success("Profile picture updated successfully");
+      showSuccessToast("Profile picture updated successfully!");
       closeProfileMenu();
     } catch (error) {
       console.error("❌ Error updating profile picture:", error);
@@ -82,7 +85,7 @@ export const useProfilePicture = (currentUser) => {
         url: "",
       });
       setShowConfirm(false);
-      toast.success("Profile picture removed successfully");
+      showSuccessToast("Profile picture removed successfully!");
     } catch (err) {
       console.error("❌ Error deleting profile picture:", err);
     } finally {

@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import { MdClose, MdDelete } from "react-icons/md";
 import { useChatStore, useMessageSelectionStore } from "../../../store";
+import { showToast } from "../../../utils";
 
 import Modal from "../../common/modal/Modal";
 import DeleteOptions from "./DeleteOptions";
 import "./SelectionFooter.css";
+import { toast } from "react-toastify";
 
 const SelectionFooter = () => {
+  const selectedMessages = useMessageSelectionStore(
+    (state) => state.selectedMessages
+  );
+  const hideSelection = useMessageSelectionStore(
+    (state) => state.hideSelection
+  );
   const {
-    selectedMessages,
     clearSelection,
-    hideSelection,
     deleteForMe,
     deleteForEveryone,
     isDeleteForEveryoneAllowed,
@@ -40,16 +46,54 @@ const SelectionFooter = () => {
     hideSelection();
   };
 
-  const handleDeleteForMe = () => {
-    deleteForMe();
-    setIsModalOpen(false);
-    hideSelection();
+  const handleDeleteForMe = async () => {
+    try {
+      hideSelection();
+      setIsModalOpen(false);
+
+      // 🟡 Step 1: Show "Deleting..." message
+      const toastId = showToast("Deleting...", { autoClose: false });
+
+      await deleteForMe(); // ✅ Ensure delete happens first
+
+      // ✅ Step 2: Update Toast to "Message Deleted"
+      const messageText = `${selectedMessages.length} ${
+        selectedMessages.length > 1 ? "Messages" : "Message"
+      } deleted for you.`;
+
+      toast.update(toastId, {
+        render: messageText,
+        autoClose: 3000, // ✅ Same Toast ID (update instead of new toast)
+      });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      showToast("Failed to delete message.");
+    }
   };
 
-  const handleDeleteForEveryone = () => {
-    deleteForEveryone();
-    setIsModalOpen(false);
-    hideSelection();
+  const handleDeleteForEveryone = async () => {
+    try {
+      hideSelection();
+      setIsModalOpen(false);
+
+      // 🟡 Step 1: Show "Deleting..." message
+      const toastId = showToast("Deleting...", { autoClose: false });
+
+      await deleteForEveryone(); // ✅ Ensure delete happens first
+
+      // ✅ Step 2: Update the existing Toast with a new message
+      const messageText = `${selectedMessages.length} ${
+        selectedMessages.length > 1 ? "Messages" : "Message"
+      } deleted for everyone.`;
+
+      toast.update(toastId, {
+        render: messageText,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      showToast("Failed to delete message.");
+    }
   };
 
   return (

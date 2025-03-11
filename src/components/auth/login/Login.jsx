@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../lib/firebase/firebase";
 import { registerUser } from "../../../lib/firebase/auth";
+import { showErrorToast, showSuccessToast } from "../../../utils";
 import "./login.css";
 
 const Login = () => {
@@ -31,10 +31,10 @@ const Login = () => {
 
     try {
       await registerUser(username, email, password, avatar.file);
-      toast.success("Account created successfully! You can now login.");
+      showSuccessToast("Account created successfully! You can now login.");
     } catch (err) {
-      console.error(err);
-      toast.error(err.message);
+      console.error(err.message);
+      showErrorToast("Failed to create account.");
     } finally {
       setLoading(false);
     }
@@ -49,10 +49,10 @@ const Login = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Logged in successfully!");
+      showSuccessToast("Logged in successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error(err.message);
+      console.error(err.message);
+      showErrorToast("Failed to login.");
     } finally {
       setLoading(false);
     }

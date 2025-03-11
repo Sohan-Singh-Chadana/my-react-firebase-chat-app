@@ -1,9 +1,9 @@
 import { memo, useState } from "react";
 import { FaCheckCircle, FaUserPlus } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
-import { toast } from "react-toastify";
 
 import { useGlobalStateStore } from "../../../../store";
+import { showSuccessToast } from "../../../../utils";
 import { useAddUser } from "../../../../hooks";
 
 import SearchBox from "../../../common/searchBox/SearchBox";
@@ -22,7 +22,7 @@ const AddUser = () => {
 
   const handleAddUser = (user) => {
     handleAdd(user);
-    toast.success("User added successfully");
+    showSuccessToast("User added successfully!");
   };
 
   return (

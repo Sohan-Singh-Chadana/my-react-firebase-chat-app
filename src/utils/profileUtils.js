@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import { updateUserProfile } from "../services/userService";
+import showSuccessToast from "./Notification/showSuccessToast";
 
 export const handleProfileUpdate = async ({
   field,
@@ -21,7 +22,7 @@ export const handleProfileUpdate = async ({
 
     await updateUserProfile(currentUser?.userId, { [field]: value.trim() });
 
-    toast.success("Profile updated successfully!");
+    showSuccessToast("Profile updated successfully!");
     setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
   } catch (error) {
     console.error(`❌ Failed to update ${field}:`, error);

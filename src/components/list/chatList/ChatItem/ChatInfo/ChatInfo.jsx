@@ -1,3 +1,4 @@
+import { MdBlock } from "react-icons/md";
 import {
   useChatStore,
   useLastMessageStore,
@@ -18,16 +19,28 @@ const ChatInfo = ({ chat, currentUser }) => {
   );
   const firstTimeChatAddTime = formatTimestamp(chat.updatedAt?.seconds);
 
+  // ✅ Function to handle deleted messages
   const getLastMessage = (chatId) => {
-    // const message = chat.lastMessage || "";
-    const message = lastMessageData?.[chatId]?.text || "";
-    if (/[a-zA-Z]/.test(message)) {
-      return message.length > 40 ? message.slice(0, 40) + "..." : message;
+    const message = lastMessageData?.[chatId];
+    const messageText = message?.text || "";
+
+    if (message?.isDeleted) {
+      return message.senderId === currentUser.uid
+        ? "You deleted this message"
+        : "This message has been deleted";
     }
-    return message.split(/\s+/).length > 10
-      ? message.split(/\s+/).slice(0, 15).join(" ") + "..."
-      : message;
+
+    if (/[a-zA-Z]/.test(messageText)) {
+      return messageText.length > 40
+        ? messageText.slice(0, 40) + "..."
+        : messageText;
+    }
+
+    return messageText.split(/\s+/).length > 10
+      ? messageText.split(/\s+/).slice(0, 10).join(" ") + "..."
+      : messageText; // 👍
   };
+
 
   const getLastMessageStatusIcon = (chatId, lastMessageData, currentUser) => {
     const message = lastMessageData?.[chatId];
@@ -47,6 +60,11 @@ const ChatInfo = ({ chat, currentUser }) => {
       : chat.user?.name || "Unknown";
   };
 
+  const getMessagePreviewClass = (chatId) => {
+    const isDeleted = lastMessageData?.[chatId]?.isDeleted;
+    return `message-preview ${isDeleted ? "deleted" : ""}`;
+  };
+
   return (
     <div className="chat-info">
       <div className="chat-header">
@@ -55,11 +73,15 @@ const ChatInfo = ({ chat, currentUser }) => {
       </div>
 
       <p
-        className="message-preview"
+        className={getMessagePreviewClass(chat.chatId)}
         style={{ padding: chat.lastMessage ? "0px" : "8px 0px" }}
       >
         {getLastMessage(chat.chatId) &&
-          getLastMessageStatusIcon(chat.chatId, lastMessageData, currentUser)}
+        lastMessageData?.[chat.chatId]?.isDeleted ? (
+          <MdBlock />
+        ) : (
+          getLastMessageStatusIcon(chat.chatId, lastMessageData, currentUser)
+        )}
         <span>{getLastMessage(chat.chatId)}</span>
       </p>
 

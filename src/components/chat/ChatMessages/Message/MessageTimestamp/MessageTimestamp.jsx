@@ -7,7 +7,7 @@ const MessageTimestamp = ({ message, isOwnMessage }) => {
   const hasText = message.text;
   const hasImageAndText = hasImage && hasText;
   const time = formatMessageTime(message.timestamp)
-  const StatusIcon = isOwnMessage ? getStatusIcon(message.status) : null;
+  const StatusIcon = isOwnMessage && !message.isDeleted ? getStatusIcon(message.status) : null;
   const isLongText = hasText && message.text.split(" ").length > 10;
 
   const getMessageColor = () =>

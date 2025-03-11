@@ -15,7 +15,7 @@
     }
 
     &.unread .chat-content .chat-info .chat-header .time {
-      color: var(--unread-color);
+      color: var(--unread-color) !important;
     }
 
     &.selected {
