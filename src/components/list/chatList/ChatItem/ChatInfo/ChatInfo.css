@@ -45,6 +45,10 @@
       }
     }
 
+    .message-preview.messagePadding{
+      padding: 8px 0px;
+    }
+
     .deleted {
       font-style: italic;
       color: var(--delete-text);

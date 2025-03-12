@@ -82,7 +82,11 @@ const Message = ({ message, index, messages }) => {
               )}
 
               {/* Timestamp & Status */}
-              <MessageTimestamp message={message} isOwnMessage={isOwnMessage} />
+              <MessageTimestamp
+                message={message}
+                isOwnMessage={isOwnMessage}
+                className={hasText ? "messageTimeStamp" : "imgMessageTimeStamp"}
+              />
             </div>
           </div>
         </div>

@@ -3,11 +3,14 @@ import {
   doc,
   getDoc,
   getDocs,
+  updateDoc,
   writeBatch,
 } from "firebase/firestore";
-import { db } from "../lib/firebase/firebase";
+import { db, storage } from "../lib/firebase/firebase";
 import { create } from "zustand";
 import useUserStore from "./userStore";
+import { extractStoragePath } from "../utils";
+import { deleteObject, ref } from "firebase/storage";
 
 const useChatStore = create((set) => ({
   chatId: null,
@@ -111,13 +114,24 @@ const useChatStore = create((set) => ({
       const messagesSnap = await getDocs(messagesRef);
 
       const batch = writeBatch(db);
+      const imagesToDelete = [];
 
       messagesSnap.forEach((docSnap) => {
         const messageData = docSnap.data();
         const messageRef = doc(db, "chats", chatId, "messages", docSnap.id);
-        const updatedDeletedFor = [...(messageData.deletedFor || []), userId];
+        const deletedFor = new Set(messageData.deletedFor || []);
+        deletedFor.add(userId);
 
-        if (updatedDeletedFor.length >= 2) {
+        const updatedDeletedFor = Array.from(deletedFor);
+
+        if (
+          updatedDeletedFor.includes(messageData.senderId) &&
+          updatedDeletedFor.includes(messageData.receiverId)
+        ) {
+          if (messageData.img) {
+            imagesToDelete.push(messageData.img);
+          }
+
           batch.delete(messageRef);
         } else {
           batch.update(messageRef, { deletedFor: updatedDeletedFor });
@@ -125,6 +139,36 @@ const useChatStore = create((set) => ({
       });
 
       await batch.commit();
+
+      await Promise.all(
+        imagesToDelete.map(async (imageUrl) => {
+          const storagePath = extractStoragePath(imageUrl);
+          if (storagePath) {
+            const imageRef = ref(storage, storagePath);
+            await deleteObject(imageRef);
+            console.log("Image deleted for storage : ", storagePath);
+          }
+        })
+      );
+
+      // ✅ Update chatList only for current user (Not for other user)
+      const currentUserRef = doc(db, "users", userId);
+      const currentUserSnap = await getDoc(currentUserRef);
+
+      if (currentUserSnap.exists()) {
+        const userData = currentUserSnap.data();
+        const chatList = userData.chatList || [];
+
+        // 🔥 Update lastMessage to empty or placeholder text
+        const updatedChatList = chatList.map((chat) =>
+          chat.chatId === chatId
+            ? { ...chat, lastMessage: "", updatedAt: new Date() }
+            : chat
+        );
+
+        await updateDoc(currentUserRef, { chatList: updatedChatList });
+      }
+
       // console.log("Chat cleared successfully for current user.");
     } catch (error) {
       console.error("Clear Chat Error:", error);

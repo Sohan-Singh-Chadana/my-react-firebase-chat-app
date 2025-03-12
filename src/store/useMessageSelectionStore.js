@@ -1,9 +1,10 @@
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { create } from "zustand";
-import { db } from "../lib/firebase/firebase";
+import { db, storage } from "../lib/firebase/firebase";
 import useUserStore from "./userStore";
 import useChatStore from "./chatStore";
-import { updateLastMessageAfterDeletion } from "../utils";
+import { extractStoragePath, updateLastMessageAfterDeletion } from "../utils";
+import { deleteObject, ref } from "firebase/storage";
 
 const useMessageSelectionStore = create((set) => ({
   showCheckboxes: false,
@@ -120,6 +121,28 @@ const useMessageSelectionStore = create((set) => ({
               updatedDeletedFor.includes(messageData.senderId) &&
               updatedDeletedFor.includes(messageData.receiverId)
             ) {
+              // ✅ If message contains an image, delete it from Firebase Storage
+              if (messageData.img) {
+                try {
+                  const imageUrl = messageData.img;
+                  const storagePath = extractStoragePath(imageUrl);
+
+                  if (storagePath) {
+                    const imageRef = ref(storage, storagePath);
+                    await deleteObject(imageRef);
+                    // console.log(
+                    //   "Image deleted from Firebase Storage",
+                    //   storagePath
+                    // );
+                  }
+                } catch (error) {
+                  console.error(
+                    "Error deleting image from Firebase Storage:",
+                    error
+                  );
+                }
+              }
+
               // 🔥 दोनों users ने delete कर दिया, अब message Firestore से हटाओ
               await deleteDoc(messageRef);
             } else {
@@ -162,10 +185,30 @@ const useMessageSelectionStore = create((set) => ({
               messageData.senderId === userId &&
               currentTime - messageTime.toMillis() <= 24 * 60 * 60 * 1000
             ) {
+              // ✅ If message has an image, delete it from Firebase Storage
+              if (messageData.img) {
+                try {
+                  const imageUrl = messageData.img;
+                  const storagePath = extractStoragePath(imageUrl);
+
+                  if (storagePath) {
+                    const imageRef = ref(storage, storagePath);
+                    await deleteObject(imageRef);
+                    // console.log(
+                    //   "Image deleted from Firebase Storage",
+                    //   storagePath
+                    // );
+                  }
+                } catch (error) {
+                  console.error("Error deleting image  :", error);
+                }
+              }
+
               // await deleteDoc(messageRef);
               await updateDoc(messageRef, {
                 text: "__deleted__",
                 isDeleted: true, // ✅ Add flag to track deleted messages
+                img: null,
               });
             } else {
               console.log(

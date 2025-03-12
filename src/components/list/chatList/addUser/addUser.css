@@ -77,27 +77,44 @@
       -o-border-radius: 50%;
     }
   }
+
   button {
     all: unset;
     background-color: var(--bg-green);
     color: var(--white-color);
-    border: none;
-    outline: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    width: 40px;
+    border-radius: 12px;
+    width: 120px;
     height: 40px;
-    /* padding: 5px 5px; */
-
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
 
     svg {
-      width: 25px;
-      height: 25px;
+      width: 20px;
+      height: 20px;
       fill: var(--white-color);
+      margin-right: 8px;
     }
+  }
+
+  /* 🔥 Hover Effect */
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* 🔥 Disabled state */
+  button.disabled {
+    background-color: #b5b5b5 !important;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.7;
   }
 }
 .addUser .error {
