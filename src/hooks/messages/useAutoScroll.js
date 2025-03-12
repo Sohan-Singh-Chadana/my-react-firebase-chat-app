@@ -6,7 +6,7 @@ export const useAutoScroll = (messages) => {
 
   useEffect(() => {
     if (endRef.current) {
-      endRef.current.scrollIntoView({ behavior: "smooth" });
+      endRef.current.scrollIntoView({ behavior: "instant" });
     }
   }, [messages]);
 

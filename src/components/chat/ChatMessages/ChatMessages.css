@@ -17,6 +17,24 @@
     position: relative;
     margin: 10px 0;
   }
+  .chatDayScroll {
+    position: sticky;
+    top: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-five);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 400;
+    z-index: 3;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
 
   .unread-badge {
     position: relative;
@@ -95,6 +113,21 @@
           }
         }
 
+        .deleteText {
+          font-style: italic;
+          color: var(--delete-text);
+
+          pre {
+            font-size: 14px;
+          }
+
+          svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: -5px;
+          }
+        }
+
         .texts {
           width: 100%;
           flex: 1;
@@ -105,24 +138,6 @@
           .message-text {
             flex: 1;
           }
-
-          .textSpan {
-            font-size: 10px;
-            font-weight: 500;
-            text-align: right;
-            color: var(--text-secondary);
-            align-self: flex-end;
-            margin-top: 0px;
-            margin-left: 10px;
-            margin-bottom: -5px;
-
-            svg {
-              margin-left: 5px;
-              width: 18px;
-              height: 18px;
-              margin-bottom: -4px;
-            }
-          }
         }
 
         .images {
@@ -131,23 +146,6 @@
 
           p {
             margin-top: 16px;
-          }
-
-          .imgSpan {
-            position: absolute;
-            bottom: 3%;
-            right: 3%;
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--text-color) !important;
-            float: right;
-
-            svg {
-              margin-left: 5px;
-              width: 18px;
-              height: 18px;
-              margin-bottom: -4px;
-            }
           }
 
           .image-box {
@@ -246,6 +244,11 @@
   .messageBox.selected {
     background-color: var(--messageBox-bg);
   }
+}
+
+/* Show date only when scrolling */
+.center.scrolling .chatDayScroll {
+  opacity: 1;
 }
 
 .show-checkboxes .messageBox:hover {

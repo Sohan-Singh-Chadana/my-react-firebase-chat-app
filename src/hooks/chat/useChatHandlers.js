@@ -6,7 +6,7 @@ import {
   useMessageSelectionStore,
   useUserStore,
 } from "../../store";
-import { deleteSingleChat, resetUnreadCount } from "../../utils";
+import { deleteSingleChat, resetUnreadCount, showToast } from "../../utils";
 
 export const useChatHandlers = () => {
   const [isDeletedModalOpen, setIsDeletedModalOpen] = useState(false);
@@ -53,8 +53,15 @@ export const useChatHandlers = () => {
   };
 
   const handleClearChat = () => {
-    clearChatForMe();
-    setIsClearChatModalOpen(false);
+    clearChatForMe()
+      .then(() => {
+        setIsClearChatModalOpen(false);
+        showToast("Chat cleared successfully! ✅");
+      })
+      .catch((error) => {
+        console.error("Error clearing chat:", error);
+        showToast("❌ Failed to clear chat.");
+      });
   };
 
   return {

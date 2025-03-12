@@ -17,4 +17,5 @@ export * from "./chat/useUserStatus";
 export * from "./messages/useVisibilityChange";
 
 export { default as useChatListeners } from "./chatList/useChatListeners";
-export * from './chat/useChatHandlers'
+export { default as useVisibleDateObserver } from "./ChatMessages/useVisibleDateObserver";
+export * from "./chat/useChatHandlers";

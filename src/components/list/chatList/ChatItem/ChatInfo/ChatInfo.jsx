@@ -4,47 +4,29 @@ import {
   useUnreadStore,
 } from "../../../../../store";
 import { formatTimestamp } from "../../../../../utils";
-import { getStatusIcon } from "../../../../../utils/messages";
 import "./ChatInfo.css";
+import MessagePreview from "./MessagePreview";
 
 const ChatInfo = ({ chat, currentUser }) => {
   const { lastMessageData } = useLastMessageStore();
-  const { unreadCounts } = useUnreadStore(); // Zustand से unreadCounts ले रहे हैं
+  const { unreadCounts } = useUnreadStore();
   const { chatId } = useChatStore();
 
-  // const lastMessageTime = formatTimestamp(chat.updatedAt?.seconds);
-  const lastMessageTime = formatTimestamp(
-    lastMessageData?.[chat.chatId]?.timestamp?.seconds
-  );
+  const lastMessage = lastMessageData?.[chat.chatId];
+  const lastMessageTime = formatTimestamp(lastMessage?.timestamp?.seconds);
   const firstTimeChatAddTime = formatTimestamp(chat.updatedAt?.seconds);
 
-  const getLastMessage = (chatId) => {
-    // const message = chat.lastMessage || "";
-    const message = lastMessageData?.[chatId]?.text || "";
-    if (/[a-zA-Z]/.test(message)) {
-      return message.length > 40 ? message.slice(0, 40) + "..." : message;
-    }
-    return message.split(/\s+/).length > 10
-      ? message.split(/\s+/).slice(0, 15).join(" ") + "..."
-      : message;
-  };
-
-  const getLastMessageStatusIcon = (chatId, lastMessageData, currentUser) => {
-    const message = lastMessageData?.[chatId];
-
-    if (!message || !message?.text) return null;
-
-    if (message?.senderId !== currentUser?.userId || !message?.status)
-      return null;
-
-    const StatusIcon = getStatusIcon(message.status);
-    return StatusIcon ? <StatusIcon /> : null;
-  };
-
-  const getChatUserName = (chat, currentUser) => {
+  // ✅ Get chat user name (handle blocked users)
+  const getChatUserName = () => {
     return chat.user?.blockedUsers?.includes(currentUser?.uid)
       ? "User"
       : chat.user?.name || "Unknown";
+  };
+
+  // ✅ Determine the message preview class
+  const getMessagePreviewClass = () => {
+    const isDeleted = lastMessage?.isDeleted;
+    return `message-preview ${isDeleted ? "deleted" : ""}`;
   };
 
   return (
@@ -55,17 +37,13 @@ const ChatInfo = ({ chat, currentUser }) => {
       </div>
 
       <p
-        className="message-preview"
-        style={{ padding: chat.lastMessage ? "0px" : "8px 0px" }}
+        className={`${getMessagePreviewClass()} ${
+          chat.lastMessage ? "" : "messagePadding"
+        }`}
       >
-        {getLastMessage(chat.chatId) &&
-          getLastMessageStatusIcon(chat.chatId, lastMessageData, currentUser)}
-        <span>{getLastMessage(chat.chatId)}</span>
+        <MessagePreview lastMessage={lastMessage} currentUser={currentUser} />
       </p>
 
-      {/* {chat.unreadCount > 0 && (
-        <span className="message-count">{chat.unreadCount}</span>
-      )} */}
       {unreadCounts[chat.chatId] > 0 && chat.chatId !== chatId && (
         <span className="message-count">{unreadCounts[chat.chatId]}</span>
       )}

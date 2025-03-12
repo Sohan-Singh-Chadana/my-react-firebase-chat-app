@@ -96,6 +96,14 @@ const Chat = () => {
   // Typing status
   useTypingStatus(text);
 
+  const centerElementStyle = {
+    ...getWallpaperColor(
+      hoveredWallpaper,
+      selectedWallpaper,
+      showWallpaperImage
+    ),
+  };
+
   return (
     <div className="chat">
       <ChatHeader />
@@ -104,13 +112,7 @@ const Chat = () => {
         <div
           className="center"
           ref={chatContainerRef}
-          style={{
-            ...getWallpaperColor(
-              hoveredWallpaper,
-              selectedWallpaper,
-              showWallpaperImage
-            ),
-          }}
+          style={centerElementStyle}
         >
           <ChatMessages messages={chatMessages} unreadCount={unreadCount} />
           {imagePreview && img.url && (

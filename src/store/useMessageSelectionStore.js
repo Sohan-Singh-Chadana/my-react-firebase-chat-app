@@ -1,9 +1,10 @@
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { create } from "zustand";
-import { db } from "../lib/firebase/firebase";
+import { db, storage } from "../lib/firebase/firebase";
 import useUserStore from "./userStore";
 import useChatStore from "./chatStore";
-import { updateLastMessageAfterDeletion } from "../utils";
+import { extractStoragePath, updateLastMessageAfterDeletion } from "../utils";
+import { deleteObject, ref } from "firebase/storage";
 
 const useMessageSelectionStore = create((set) => ({
   showCheckboxes: false,
@@ -44,6 +45,7 @@ const useMessageSelectionStore = create((set) => ({
       let allMessagesAreFromUser = true;
       // yah check karega ki message 24 hours se pehle send hua hua hai
       let allMessagesWithin24Hours = true;
+      let allMessagesAreNotDeleted = true;
 
       const currentTime = Date.now();
 
@@ -54,6 +56,12 @@ const useMessageSelectionStore = create((set) => ({
         if (messageSnap.exists()) {
           const messageData = messageSnap.data();
           const messageTime = messageData.timestamp.toMillis();
+
+          // ❌ If the message is already deleted, disable "Delete for Everyone"
+          if (messageData.isDeleted) {
+            allMessagesAreNotDeleted = false;
+            break;
+          }
 
           // agar koi message dusre user ka hai, to delete for everyone band kar do
           if (messageData.senderId !== userId) {
@@ -69,10 +77,15 @@ const useMessageSelectionStore = create((set) => ({
         }
       }
 
-      // ✅ "Delete for Everyone" tabhi show honga jab dono condition sahi ho
+      // ✅ "Delete for Everyone" only shows when:
+      //    - Messages are from the user
+      //    - Messages are within 24 hours
+      //    - Messages are not already deleted
       set({
         isDeleteForEveryoneAllowed:
-          allMessagesAreFromUser && allMessagesWithin24Hours,
+          allMessagesAreFromUser &&
+          allMessagesWithin24Hours &&
+          allMessagesAreNotDeleted,
       });
     } catch (error) {
       console.error("Error checking delete permissions:", error);
@@ -108,6 +121,28 @@ const useMessageSelectionStore = create((set) => ({
               updatedDeletedFor.includes(messageData.senderId) &&
               updatedDeletedFor.includes(messageData.receiverId)
             ) {
+              // ✅ If message contains an image, delete it from Firebase Storage
+              if (messageData.img) {
+                try {
+                  const imageUrl = messageData.img;
+                  const storagePath = extractStoragePath(imageUrl);
+
+                  if (storagePath) {
+                    const imageRef = ref(storage, storagePath);
+                    await deleteObject(imageRef);
+                    // console.log(
+                    //   "Image deleted from Firebase Storage",
+                    //   storagePath
+                    // );
+                  }
+                } catch (error) {
+                  console.error(
+                    "Error deleting image from Firebase Storage:",
+                    error
+                  );
+                }
+              }
+
               // 🔥 दोनों users ने delete कर दिया, अब message Firestore से हटाओ
               await deleteDoc(messageRef);
             } else {
@@ -150,7 +185,31 @@ const useMessageSelectionStore = create((set) => ({
               messageData.senderId === userId &&
               currentTime - messageTime.toMillis() <= 24 * 60 * 60 * 1000
             ) {
-              await deleteDoc(messageRef);
+              // ✅ If message has an image, delete it from Firebase Storage
+              if (messageData.img) {
+                try {
+                  const imageUrl = messageData.img;
+                  const storagePath = extractStoragePath(imageUrl);
+
+                  if (storagePath) {
+                    const imageRef = ref(storage, storagePath);
+                    await deleteObject(imageRef);
+                    // console.log(
+                    //   "Image deleted from Firebase Storage",
+                    //   storagePath
+                    // );
+                  }
+                } catch (error) {
+                  console.error("Error deleting image  :", error);
+                }
+              }
+
+              // await deleteDoc(messageRef);
+              await updateDoc(messageRef, {
+                text: "__deleted__",
+                isDeleted: true, // ✅ Add flag to track deleted messages
+                img: null,
+              });
             } else {
               console.log(
                 "❌ Delete for everyone allowed only within 24 hours."

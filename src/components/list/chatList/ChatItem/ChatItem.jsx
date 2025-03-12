@@ -2,6 +2,7 @@ import {
   useChatStore,
   useGlobalStateStore,
   useSelectChats,
+  useUnreadStore,
   useUserStore,
 } from "../../../../store";
 import {
@@ -18,19 +19,21 @@ const ChatItem = ({ chat }) => {
   const { selectMode } = useGlobalStateStore();
   const { selectedChats } = useSelectChats();
   const { currentUser } = useUserStore();
+  const { unreadCounts } = useUnreadStore();
 
   // ✅ Function for cleaner class handling
-  const getChatItemClass = () => {
+  const getChatItemClass = (chat) => {
     let classes = "chat-item";
     if (chatId === chat.chatId) classes += " selected";
     if (selectMode) classes += " with-checkbox";
-    if (chat.unreadCount > 0) classes += " unread";
+    if (unreadCounts[chat.chatId] > 0 && chat.chatId !== chatId)
+      classes += " unread";
     return classes;
   };
   return (
     <div
       onClick={(event) => handleChatSelect(chat, event)}
-      className={getChatItemClass()}
+      className={getChatItemClass(chat)}
     >
       {selectMode && (
         <input
@@ -46,10 +49,7 @@ const ChatItem = ({ chat }) => {
 
       <div className="chat-content">
         <Avatar chat={chat} currentUser={currentUser} />
-        <ChatInfo
-          chat={chat}
-          currentUser={currentUser}
-        />
+        <ChatInfo chat={chat} currentUser={currentUser} />
       </div>
     </div>
   );

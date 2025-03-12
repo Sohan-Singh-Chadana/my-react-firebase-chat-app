@@ -1,9 +1,9 @@
 import { memo, useState } from "react";
 import { FaCheckCircle, FaUserPlus } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
-import { toast } from "react-toastify";
 
 import { useGlobalStateStore } from "../../../../store";
+import { showSuccessToast } from "../../../../utils";
 import { useAddUser } from "../../../../hooks";
 
 import SearchBox from "../../../common/searchBox/SearchBox";
@@ -20,9 +20,14 @@ const AddUser = () => {
       )
     : allUsers;
 
-  const handleAddUser = (user) => {
-    handleAdd(user);
-    toast.success("User added successfully");
+  const handleAddUser = async (user) => {
+    try {
+      await handleAdd(user); // ✅ Ensure user is added first
+      showSuccessToast("User added successfully!");
+    } catch (error) {
+      console.error("❌ Error adding user:", error);
+      showSuccessToast("Failed to add user!");
+    }
   };
 
   return (
@@ -50,9 +55,15 @@ const AddUser = () => {
               }`}
             >
               {existingChats.has(user.userId) ? (
-                <FaCheckCircle size={30} />
+                <>
+                  <FaCheckCircle size={20} />
+                  <span>Added</span> {/* ✅ "Added" text के साथ */}
+                </>
               ) : (
-                <FaUserPlus size={30} />
+                <>
+                  <FaUserPlus size={20} />
+                  <span>Add</span> {/* ✅ "Add" text के साथ */}
+                </>
               )}
             </button>
           </div>

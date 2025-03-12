@@ -1,24 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChatStore, useUserStore } from "../../store";
 import { resetUnreadCount } from "../../utils";
 
 export const useVisibilityChange = () => {
   const { chatId } = useChatStore();
   const { currentUser } = useUserStore();
+  const [chatOpened, setChatOpened] = useState(false);
 
   const currentUserId = currentUser?.userId;
 
   useEffect(() => {
     if (!chatId || !currentUserId) return;
 
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === "hidden") {
+    // ✅ Mark chat as opened when it is set for the first time
+    if (!chatOpened) {
+      setChatOpened(true);
+    }
+
+    const handleVisibilityOrFocusChange = async () => {
+      if (
+        chatOpened && // ✅ Only reset if chat was opened before
+        (document.visibilityState === "hidden" || document.hasFocus() === false)
+      ) {
         await resetUnreadCount(chatId, currentUserId);
       }
     };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    window.addEventListener("blur", handleVisibilityOrFocusChange);
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityOrFocusChange
+    );
+
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleVisibilityOrFocusChange);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityOrFocusChange
+      );
     };
-  }, [chatId, currentUserId]);
+  }, [chatId, chatOpened, currentUserId]);
 };
