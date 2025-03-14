@@ -13,10 +13,7 @@ export const setUserActive = async (chatId, userId) => {
 
   try {
     const chatSnap = await getDoc(chatRef);
-    if (!chatSnap.exists()) {
-      console.error(`❌ Chat document does not exist: ${chatId}`);
-      return;
-    }
+    if (!chatSnap.exists()) return;
 
     await updateDoc(chatRef, {
       activeUsers: arrayUnion(userId),
@@ -32,10 +29,7 @@ export const setUserInactive = async (chatId, userId) => {
 
   try {
     const chatSnap = await getDoc(chatRef);
-    if (!chatSnap.exists()) {
-      console.error(`❌ Chat document does not exist: ${chatId}`);
-      return;
-    }
+    if (!chatSnap.exists()) return;
 
     await updateDoc(chatRef, {
       activeUsers: arrayRemove(userId),

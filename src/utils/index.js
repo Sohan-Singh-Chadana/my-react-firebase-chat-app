@@ -7,12 +7,10 @@ export {
 } from "./chatListUtils";
 
 // ✅ Ensure chatDeletionUtils has a default export, otherwise change it to named exports
-export * from "./chatDeletionUtils"; // ✅ Fix: Export all named functions
+export * from "./firebase/chat/chatDeletionUtils"; // ✅ Fix: Export all named functions
 
 // ✅ Export chat deletion utilities
-export * from "./deleteChatUtils";
-export * from "./deletePhotoFromStorage";
-export * from "./deleteSingleChat";
+export * from "./firebase/chat/deleteSingleChat";
 
 // ✅ Correct named exports for message, unread messages, and active users utils
 export * from "./messageUtils";

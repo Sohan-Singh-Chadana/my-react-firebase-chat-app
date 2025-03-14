@@ -36,10 +36,16 @@ export const useChatHandlers = () => {
     setMenuOpen("actionMenuInChatTop", false);
   };
 
-  const handleDeleteChat = () => {
-    deleteSingleChat();
-    setIsDeletedModalOpen(false);
-    setMenuOpen("actionMenuInChatTop", false);
+  const handleDeleteChat = async () => {
+    try {
+      await deleteSingleChat(); 
+      setIsDeletedModalOpen(false);
+      setMenuOpen("actionMenuInChatTop", false);
+      showToast("Chat deleted successfully! ✅");
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      showToast("❌ Failed to delete chat.");
+    }
   };
 
   const handleSelectMessages = () => {

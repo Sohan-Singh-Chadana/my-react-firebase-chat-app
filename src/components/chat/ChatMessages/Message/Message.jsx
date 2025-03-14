@@ -9,12 +9,16 @@ import SelectableCheckbox from "./SelectableCheckbox";
 import MessageTimestamp from "./MessageTimestamp";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
+import { useMessageSender } from "../../../../hooks";
 import "./Message.css";
+import MessageImageLoader from "./MessageImage/MessageImageLoader";
 
 const Message = ({ message, index, messages }) => {
   const { currentUser } = useUserStore();
   const { showCheckboxes, selectMessage, selectedMessages } =
     useMessageSelectionStore();
+  const { img } = useMessageSender();
+
   // const isLoading = useMessagesStore((state) => state.isLoading);
 
   const isOwnMessage = message.senderId === currentUser.userId;
@@ -24,6 +28,9 @@ const Message = ({ message, index, messages }) => {
 
   const [imageLoading, setImageLoading] = useState(message?.img ? true : false);
   const [imageError, setImageError] = useState(false);
+
+  // ✅ isSending flag Firebase se use karo
+  const isSending = message.isSending || false;
 
   const renderedText = renderMessage(message, currentUser);
   const isDeletedMessage = Boolean(message.isDeleted);
@@ -82,7 +89,11 @@ const Message = ({ message, index, messages }) => {
             </div>
 
             <div className={getMessageContainerClass()}>
-              {hasImage && (
+              {/* ✅ Spinner jab tak image send ho rahi hai */}
+              {isSending && <MessageImageLoader />}
+
+              {/* ✅ Jab image upload ho jaye (isSending false ho), tab image show ho */}
+              {!isSending && hasImage && (
                 <MessageImage
                   imageLoading={imageLoading}
                   imageError={imageError}
@@ -96,6 +107,7 @@ const Message = ({ message, index, messages }) => {
               {renderedText && (
                 <MessageText
                   hasText={message.text}
+                  hasImageAndText={hasImageAndText}
                   text={renderedText}
                   isDeleted={isDeletedMessage}
                 />

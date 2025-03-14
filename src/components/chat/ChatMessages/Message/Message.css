@@ -112,6 +112,11 @@
       }
     }
   }
+
+  .sending {
+    opacity: 0.6; /* ✅ Jab tak send ho rahi ho, image dim rahegi */
+  }
+ 
 }
 
 .messageBox.selected {

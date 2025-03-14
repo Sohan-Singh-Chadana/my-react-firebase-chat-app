@@ -1,9 +1,11 @@
-import "./MessageImageLoader.css"
+import { MdClose } from "react-icons/md";
+import "./MessageImageLoader.css";
 const MessageImageLoader = () => {
   return (
-    <div className="loaderBox">
-      <div className="image-loader">
+    <div className="loader-box">
+      <div className="loading-overlay">
         <div className="spinner"></div>
+        <MdClose className="close-icon" size={24} />
       </div>
     </div>
   );

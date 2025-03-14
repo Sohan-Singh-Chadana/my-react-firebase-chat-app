@@ -1,4 +1,4 @@
-import { MdClose, MdSend, MdMic } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 import ChatInput from "../ChatInput";
 import "./ImagePreviewPopup.css";
 import SendButton from "../SendButton";
@@ -19,7 +19,12 @@ const ImagePreviewPopup = ({
         <div className="image">
           <img src={img.url} alt="" />
         </div>
-        <ChatInput onSend={onSend} text={text} setText={setText} placeholder="Add a caption..." />
+        <ChatInput
+          onSend={onSend}
+          text={text}
+          setText={setText}
+          placeholder="Add a caption..."
+        />
         <SendButton
           onClick={onSend}
           disabled={isCurrentUserBlocked || isReceiverBlocked}

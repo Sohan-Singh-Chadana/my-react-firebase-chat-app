@@ -7,7 +7,7 @@ const ImageLoader = ({
   borderRadius = "50%",
 }) => {
   return (
-    <div className="image-container" style={{ width, height, borderRadius }}>
+    <div className="image-container-loader" style={{ width, height, borderRadius }}>
       <div className="loading-spinner">
         <span
           className="spinner"

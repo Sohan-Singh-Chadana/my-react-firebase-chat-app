@@ -8,23 +8,17 @@ import {
   updateDoc,
   writeBatch,
 } from "firebase/firestore";
-import { db } from "../lib/firebase/firebase";
-import { deleteChatWithMessages } from "./deleteChatUtils";
-import {
-  useChatStore,
-  useGlobalStateStore,
-  useSelectChats,
-  useUserStore,
-} from "../store";
+import { useChatStore, useSelectChats, useUserStore } from "../../../store";
+import { db, storage } from "../../../lib/firebase/firebase";
+import { extractStoragePath } from "../../storageUtils";
+import { deleteObject, ref } from "firebase/storage";
 
-export const chatDeletionUtils = async () => {
+export const deleteChatHandler = async (chatIdList) => {
   const { currentUser } = useUserStore.getState();
   const { resetChatId } = useChatStore.getState();
-  const { setSelectMode } = useGlobalStateStore.getState();
-  const { selectedChats, clearSelectedChats, setChats } =
-    useSelectChats.getState();
+  const { setChats } = useSelectChats.getState();
 
-  if (!Array.isArray(selectedChats) || selectedChats.length === 0) return;
+  if (!chatIdList.length || !currentUser?.userId) return;
 
   try {
     const batch = writeBatch(db);
@@ -42,25 +36,16 @@ export const chatDeletionUtils = async () => {
 
     // ✅ Remove selected chats from chatList
     const updatedChatList = currentChatList.filter(
-      (chat) =>
-        !selectedChats.some(
-          (selectedChat) => selectedChat.chatId === chat.chatId
-        )
+      (chat) => !chatIdList.includes(chat.chatId)
     );
 
     batch.update(userRef, { chatList: updatedChatList });
 
-    for (const selectedChat of selectedChats) {
-      const chatRef = doc(db, "chats", selectedChat.chatId);
-      const messagesRef = collection(
-        db,
-        "chats",
-        selectedChat.chatId,
-        "messages"
-      );
+    for (const chatId of chatIdList) {
+      const chatRef = doc(db, "chats", chatId);
+      const messagesRef = collection(db, "chats", chatId, "messages");
 
       const chatSnap = await getDoc(chatRef);
-
       if (!chatSnap.exists()) continue; // ✅ Skip this chat since it does not exist
 
       const chatData = chatSnap.data();
@@ -69,20 +54,12 @@ export const chatDeletionUtils = async () => {
 
       // ✅ Check if messages exist before updating
       const messagesSnap = await getDocs(messagesRef);
-
-
       // 🔥 Run deleteForMe for all messages in this chat
       await Promise.all(
         messagesSnap.docs.map(async (msgDoc) => {
           if (!msgDoc.exists()) return; // ✅ Skip if message does not exist
 
-          const messageRef = doc(
-            db,
-            "chats",
-            selectedChat.chatId,
-            "messages",
-            msgDoc.id
-          );
+          const messageRef = doc(db, "chats", chatId, "messages", msgDoc.id);
           const messageData = msgDoc.data();
           const updatedDeletedFor = [
             ...(messageData.deletedFor || []),
@@ -96,6 +73,23 @@ export const chatDeletionUtils = async () => {
             updatedDeletedFor.includes(messageData.senderId) &&
             updatedDeletedFor.includes(messageData.receiverId)
           ) {
+            // ✅ If message contains an image, delete it from Firebase Storage
+            if (messageData.img) {
+              try {
+                const imageUrl = messageData.img;
+                const storagePath = extractStoragePath(imageUrl);
+
+                if (storagePath) {
+                  const imageRef = ref(storage, storagePath);
+                  await deleteObject(imageRef);
+                }
+              } catch (error) {
+                console.error(
+                  "Error deleting image from Firebase Storage:",
+                  error
+                );
+              }
+            }
             await deleteDoc(messageRef);
           } else {
             await updateDoc(messageRef, { deletedFor: updatedDeletedFor });
@@ -115,31 +109,25 @@ export const chatDeletionUtils = async () => {
         deletedAt: updatedDeletedAt,
       });
 
-      // ✅ If both users deleted the chat, delete it
-      if (
-        updatedDeletedBy.includes(currentUser.userId) &&
-        updatedDeletedBy.includes(selectedChat.receiverId)
-      ) {
-        await deleteChatWithMessages(chatRef, messagesRef, batch);
+      // ✅ If both users deleted the chat, delete it completely
+      const participants = chatData.participants || [];
+      const allDeleted = participants.every((userId) =>
+        updatedDeletedBy.includes(userId)
+      );
+
+      if (allDeleted) {
+        batch.delete(chatRef);
       }
     }
 
     await batch.commit(); // Commit batch update
 
-    // ✅ Update Zustand state
     setChats((state) => ({
-      chats: state.chats.filter(
-        (chat) =>
-          !selectedChats.some(
-            (selectedChat) => selectedChat.chatId === chat.chatId
-          )
-      ),
+      chats: state.chats.filter((chat) => !chatIdList.includes(chat.chatId)),
     }));
 
     resetChatId();
-    clearSelectedChats();
-    setSelectMode(false);
-  } catch (err) {
-    console.error("❌ [Error] Failed to delete chats:", err);
+  } catch (error) {
+    console.error("❌ [Error] Failed to delete chat(s):", error);
   }
 };
