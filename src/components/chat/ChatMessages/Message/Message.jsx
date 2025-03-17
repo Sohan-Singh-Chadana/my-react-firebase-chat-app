@@ -1,25 +1,17 @@
 import { useState } from "react";
-import {
-  useMessageSelectionStore,
-  useMessagesStore,
-  useUserStore,
-} from "../../../../store";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import { useMessageSelectionStore, useUserStore } from "../../../../store";
 import SelectableCheckbox from "./SelectableCheckbox";
 import MessageTimestamp from "./MessageTimestamp";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
-import { useMessageSender } from "../../../../hooks";
+import BlurredImagePreview from "./BlurredImagePreview";
 import "./Message.css";
-import MessageImageLoader from "./MessageImage/MessageImageLoader";
 
 const Message = ({ message, index, messages }) => {
   const { currentUser } = useUserStore();
   const { showCheckboxes, selectMessage, selectedMessages } =
     useMessageSelectionStore();
-  const { img } = useMessageSender();
-
-  // const isLoading = useMessagesStore((state) => state.isLoading);
 
   const isOwnMessage = message.senderId === currentUser.userId;
   const hasImage = Boolean(message.img);
@@ -89,8 +81,10 @@ const Message = ({ message, index, messages }) => {
             </div>
 
             <div className={getMessageContainerClass()}>
-              {/* ✅ Spinner jab tak image send ho rahi hai */}
-              {isSending && <MessageImageLoader />}
+              {/* ✅ Show Blurred Preview while Image is Uploading */}
+              {isSending && hasImage && (
+                <BlurredImagePreview imgSrc={message.img} />
+              )}
 
               {/* ✅ Jab image upload ho jaye (isSending false ho), tab image show ho */}
               {!isSending && hasImage && (
@@ -101,9 +95,11 @@ const Message = ({ message, index, messages }) => {
                   src={message.img}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
+                  message={message}
                 />
               )}
 
+              {/* ✅ Render Message Text */}
               {renderedText && (
                 <MessageText
                   hasText={message.text}
@@ -113,8 +109,8 @@ const Message = ({ message, index, messages }) => {
                 />
               )}
 
-              {/* Timestamp & Status */}
-              {!imageLoading && (
+              {/* ✅ Timestamp & Status */}
+              {(!imageLoading || isSending) && (
                 <MessageTimestamp
                   message={message}
                   isOwnMessage={isOwnMessage}

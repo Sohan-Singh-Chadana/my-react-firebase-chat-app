@@ -33,44 +33,78 @@ export const useMessageSender = () => {
     let imgUrl = null;
     let messageId = null;
     try {
-      if (img.file) {
-        setSendingImage(true);
-        imgUrl = await upload(img.file);
-      }
-
       const messagesRef = collection(db, "chats", chatId, "messages");
       const chatRef = doc(db, "chats", chatId);
-
       const timestamp = new Date();
       const formattedDate = getFormattedDate();
 
-      const newMessage = {
-        senderId: currentUserId,
-        receiverId,
-        text: text || "",
-        timestamp,
-        formattedDate,
-        status: "pending",
-        deletedFor: [],
-        ...(imgUrl && { img: imgUrl, isSending: true }),
-      };
+      if (img.file) {
+        setSendingImage(true);
 
-      const docRef = await addDoc(messagesRef, newMessage);
-      messageId = docRef.id; // ✅ Firebase se message ID le lo
+        // ✅ Calculate image size in KB
+        const imgSizeKB = (img.file.size / 1024).toFixed(1);
 
-      await updateUnreadCount(chatId, receiverId, currentUserId);
+        // ✅ Show a temporary blurred preview before uploading
+        const tempImgUrl = URL.createObjectURL(img.file);
+        const tempMessage = {
+          senderId: currentUserId,
+          receiverId,
+          text: text || "",
+          timestamp,
+          formattedDate,
+          status: "pending",
+          deletedFor: [],
+          img: tempImgUrl,
+          isSending: true,
+          imgSize: imgSizeKB,
+        };
+
+        // ✅ Add temp message to Firebase (with blurred preview)
+        const tempDocRef = await addDoc(messagesRef, tempMessage);
+        messageId = tempDocRef.id; // ✅ Firebase se message ID le lo
+
+        // ✅ Upload Image in the background ✅ Upload Image and Get URL
+        imgUrl = await upload(img.file);
+
+        // ✅ Update Message with Final Image URL
+        await updateDoc(doc(db, "chats", chatId, "messages", messageId), {
+          img: imgUrl,
+          isSending: false,
+        });
+
+        await updateUnreadCount(chatId, receiverId, currentUserId);
+      } else {
+        // ✅ If text-only message, send normally
+        const newMessage = {
+          senderId: currentUserId,
+          receiverId,
+          text: text || "",
+          timestamp,
+          formattedDate,
+          status: "pending",
+          deletedFor: [],
+          // ...(imgUrl && { img: imgUrl, isSending: true }),
+        };
+
+        await addDoc(messagesRef, newMessage);
+
+        await updateUnreadCount(chatId, receiverId, currentUserId);
+      }
+
+      // const docRef = await addDoc(messagesRef, newMessage);
+      // messageId = docRef.id; // ✅ Firebase se message ID le lo
+
+      // // ✅ Ab Firebase me "isSending: false" update karo (upload complete hone ke baad)
+      // if (messageId) {
+      //   await updateDoc(doc(db, "chats", chatId, "messages", messageId), {
+      //     isSending: false,
+      //   });
+      // }
 
       await updateDoc(chatRef, {
         [`deletedAt.${currentUserId}`]: deleteField(),
         [`deletedAt.${receiverId}`]: deleteField(),
       });
-
-      // ✅ Ab Firebase me "isSending: false" update karo (upload complete hone ke baad)
-      if (messageId) {
-        await updateDoc(doc(db, "chats", chatId, "messages", messageId), {
-          isSending: false,
-        });
-      }
 
       setImg({ file: null, url: "" });
       setText("");

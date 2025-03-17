@@ -16,6 +16,7 @@ const ChatFooter = ({
   setText,
   img,
   setImg,
+  sendingImage,
 }) => {
   const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,7 +67,7 @@ const ChatFooter = ({
           <SendButton
             onClick={handleSend}
             disabled={isCurrentUserBlocked || isReceiverBlocked}
-            hasContent={text || img.file}
+            hasContent={(text || img.file) && !sendingImage}
             className="sendButton"
           />
         </>
