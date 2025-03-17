@@ -1,0 +1,41 @@
+.blurred-image-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.blurred-image {
+  filter: blur(8px);
+  transition: filter 0.3s ease-in-out;
+}
+
+.blurred-image.loaded {
+  filter: blur(3px);
+}
+
+.download-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border-radius: 25px;
+}
+
+.download-icon {
+  font-size: 30px;
+  color: white;
+  opacity: 0.8;
+}
+
+.image-size {
+  font-size: 12px;
+}

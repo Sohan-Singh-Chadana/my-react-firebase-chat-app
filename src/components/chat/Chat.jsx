@@ -39,7 +39,8 @@ const Chat = () => {
 
   const { chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const { messages } = useMessagesStore();
-  const { sendMessage, text, setText, img, setImg } = useMessageSender();
+  const { sendMessage, text, setText, img, setImg, sendingImage } =
+    useMessageSender();
   const { showCheckboxes } = useMessageSelectionStore();
   const { hoveredWallpaper, selectedWallpaper, showWallpaperImage } =
     useWallpaperStore();
@@ -65,6 +66,7 @@ const Chat = () => {
   const handleSend = async () => {
     if (isCurrentUserBlocked || isReceiverBlocked) return;
 
+    setImagePreview(false);
     const success = await sendMessage();
 
     if (success) {
@@ -76,7 +78,6 @@ const Chat = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-    setImagePreview(false);
 
     if (!userScrolledUp.current) {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +85,10 @@ const Chat = () => {
   };
 
   const handleImagePreview = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // ✅ Reset file input before selecting new file
+    }
+
     fileInputRef.current.click();
     setImagePreview(true);
   };
@@ -91,6 +96,10 @@ const Chat = () => {
   const handleImageRemove = () => {
     setImg({ file: null, url: "" });
     setImagePreview(false);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // ✅ Reset file input
+    }
   };
 
   // Typing status
@@ -140,6 +149,7 @@ const Chat = () => {
             setText={setText}
             img={img}
             setImg={setImg}
+            sendingImage={sendingImage} // ✅ Pass sendingImage to ChatFooter
           />
         )}
 

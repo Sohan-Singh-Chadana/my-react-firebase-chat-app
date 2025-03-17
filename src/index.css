@@ -83,6 +83,8 @@
   --offlineAlert-text: var(--text-common-color);
   --delete-text: var(--three-lightgray-common-color);
   --toast-text-color: var(--text-common-color);
+  --message_image_loader-color: #f0f0f0 ;
+  --blurred-box_color: rgba(255, 255, 255, 1);
 
   --border-color: #d1d7db;
   --border-top-color: #dddddd35;
@@ -128,6 +130,8 @@
   --default-chat-bg-color: #0b141a;
   --offlineAlert-bg: #182229;
   --offlineAlert-icon: #f7bb37;
+  --message_image_loader-color: #54656f;
+  --blurred-box_color: rgba(13, 17, 22, 0.8);
 
   --text-color: var(--white-color);
   --text-secondary: var(--three-lightgray-common-color);

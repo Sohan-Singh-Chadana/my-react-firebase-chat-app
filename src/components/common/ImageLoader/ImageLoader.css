@@ -1,8 +1,7 @@
-.image-container {
+.image-container-loader {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   overflow: hidden;
   position: relative;
 }

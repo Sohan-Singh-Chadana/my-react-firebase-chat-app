@@ -1,0 +1,123 @@
+.messageBox {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+
+  .messageContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 64px 0px 32px;
+    position: relative;
+    flex: 1;
+
+    .message {
+      width: fit-content;
+      max-width: 75%;
+      background-color: var(--bg-color);
+      position: relative;
+      border-radius: 0 10px 10px 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+      &.own {
+        align-self: flex-end;
+        background-color: var(--message-own-color);
+        border-radius: 10px 0px 10px 10px;
+      }
+
+      .message-content {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .texts-container {
+        width: 100%;
+        flex: 1;
+        padding: 4px 6px;
+        text-align: left;
+        display: flex;
+
+        .message-text {
+          flex: 1;
+        }
+      }
+
+      .image-container {
+        padding: 4px;
+        position: relative;
+        background-color: inherit;
+
+        p {
+          margin-top: 16px;
+        }
+      }
+
+      .pointer {
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+      }
+
+      &.own .pointer {
+        right: -8px;
+        border-left-color: var(--message-own-color);
+        border-right: 0;
+        border-top: 0;
+      }
+
+      &:not(.own) .pointer {
+        left: -10px;
+        border-right-color: var(--bg-color);
+        border-left: 0;
+        border-top: 0;
+      }
+
+      &.own .down-icon {
+        background: linear-gradient(
+          45deg,
+          var(--message-own-color) 50%,
+          transparent 80%
+        );
+      }
+
+      .down-icon {
+        position: absolute;
+        right: -30px;
+        top: 0px;
+        z-index: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          45deg,
+          var(--bg-color) 50%,
+          transparent 80%
+        );
+        transition: all 0.2s ease;
+
+        svg {
+          width: 30px;
+          height: 30px;
+          color: var(--text-secondary);
+        }
+      }
+
+      &:hover .down-icon {
+        right: 0px;
+      }
+    }
+  }
+
+  .sending {
+    opacity: 0.6; /* ✅ Jab tak send ho rahi ho, image dim rahegi */
+  }
+}
+
+.messageBox.selected {
+  background-color: var(--messageBox-bg);
+}

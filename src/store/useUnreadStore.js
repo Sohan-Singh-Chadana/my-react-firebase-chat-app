@@ -6,15 +6,9 @@ export const useUnreadStore = create((set, get) => ({
   unreadCounts: {},
 
   // ✅ Unread Count को अपडेट करने का function
-  updateUnreadCount: (chatId, count) =>
+  setChatUnreadCount: (chatId, count) =>
     set((state) => ({
       unreadCounts: { ...state.unreadCounts, [chatId]: count },
-    })),
-
-  // ✅ सिर्फ एक chat का unread count reset करने का function
-  resetChatUnreadCount: (chatId) =>
-    set((state) => ({
-      unreadCounts: { ...state.unreadCounts, [chatId]: 0 },
     })),
 
   // ✅ Listener function जो real-time unread count track करेगा
@@ -30,7 +24,7 @@ export const useUnreadStore = create((set, get) => ({
     // ✅ Real-time Listener सेट करें
     const unsubscribe = onSnapshot(qUnreadCount, (snapshot) => {
       const unreadCount = snapshot.size;
-      get().updateUnreadCount(chatId, unreadCount); // Zustand state update
+      get().setChatUnreadCount(chatId, unreadCount); // Zustand state update
     });
 
     return unsubscribe; // Listener को बंद करने के लिए return करो

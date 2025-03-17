@@ -28,13 +28,9 @@ export const useChatMessages = () => {
         (msg) => !msg.deletedFor?.includes(currentUserId)
       );
 
-      // .filter(
-      //   (msg) =>
-      //     !msg.deletedBy?.includes(currentUserId) &&
-      //     (!msg.deletedAt || !msg.deletedAt[currentUserId])
-      // );
-
-      if (JSON.stringify(messagesRef.current) !== JSON.stringify(filteredMessages)) {
+      if (
+        JSON.stringify(messagesRef.current) !== JSON.stringify(filteredMessages)
+      ) {
         messagesRef.current = filteredMessages;
         setMessages(chatId, filteredMessages); // ✅ Updates Zustand store only if messages change
       }

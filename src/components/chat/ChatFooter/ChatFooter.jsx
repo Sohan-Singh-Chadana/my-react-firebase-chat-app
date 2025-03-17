@@ -16,6 +16,7 @@ const ChatFooter = ({
   setText,
   img,
   setImg,
+  sendingImage,
 }) => {
   const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,6 +33,9 @@ const ChatFooter = ({
         file: e.target.files[0],
         url: URL.createObjectURL(e.target.files[0]),
       });
+
+      // ✅ Reset file input to allow selecting the same file again
+      e.target.value = "";
     }
   };
 
@@ -63,7 +67,7 @@ const ChatFooter = ({
           <SendButton
             onClick={handleSend}
             disabled={isCurrentUserBlocked || isReceiverBlocked}
-            hasContent={text || img.file}
+            hasContent={(text || img.file) && !sendingImage}
             className="sendButton"
           />
         </>

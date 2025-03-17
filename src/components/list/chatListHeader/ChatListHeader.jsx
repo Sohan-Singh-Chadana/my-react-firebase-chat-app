@@ -12,7 +12,7 @@ import {
   useSelectChats,
 } from "../../../store";
 
-import { chatDeletionUtils } from "../../../utils";
+import { chatDeletionUtils, showToast } from "../../../utils";
 import "./chatListHeader.css";
 
 const ChatListHeader = () => {
@@ -35,9 +35,15 @@ const ChatListHeader = () => {
     setMenuOpen("actionMenuInChatList", false); // Close menu after selecting
   };
 
-  const handleDeleteChats = () => {
-    chatDeletionUtils();
-    setConfirmDelete(false);
+  const handleDeleteChats = async () => {
+    try {
+      await chatDeletionUtils(); // ✅ Ensure async function completes
+      setConfirmDelete(false);
+      showToast("Chat deleted successfully! ✅");
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      showToast("❌ Failed to delete chat.");
+    }
   };
 
   const handleCancelSelect = () => {

@@ -1,7 +1,12 @@
+import { useState } from "react";
+import { MdKeyboardArrowDown } from "react-icons/md";
 import { useMessageSelectionStore, useUserStore } from "../../../../store";
-import { MdBlock, MdKeyboardArrowDown } from "react-icons/md";
 import SelectableCheckbox from "./SelectableCheckbox";
 import MessageTimestamp from "./MessageTimestamp";
+import MessageImage from "./MessageImage";
+import MessageText from "./MessageText";
+import BlurredImagePreview from "./BlurredImagePreview";
+import "./Message.css";
 
 const Message = ({ message, index, messages }) => {
   const { currentUser } = useUserStore();
@@ -9,23 +14,35 @@ const Message = ({ message, index, messages }) => {
     useMessageSelectionStore();
 
   const isOwnMessage = message.senderId === currentUser.userId;
-  const hasImage = message.img;
-  const hasText = message.text;
+  const hasImage = Boolean(message.img);
+  const hasText = Boolean(message.text);
   const hasImageAndText = hasImage && hasText;
 
+  const [imageLoading, setImageLoading] = useState(message?.img ? true : false);
+  const [imageError, setImageError] = useState(false);
+
+  // ✅ isSending flag Firebase se use karo
+  const isSending = message.isSending || false;
+
   const renderedText = renderMessage(message, currentUser);
-  const hasMessageText = renderedText;
-  const isDeletedMessage = message.isDeleted;
+  const isDeletedMessage = Boolean(message.isDeleted);
 
   const getMessageContainerClass = () =>
-    hasImageAndText ? "images" : hasImage ? "images" : "texts";
+    hasImageAndText
+      ? "image-container"
+      : hasImage
+      ? "image-container"
+      : "texts-container";
 
-  const getMessageTextStyle = () => ({
-    padding: hasText.split(" ").length >= 25 ? "4px 4px" : "0px",
-  });
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
 
-  const getMessageImageClass = () =>
-    `image-box ${!hasText ? "with-gradient" : ""}`;
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+  };
 
   const handelSelectedMessages = (e) => {
     e.stopPropagation();
@@ -57,36 +74,51 @@ const Message = ({ message, index, messages }) => {
       <div className="messageContainer">
         <div className={isOwnMessage ? "message own" : "message"}>
           {isFirstMessageOfSender && <span className="pointer"></span>}
+
           <div className="message-content">
             <div className="down-icon">
               <MdKeyboardArrowDown />
             </div>
+
             <div className={getMessageContainerClass()}>
-              {hasImage && (
-                <div className={getMessageImageClass()}>
-                  <img src={hasImage} alt="" />
-                </div>
+              {/* ✅ Show Blurred Preview while Image is Uploading */}
+              {isSending && hasImage && (
+                <BlurredImagePreview imgSrc={message.img} />
               )}
 
-              {hasMessageText && (
-                <div
-                  className={`message-text ${
-                    isDeletedMessage ? "deleteText" : ""
-                  }`}
-                  style={getMessageTextStyle()}
-                >
-                  <pre>
-                    {isDeletedMessage && <MdBlock />} {hasMessageText}
-                  </pre>
-                </div>
+              {/* ✅ Jab image upload ho jaye (isSending false ho), tab image show ho */}
+              {!isSending && hasImage && (
+                <MessageImage
+                  imageLoading={imageLoading}
+                  imageError={imageError}
+                  hasText={hasText}
+                  src={message.img}
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  message={message}
+                />
               )}
 
-              {/* Timestamp & Status */}
-              <MessageTimestamp
-                message={message}
-                isOwnMessage={isOwnMessage}
-                className={hasText ? "messageTimeStamp" : "imgMessageTimeStamp"}
-              />
+              {/* ✅ Render Message Text */}
+              {renderedText && (
+                <MessageText
+                  hasText={message.text}
+                  hasImageAndText={hasImageAndText}
+                  text={renderedText}
+                  isDeleted={isDeletedMessage}
+                />
+              )}
+
+              {/* ✅ Timestamp & Status */}
+              {(!imageLoading || isSending) && (
+                <MessageTimestamp
+                  message={message}
+                  isOwnMessage={isOwnMessage}
+                  className={
+                    hasText ? "messageTimeStamp" : "imgMessageTimeStamp"
+                  }
+                />
+              )}
             </div>
           </div>
         </div>
