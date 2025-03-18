@@ -3,14 +3,19 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import weekday from "dayjs/plugin/weekday";
+import localeData from "dayjs/plugin/localeData";
 import "dayjs/locale/en"; // English locale (optional)
 
 dayjs.extend(relativeTime);
 dayjs.extend(localizedFormat);
-dayjs.locale("en"); // Set locale to English
-
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+dayjs.locale("en"); // Set locale to English
 
 // Format Last Seen Time
 export const formatLastSeen = (lastSeen) => {
@@ -65,4 +70,22 @@ export const formatMessageTime = (timestamp) => {
 // ✅ Get the current date in "YYYY-MM-DD" format
 export const getFormattedDate = () => {
   return dayjs().format("YYYY-MM-DD");
+};
+
+// Chat Image Preview timeStamp
+export const formatChatImagePreviewTimestamp = (timestamp) => {
+  if (!timestamp) return "Unknown Time";
+
+  const date = dayjs(timestamp * 1000);
+  const now = dayjs();
+
+  if (date.isToday()) {
+    return `Today at ${date.format("h:mm A")}`;
+  } else if (date.isYesterday()) {
+    return `Yesterday at ${date.format("h:mm A")}`;
+  } else if (date.isSameOrAfter(now.subtract(1, "week"))) {
+    return `${date.format("dddd")} at ${date.format("h:mm A")}`;
+  } else {
+    return `${date.format("M/D/YYYY")} at ${date.format("h:mm A")}`;
+  }
 };

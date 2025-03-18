@@ -1,7 +1,9 @@
 .loader-box {
   position: relative;
-  width: 250px;
+  width: 300px;
   height: 250px;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 8px;
   overflow: hidden;
   background: var(--message_image_loader-color);

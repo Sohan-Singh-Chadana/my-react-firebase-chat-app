@@ -1,0 +1,54 @@
+.preview-content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--preview-header-color);
+  color: var(--text-color);
+  z-index: 1;
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 500;
+
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+
+      .message_timestamp {
+        font-weight: 400;
+        font-size: 12px;
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .actions-btn {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    button {
+      all: unset;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        fill: var(--side-menu-icon-color);
+      }
+    }
+  }
+}

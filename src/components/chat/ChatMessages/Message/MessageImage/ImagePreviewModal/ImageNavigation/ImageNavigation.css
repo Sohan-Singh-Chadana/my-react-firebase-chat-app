@@ -1,0 +1,54 @@
+.preview-container {
+  .preview-content {
+    button {
+      all: unset;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--preview-button-next-back-color);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* ✅ Soft shadow */
+      transition: all 0.3s ease-in-out; /* ✅ Smooth hover effect */
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #8e9194; /* ✅ Slightly darker on hover */
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* ✅ Stronger shadow on hover */
+    }
+
+    button:active {
+      transform: translateY(-50%) scale(0.95); /* ✅ Click effect */
+    }
+
+    button:disabled {
+      background-color: var(--preview-disabled-btn-color);
+      cursor: not-allowed;
+    }
+
+    button:disabled svg {
+      fill: var(--preview-button-next-back-color);
+    }
+
+    svg {
+      width: 25px;
+      height: 25px;
+      fill: #fff;
+      filter: brightness(1.2);
+    }
+
+    .nextBtn {
+      right: 25px; /* ✅ Added padding from the right */
+    }
+
+    .prevBtn {
+      left: 25px; /* ✅ Added padding from the left */
+    }
+  }
+}
