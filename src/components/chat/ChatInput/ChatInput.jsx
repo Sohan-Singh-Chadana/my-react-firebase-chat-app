@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import { MdEmojiEmotions } from "react-icons/md";
 import EmojiPicker from "emoji-picker-react";
-import "./ChatInput.css";
+import { isEmojiOnly } from "../../../utils/messages";
 import { useOutsideClick } from "../../../hooks";
+import "./ChatInput.css";
 
 const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
   //   const [text, setText] = useState("");
@@ -10,6 +11,7 @@ const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
 
   // const emojiRef = useRef(null);
   const textareaRef = useRef(null);
+  const onlyEmojis = isEmojiOnly(text);
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji); // Emoji ko text ke sath add karein
@@ -57,7 +59,7 @@ const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
         )}
       </div>
       <textarea
-        className="message-input"
+        className={`message-input ${onlyEmojis ? 'emoji-text' : ''}`}
         rows="1"
         placeholder={placeholder || "Type a message..."}
         value={text}

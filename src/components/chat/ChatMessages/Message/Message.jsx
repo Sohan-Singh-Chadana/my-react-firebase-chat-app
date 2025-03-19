@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useMessageSelectionStore, useUserStore } from "../../../../store";
+import { isEmojiOnly } from "../../../../utils/messages";
 import SelectableCheckbox from "./SelectableCheckbox";
 import MessageTimestamp from "./MessageTimestamp";
 import MessageImage from "./MessageImage";
@@ -26,13 +27,15 @@ const Message = ({ message, index, messages }) => {
 
   const renderedText = renderMessage(message, currentUser);
   const isDeletedMessage = Boolean(message.isDeleted);
+  const onlyEmojis = isEmojiOnly(renderedText);
 
-  const getMessageContainerClass = () =>
-    hasImageAndText
-      ? "image-container"
-      : hasImage
-      ? "image-container"
-      : "texts-container";
+  // ✅ Updated to handle emoji-only messages
+  const getMessageContainerClass = () => {
+    if (hasImageAndText) return "image-container";
+    if (hasImage) return "image-container";
+    if (onlyEmojis) return "emoji-container"; // ✅ Special class for emoji-only
+    return "texts-container";
+  };
 
   const handleImageLoad = () => {
     setImageLoading(false);
@@ -72,7 +75,11 @@ const Message = ({ message, index, messages }) => {
     >
       <SelectableCheckbox messageId={message.id} />
       <div className="messageContainer">
-        <div className={isOwnMessage ? "message own" : "message"}>
+        <div
+          className={`${isOwnMessage ? "message own" : "message"} ${
+            onlyEmojis ? "emoji-only" : ""
+          } `}
+        >
           {isFirstMessageOfSender && <span className="pointer"></span>}
 
           <div className="message-content">
@@ -109,14 +116,14 @@ const Message = ({ message, index, messages }) => {
                 />
               )}
 
-              {/* ✅ Timestamp & Status */}
+              {/* ✅ Timestamp & Status &  Emoji */}
               {(!imageLoading || isSending) && (
                 <MessageTimestamp
                   message={message}
                   isOwnMessage={isOwnMessage}
-                  className={
+                  className={`${
                     hasText ? "messageTimeStamp" : "imgMessageTimeStamp"
-                  }
+                  } ${onlyEmojis ? "emoji-timestamp" : ""}`}
                 />
               )}
             </div>

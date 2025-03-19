@@ -259,9 +259,9 @@ body {
     flex-direction: column;
     background-color: var(--sidebar-bg);
     transition: all 0.3s ease-in-out;
-    overflow-y: auto;
     position: relative;
     flex: 1;
+    /* overflow-y: auto; */
   }
 }
 
