@@ -16,7 +16,7 @@
 
 .messageTimeStamp {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   text-align: right;
   color: var(--text-secondary);
   align-self: flex-end;
@@ -40,6 +40,18 @@
   margin-left: 0;
 }
 
+.isLongTextWithImage {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0px 5px 0px 0px;
+  position: relative;
+
+  svg {
+    margin-bottom: 2px;
+  }
+}
+
 .imageWithTextTimeStamp {
   margin-bottom: 0;
   margin-top: 5px;
@@ -48,6 +60,25 @@
   right: 5px;
   bottom: 5px;
 }
+
 .onlyImageTextTimeStamp {
   color: var(--white-color);
 }
+
+/* ✅ Timestamp placement for emoji-only */
+.emoji-timestamp {
+  background-color: var(--bg-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 0;
+  margin-bottom: 5px;
+  align-self: unset;
+  text-align: left;
+  margin-top: -5px;
+}
+.own .emoji-timestamp {
+  background-color: var(--message-own-color);
+  padding: 2px 4px;
+}
+
+

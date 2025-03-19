@@ -104,7 +104,7 @@ const Chat = () => {
 
   // Typing status
   useTypingStatus(text);
-
+  
   const centerElementStyle = {
     ...getWallpaperColor(
       hoveredWallpaper,

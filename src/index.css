@@ -67,6 +67,14 @@
   --header-back-bg: var(--primary-color);
   --container-back-bg: #dbd8d4;
   --messageBox-bg: #e4e8e2;
+  --preview-header-color: var(--white-color);
+  --preview-content-footer-color: var(--white-color);
+  --image-preview-modal-chat: #fefefef5;
+  --image-box-color: #dfe3e7;
+  --fullscreen-overlay-color: #fefefef5;
+  --preview-button-next-back-color: #acafb2;
+  --preview-disabled-btn-color: #ecedee;
+  
 
   --text-color: var(--text-common-color);
   --text-secondary: #667781;
@@ -83,13 +91,14 @@
   --offlineAlert-text: var(--text-common-color);
   --delete-text: var(--three-lightgray-common-color);
   --toast-text-color: var(--text-common-color);
-  --message_image_loader-color: #f0f0f0 ;
+  --message_image_loader-color: #f0f0f0;
   --blurred-box_color: rgba(255, 255, 255, 1);
 
   --border-color: #d1d7db;
   --border-top-color: #dddddd35;
   --border-bottom-color: #ddd;
   --addUser-bottom-color: #f2f2f2;
+  --imageBox-active-border-color: var(--border-color);
 
   --hover-chatList: #f5f6f6;
   --hover-menu: #f0f0f0;
@@ -132,6 +141,13 @@
   --offlineAlert-icon: #f7bb37;
   --message_image_loader-color: #54656f;
   --blurred-box_color: rgba(13, 17, 22, 0.8);
+  --preview-header-color: var(--one-common-color);
+  --preview-content-footer-color: #111c22;
+  --image-preview-modal-chat: #101b22f9;
+  --image-box-color: var(--secondary-color);
+  --fullscreen-overlay-color: #101b22f9;
+  --preview-button-next-back-color: #5c6468;
+  --preview-disabled-btn-color: #1c272d;
 
   --text-color: var(--white-color);
   --text-secondary: var(--three-lightgray-common-color);
@@ -149,6 +165,7 @@
   --border-color: #2f3b43;
   --border-bottom-color: #222d34;
   --addUser-bottom-color: #3b3f4c;
+  --imageBox-active-border-color: #667781;
 
   --sidebar-bg: var(--one-common-color);
   --hover-chatList: var(--bg-blue-common-color);
@@ -242,9 +259,9 @@ body {
     flex-direction: column;
     background-color: var(--sidebar-bg);
     transition: all 0.3s ease-in-out;
-    overflow-y: auto;
     position: relative;
     flex: 1;
+    /* overflow-y: auto; */
   }
 }
 

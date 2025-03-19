@@ -4,8 +4,8 @@ import {
   useUnreadStore,
 } from "../../../../../store";
 import { formatTimestamp } from "../../../../../utils";
-import "./ChatInfo.css";
 import MessagePreview from "./MessagePreview";
+import "./ChatInfo.css";
 
 const ChatInfo = ({ chat, currentUser }) => {
   const { lastMessageData } = useLastMessageStore();
@@ -25,8 +25,7 @@ const ChatInfo = ({ chat, currentUser }) => {
 
   // ✅ Determine the message preview class
   const getMessagePreviewClass = () => {
-    const isDeleted = lastMessage?.isDeleted;
-    return `message-preview ${isDeleted ? "deleted" : ""}`;
+    return `message-preview`;
   };
 
   return (

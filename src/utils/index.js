@@ -34,3 +34,6 @@ export { default as showErrorToast } from "./Notification/showErrorToast";
 
 // ✅ Export Storage utilities
 export * from "./storageUtils";
+
+//Export ImagePreviewModal utilities
+export * from "./ImagePreviewModal/downloadUtils";

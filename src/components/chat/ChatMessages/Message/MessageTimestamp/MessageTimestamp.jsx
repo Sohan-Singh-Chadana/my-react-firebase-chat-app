@@ -15,9 +15,11 @@ const MessageTimestamp = ({ message, isOwnMessage, className }) => {
     <span
       className={
         isLongText
-          ? `${className} isLogTextTimeStamp`
+          ? `${className} ${
+              hasImageAndText ? "isLongTextWithImage" : "isLogTextTimeStamp"
+            }`
           : hasImageAndText
-          ? `${className} imageWithTextTimeStamp`
+          ? `${className} imageWithTextTimeStamp `
           : className
       }
     >

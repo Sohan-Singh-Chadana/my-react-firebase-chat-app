@@ -9,7 +9,7 @@ const BlurredImageDownload = ({
   imageLoading,
 }) => {
   return (
-    <div className="blurred-image-container" onClick={handleDownload}>
+    <div className="blurred-image-container" onClick={() => handleDownload(message.id)}>
       <img
         src={message.img}
         alt="Message"

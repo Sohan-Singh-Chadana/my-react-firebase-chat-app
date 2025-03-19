@@ -10,6 +10,19 @@ const useMessagesStore = create((set) => ({
     })),
 
   setLoading: (isLoading) => set({ isLoading }),
+
+  // ✅ Function to update a specific message
+  updateMessage: (chatId, messageId, updateFn) =>
+    set((state) => {
+      if (!state.messages[chatId]) return state;
+      
+      return {
+        messages: {
+          ...state.messages,
+          [chatId]: state.messages[chatId].map((msg) => msg.id === messageId ? updateFn(msg) : msg),
+        }
+      }
+    }),
 }));
 
 export default useMessagesStore;

@@ -1,3 +1,6 @@
+:root {
+  --transparent-bg: transparent;
+}
 .messageBox {
   display: flex;
   align-items: center;
@@ -15,7 +18,7 @@
 
     .message {
       width: fit-content;
-      max-width: 75%;
+      max-width: 70%;
       background-color: var(--bg-color);
       position: relative;
       border-radius: 0 10px 10px 10px;
@@ -48,10 +51,26 @@
         padding: 4px;
         position: relative;
         background-color: inherit;
+        max-width: 300px;
 
         p {
           margin-top: 16px;
         }
+      }
+
+      /* ✅ Emoji Only Message */
+      .emoji-container {
+        background-color: var(--transparent-bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ✅ Add special bg for emoji */
+      &.emoji-only {
+        background-color: transparent !important;
+        box-shadow: none;
       }
 
       .pointer {
@@ -76,12 +95,20 @@
         border-top: 0;
       }
 
+      &.emoji-only .pointer {
+        display: none;
+      }
+
       &.own .down-icon {
         background: linear-gradient(
           45deg,
           var(--message-own-color) 50%,
           transparent 80%
         );
+      }
+
+      &.emoji-only .down-icon {
+        background: transparent;
       }
 
       .down-icon {

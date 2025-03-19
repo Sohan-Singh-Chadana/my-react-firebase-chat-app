@@ -57,6 +57,7 @@ export const useMessageSender = () => {
           img: tempImgUrl,
           isSending: true,
           imgSize: imgSizeKB,
+          downloadedBy: [currentUserId]
         };
 
         // ✅ Add temp message to Firebase (with blurred preview)

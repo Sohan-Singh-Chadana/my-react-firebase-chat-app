@@ -28,6 +28,11 @@
     &:disabled {
       cursor: not-allowed;
     }
+
+    &.emoji-text {
+    font-size: 18px !important;
+    line-height: 1.4;
+  }
   }
 
   .emoji {
