@@ -76,7 +76,7 @@ const Message = ({ message, index, messages }) => {
       <SelectableCheckbox messageId={message.id} />
       <div className="messageContainer">
         <div
-          className={`${isOwnMessage ? "message own" : "message"} ${
+          className={`text-selection-allow ${isOwnMessage ? "message own" : "message"} ${
             onlyEmojis ? "emoji-only" : ""
           } `}
         >

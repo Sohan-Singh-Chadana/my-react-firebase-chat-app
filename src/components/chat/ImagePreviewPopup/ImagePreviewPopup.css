@@ -20,7 +20,7 @@
       height: 30px;
       cursor: pointer;
       color: var(--text-secondary);
-      margin-bottom: -8px;
+      margin-bottom: -4px;
     }
 
     .close {

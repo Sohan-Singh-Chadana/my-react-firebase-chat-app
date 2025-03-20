@@ -3,7 +3,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  /* font-family: "Poppins", sans-serif; */
 }
 
 ::-webkit-scrollbar {
@@ -74,7 +76,6 @@
   --fullscreen-overlay-color: #fefefef5;
   --preview-button-next-back-color: #acafb2;
   --preview-disabled-btn-color: #ecedee;
-  
 
   --text-color: var(--text-common-color);
   --text-secondary: #667781;
@@ -186,6 +187,30 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: all 0.3s ease-in-out;
+  -webkit-touch-callout: none; /* Disable callout in Safari */
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.text-selection-allow {
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.text-selection-not-allow {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* header style */

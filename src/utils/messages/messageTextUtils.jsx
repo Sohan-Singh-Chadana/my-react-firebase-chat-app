@@ -1,16 +1,33 @@
 // ✅ Utility to detect message type, emoji, and numbers
 export const detectMessageType = (text) => {
-  const emojiRegex = /[\p{Emoji}]/gu;
-  const hindiRegex = /[\u0900-\u097F]/; // Unicode for Hindi
-  const numberRegex = /\d/; // Number detection
-  const isEmojiOnly = text.replace(emojiRegex, "").trim().length === 0;
-  const hasEmoji = emojiRegex.test(text);
-  const hasNumbers = numberRegex.test(text);
-  const isHindi = hindiRegex.test(text);
+  const emojiRegex = /^[\p{Emoji}\s]+$/gu; // ✅ Detects only emoji or spaces
+  const mixedEmojiRegex = /[\p{Emoji}]/gu; // ✅ Detect emoji anywhere
+  const hindiRegex = /[\u0900-\u097F]/; // ✅ Detect Hindi characters
+  const numberRegex = /^\+?[0-9\s-]+$/; // ✅ Detect numbers, including +, -, and spaces
 
-  if (isEmojiOnly) return "emoji";
-  if (hasEmoji) return hasNumbers ? "mixed-number" : "mixed";
-  if (isHindi) return "hindi";
+  const trimmedText = text.trim();
+
+  // ✅ Check for only numbers
+  if (numberRegex.test(trimmedText)) {
+    return "english"; // ✅ Treat pure numbers as normal text
+  }
+
+  // ✅ Only emoji (with optional spaces)
+  if (emojiRegex.test(trimmedText)) {
+    return "emoji";
+  }
+
+  // ✅ Check for emojis mixed with text, but ignore numbers
+  if (mixedEmojiRegex.test(trimmedText) && !numberRegex.test(trimmedText)) {
+    return "mixed";
+  }
+
+  // ✅ Check if text is Hindi
+  if (hindiRegex.test(trimmedText)) {
+    return "hindi";
+  }
+
+  // ✅ Default to English if no emoji or Hindi
   return "english";
 };
 
@@ -24,7 +41,7 @@ export const formatMixedText = (text) => {
   return parts.flatMap((part, index) => [
     <span
       key={`text-${index}`}
-      className={`normal-text ${part.length >= 25 ? "bold-text" : ""}`} // ✅ Add bold for long text
+      className={`normal-text`} // ✅ Add bold for long text
     >
       {part}
     </span>,
@@ -40,4 +57,3 @@ export const formatMixedText = (text) => {
     ),
   ]);
 };
-

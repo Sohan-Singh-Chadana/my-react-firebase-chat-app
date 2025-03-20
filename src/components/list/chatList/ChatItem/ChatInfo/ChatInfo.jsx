@@ -28,10 +28,12 @@ const ChatInfo = ({ chat, currentUser }) => {
     return `message-preview`;
   };
 
+  const userNameText = getChatUserName(chat, currentUser);
+
   return (
     <div className="chat-info">
       <div className="chat-header">
-        <h4>{getChatUserName(chat, currentUser)}</h4>
+        <h4 title={userNameText}>{userNameText}</h4>
         <span className="time">{lastMessageTime || firstTimeChatAddTime}</span>
       </div>
 

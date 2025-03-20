@@ -54,7 +54,7 @@
       vertical-align: middle;
     }
 
-    .emoji-only-text {
+    .emoji-only-text .large-emoji{
       font-size: 24px; /* ✅ Increase size for only emoji messages */
       display: inline-block;
     }

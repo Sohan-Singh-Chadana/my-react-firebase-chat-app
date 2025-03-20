@@ -39,7 +39,7 @@ const Chat = () => {
 
   const { chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const { messages } = useMessagesStore();
-  const { sendMessage, text, setText, img, setImg, sendingImage } =
+  const { sendMessage, text, setText, img, setImg, sendingMessage } =
     useMessageSender();
   const { showCheckboxes } = useMessageSelectionStore();
   const { hoveredWallpaper, selectedWallpaper, showWallpaperImage } =
@@ -47,7 +47,6 @@ const Chat = () => {
   const chatMessages = messages[chatId] || [];
 
   const fileInputRef = useRef(null);
-  const textareaRef = useRef(null); // Create ref for textarea
 
   // fetch Messages
   useChatMessages();
@@ -75,10 +74,6 @@ const Chat = () => {
       console.error("❌ Message sending failed. Chat list update skipped.");
     }
 
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-
     if (!userScrolledUp.current) {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
     }
@@ -104,7 +99,7 @@ const Chat = () => {
 
   // Typing status
   useTypingStatus(text);
-  
+
   const centerElementStyle = {
     ...getWallpaperColor(
       hoveredWallpaper,
@@ -149,7 +144,7 @@ const Chat = () => {
             setText={setText}
             img={img}
             setImg={setImg}
-            sendingImage={sendingImage} // ✅ Pass sendingImage to ChatFooter
+            sendingMessage={sendingMessage} // ✅ Pass sendingMessage to ChatFooter
           />
         )}
 

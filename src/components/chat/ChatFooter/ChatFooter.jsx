@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { MdOutlineAdd } from "react-icons/md";
 import PopupMenu from "../PopupMenu";
@@ -16,10 +16,22 @@ const ChatFooter = ({
   setText,
   img,
   setImg,
-  sendingImage,
+  sendingMessage,
 }) => {
   const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const textareaRef = useRef(null);
+
+  const handleButtonClick = async () => {
+    // ✅ Now reset textarea height after message is sent
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+    setText("")
+
+    await handleSend(); // ✅ Wait for message to be sent
+  };
 
   const menuRef = useOutsideClick(
     () => setMenuOpen(false),
@@ -63,11 +75,16 @@ const ChatFooter = ({
             onChange={handleImg}
           />
 
-          <ChatInput onSend={handleSend} text={text} setText={setText} />
+          <ChatInput
+            onSend={handleButtonClick}
+            text={text}
+            setText={setText}
+            textareaRef={textareaRef}
+          />
           <SendButton
-            onClick={handleSend}
+            onClick={handleButtonClick}
             disabled={isCurrentUserBlocked || isReceiverBlocked}
-            hasContent={(text || img.file) && !sendingImage}
+            hasContent={(text || img.file) && !sendingMessage}
             className="sendButton"
           />
         </>

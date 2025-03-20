@@ -1,13 +1,15 @@
 @import url(https://fonts.googleapis.com/css?family=Noto+Sans+Devanagari:100,200,300,regular,500,600,700,800,900);
 
+:root{
+ --read-btn-color: #0c84f7;
+}
+
 .message-text {
   align-self: flex-start;
   font-weight: 400;
   color: var(--text-five);
   word-wrap: break-word;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
 
   &::-webkit-scrollbar {
@@ -39,7 +41,7 @@
   /* ✅ Mixed text with emoji */
   &.mixed-text {
     font-size: 16px;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
   }
 
   /* ✅ Hindi or other native languages (smaller size) */
@@ -57,11 +59,19 @@
   }
 
   &.medium-long-text {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   &.image-text {
     padding-top: 12px;
+  }
+  &.number-text{
+    font-size: 16px;
+    font-weight: 400 !important;
+  }
+  /* ✅ Bold for long messages */
+  &.bold-text {
+    font-weight: 500 !important;
   }
 
   pre {
@@ -77,22 +87,22 @@
   /* ✅ Normal emoji with numbers */
   .normal-emoji {
     font-size: 16px;
+    font-weight: 400;
     line-height: 1.4;
   }
 
   /* ✅ Normal text size in mixed text */
   .normal-text {
     font-size: 16px;
+    font-weight: 400;
     line-height: 1.4;
   }
 
-  /* ✅ Bold for long messages */
-  .bold-text {
-    font-weight: 500 !important;
-  }
+  
+  
 
   .read-more-btn {
-    color: #0c84f7;
+    color: var(--read-btn-color);
     font-size: 13px;
     background: none;
     border: none;

@@ -5,12 +5,18 @@ import { isEmojiOnly } from "../../../utils/messages";
 import { useOutsideClick } from "../../../hooks";
 import "./ChatInput.css";
 
-const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
+const ChatInput = ({
+  onSend,
+  text,
+  setText,
+  placeholder = "",
+  textareaRef = null,
+}) => {
   //   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
 
   // const emojiRef = useRef(null);
-  const textareaRef = useRef(null);
+
   const onlyEmojis = isEmojiOnly(text);
 
   const handleEmoji = (e) => {
@@ -28,14 +34,14 @@ const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSend(text);
+      onSend();
       setText("");
-
-      // Reset textarea height
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
     }
+  };
+
+  const handleOnInput = (e) => {
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
   };
 
   const emojiRef = useOutsideClick(() => setOpen(false), open, ".emoji");
@@ -59,15 +65,12 @@ const ChatInput = ({ onSend, text, setText, placeholder = "" }) => {
         )}
       </div>
       <textarea
-        className={`message-input ${onlyEmojis ? 'emoji-text' : ''}`}
+        className={`message-input ${onlyEmojis ? "emoji-text" : ""}`}
         rows="1"
         placeholder={placeholder || "Type a message..."}
         value={text}
         onChange={handleInputChange}
-        onInput={(e) => {
-          e.target.style.height = "auto";
-          e.target.style.height = e.target.scrollHeight + "px";
-        }}
+        onInput={handleOnInput}
         onKeyDown={handleKeyPress}
         ref={textareaRef}
       />

@@ -25,12 +25,26 @@ const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
   const getMessageTextClass = () => {
     let classes = "";
 
-    if (hasText.split(" ").length >= 25) {
-      classes += "long-text ";
-    }
+    const wordCount = hasText.split(" ").length;
+    const textLength = hasText.length;
 
-    if(hasText.split(" ").length >= 10) {
-      classes += "medium-long-text ";
+    // ✅ Check for Hindi characters (Devanagari script)
+    const isHindiText = /[\u0900-\u097F]/.test(hasText);
+
+    // ✅ Detect numbers correctly now
+    const numberRegex = /^\+?[0-9\s-]+$/; // ✅ Check for numbers, including +, -
+    const hasNumbers = numberRegex.test(hasText.trim());
+
+    const longTextLimit = isHindiText ? 180 : 120; // Higher limit for Hindi
+    const mediumTextLimit = isHindiText ? 100 : 60; // Higher limit for Hindi
+
+    // ✅ Check for long text if word count >= 25 or text length > threshold
+    if (wordCount >= 25 || textLength > longTextLimit) {
+      classes += "long-text bold-text ";
+    }
+    // ✅ Check for medium-long text if word count >= 12 or text length > threshold
+    else if (wordCount >= 12 || textLength > mediumTextLimit) {
+      classes += "medium-long-text bold-text ";
     }
 
     if (hasImageAndText) {
@@ -44,6 +58,11 @@ const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
       classes += " hindi-text";
     } else if (messageType === "mixed") {
       classes += " mixed-text";
+    }
+
+    // ✅ Treat numbers like normal text (default to message-text class)
+    else if (hasNumbers) {
+      classes += "number-text"; // ✅ Treat numbers as normal text
     }
 
     return classes.trim();
@@ -60,18 +79,16 @@ const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
         {isExpanded || !shouldTruncate ? (
           messageType === "mixed" || messageType === "mixed-number" ? (
             formatMixedText(text)
-          ) : text.length >= 25 ? (
-            <span className="bold-text">{text}</span>
           ) : (
             <span>{text}</span>
           )
         ) : messageType === "mixed" || messageType === "mixed-number" ? (
-          formatMixedText(`${text.slice(0, maxTextLength)}...`)
+          formatMixedText(`${text.slice(0, maxTextLength)} ...`)
         ) : text.length >= 25 ? (
-          <span className="bold-text">{text.slice(0, maxTextLength)}...</span>
+          <span>{text.slice(0, maxTextLength)} ...</span>
         ) : (
-          `${text.slice(0, maxTextLength)}...`
-        )}{" "}
+          `${text.slice(0, maxTextLength)} ...`
+        )}
         {/* ✅ Show "Read More" or "Read Less" */}
         {shouldTruncate && !isExpanded && (
           <button className="read-more-btn" onClick={toggleExpand}>

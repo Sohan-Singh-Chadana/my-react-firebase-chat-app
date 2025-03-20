@@ -4,7 +4,6 @@ import {
   collection,
   deleteField,
   doc,
-  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/firebase/firebase";
@@ -14,7 +13,7 @@ import { getFormattedDate, updateUnreadCount, upload } from "../../utils";
 export const useMessageSender = () => {
   const [text, setText] = useState("");
   const [img, setImg] = useState({ file: null, url: "" });
-  const [sendingImage, setSendingImage] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   const { chatId, user } = useChatStore.getState();
   const { currentUser } = useUserStore.getState();
@@ -38,9 +37,9 @@ export const useMessageSender = () => {
       const timestamp = new Date();
       const formattedDate = getFormattedDate();
 
-      if (img.file) {
-        setSendingImage(true);
+      setSendingMessage(true);
 
+      if (img.file) {
         // ✅ Calculate image size in KB
         const imgSizeKB = (img.file.size / 1024).toFixed(1);
 
@@ -57,7 +56,7 @@ export const useMessageSender = () => {
           img: tempImgUrl,
           isSending: true,
           imgSize: imgSizeKB,
-          downloadedBy: [currentUserId]
+          downloadedBy: [currentUserId],
         };
 
         // ✅ Add temp message to Firebase (with blurred preview)
@@ -88,19 +87,8 @@ export const useMessageSender = () => {
         };
 
         await addDoc(messagesRef, newMessage);
-
         await updateUnreadCount(chatId, receiverId, currentUserId);
       }
-
-      // const docRef = await addDoc(messagesRef, newMessage);
-      // messageId = docRef.id; // ✅ Firebase se message ID le lo
-
-      // // ✅ Ab Firebase me "isSending: false" update karo (upload complete hone ke baad)
-      // if (messageId) {
-      //   await updateDoc(doc(db, "chats", chatId, "messages", messageId), {
-      //     isSending: false,
-      //   });
-      // }
 
       await updateDoc(chatRef, {
         [`deletedAt.${currentUserId}`]: deleteField(),
@@ -109,13 +97,13 @@ export const useMessageSender = () => {
 
       setImg({ file: null, url: "" });
       setText("");
-      setSendingImage(false); // ✅ Stop loading spinner
+      setSendingMessage(false); // ✅ Stop loading spinner
 
       //   console.log(`✅ Message sent to ${user.name}`);
       return true;
     } catch (err) {
       console.error("❌ Error sending message:", err);
-      setSendingImage(false); // ✅ Stop loading spinner
+      setSendingMessage(false); // ✅ Stop loading spinner
       return false;
     }
   };
@@ -126,6 +114,6 @@ export const useMessageSender = () => {
     setText,
     img,
     setImg,
-    sendingImage,
+    sendingMessage,
   };
 };
