@@ -25,7 +25,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        max-width: 90vw;
+        max-width: 80vw;
         max-height: 80vh;
         margin: 0 auto;
 
@@ -49,10 +49,10 @@
         }
 
         .caption-text {
-          font-size: 16px;
+          font-size: 0.9rem;
           font-weight: 400;
           color: var(--text-secondary);
-          text-align: center;
+          margin-top: 8px;
         }
       }
 
@@ -61,7 +61,7 @@
       }
 
       .preview-image.has-caption figure {
-        max-height: 75vh;
+        max-height: 70vh;
       }
     }
   }

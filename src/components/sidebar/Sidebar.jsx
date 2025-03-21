@@ -1,14 +1,13 @@
 import { MdChat, MdSettings } from "react-icons/md";
-import List from "../list/List";
-import "./sidebar.css";
 import { IoSettingsOutline } from "react-icons/io5";
 import { BsChatLeftText } from "react-icons/bs";
+import { useUserStore, useVisibleComponentStore } from "../../store";
+import List from "../list/List";
 import Settings from "./Setting";
 import Profile from "./Profile";
-import { useUserStore, useVisibleComponentStore } from "../../store";
+import "./sidebar.css";
 
-
-export const Sidebar = () => {
+const Sidebar = () => {
   const { currentUser } = useUserStore();
   const { visibleComponent, toggleComponent } = useVisibleComponentStore();
   const { list, settings, profile } = visibleComponent;
@@ -48,3 +47,5 @@ export const Sidebar = () => {
     </div>
   );
 };
+
+export default Sidebar;

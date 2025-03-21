@@ -7,6 +7,8 @@
   border-bottom: 1px solid var(--border-bottom-color);
   position: relative;
   transition: all 0.2s ease-in-out;
+  height: 72px;
+  gap: 5px;
 
   .chat-header {
     display: flex;
@@ -54,14 +56,15 @@
       vertical-align: middle;
     }
 
-    .emoji-only-text {
+    .emoji-only-text .large-emoji {
       font-size: 24px; /* ✅ Increase size for only emoji messages */
       display: inline-block;
     }
   }
 
-  .message-preview.messagePadding {
-    padding: 8px 0px;
+  .message-preview.noLastMsg {
+    /* padding: 8px 0px; */
+    height: 17px;
   }
 
   .deleted {

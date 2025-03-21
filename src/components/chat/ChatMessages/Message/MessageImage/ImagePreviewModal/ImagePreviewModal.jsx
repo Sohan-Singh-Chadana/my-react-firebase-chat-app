@@ -25,6 +25,21 @@ const ImagePreviewModal = ({
     setImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  const handlePreviewClose = (e) => {
+    // ✅ Check if the target is the container or the preview image
+    if (
+      e.target === e.currentTarget ||
+      e.target.classList.contains("preview-image")
+    ) {
+      setIsPreviewOpen(false);
+    }
+  };
+
+  const handleImageZoomOpen = (e) => {
+    e.stopPropagation(); // ✅ Stop closing when clicking the image
+    setIsZoomModalOpen(true);
+  };
+
   const captionText = currentImage?.text;
 
   return (
@@ -35,33 +50,21 @@ const ImagePreviewModal = ({
           setIsPreviewOpen={setIsPreviewOpen}
         />
 
-        <div
-          className="preview-content"
-          onClick={(e) => {
-            if (
-              e.target === e.currentTarget ||
-              e.target.classList.contains("preview-image")
-            ) {
-              setIsPreviewOpen(false);
-            }
-          }}
-        >
+        <div className="preview-content" onClick={handlePreviewClose}>
           <div
             className={`preview-image ${captionText ? "has-caption" : ""}`}
             onClick={() => setIsPreviewOpen(false)}
           >
             <figure>
               <img
-                // src={src}
                 src={currentImage.img}
                 alt="Preview"
-                onClick={(e) => {
-                  e.stopPropagation(); // ✅ Stop closing when clicking the image
-                  setIsZoomModalOpen(true);
-                }}
+                onClick={handleImageZoomOpen}
               />
             </figure>
-            <span className="caption-text">{captionText}</span>
+            <span className="caption-text text-selection-not-allow">
+              {captionText}
+            </span>
           </div>
 
           {/* ✅ Previous/Next Buttons */}

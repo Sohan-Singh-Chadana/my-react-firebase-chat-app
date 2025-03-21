@@ -3,3 +3,14 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.no-chats{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  height: 50vh;
+  font-size: 16px;
+  color: var(--text-five);
+}

@@ -1,7 +1,7 @@
 import { MdClose } from "react-icons/md";
 import ChatInput from "../ChatInput";
-import "./ImagePreviewPopup.css";
 import SendButton from "../SendButton";
+import "./ImagePreviewPopup.css";
 
 const ImagePreviewPopup = ({
   img,
@@ -12,6 +12,11 @@ const ImagePreviewPopup = ({
   isCurrentUserBlocked,
   isReceiverBlocked,
 }) => {
+  const handleSendButtonClick = async () => {
+    setText("");
+    await onSend(); // ✅ Wait for message to be sent
+  };
+
   return (
     <div className="image-preview">
       <div className="image-preview-container">
@@ -20,13 +25,13 @@ const ImagePreviewPopup = ({
           <img src={img.url} alt="" />
         </div>
         <ChatInput
-          onSend={onSend}
+          onSend={handleSendButtonClick}
           text={text}
           setText={setText}
           placeholder="Add a caption..."
         />
         <SendButton
-          onClick={onSend}
+          onClick={handleSendButtonClick}
           disabled={isCurrentUserBlocked || isReceiverBlocked}
           hasContent={text || img.file}
           className="MediaSendBtn"

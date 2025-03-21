@@ -17,7 +17,7 @@
 .searchBar input {
   width: inherit;
   font-size: 16px;
-  padding: 5px;
+  padding: 10px;
   background: transparent;
   color: var(--text-color);
   border: 0;
@@ -37,6 +37,6 @@
   padding: 0;
 
   svg{
-    margin-bottom: -8px;
+    margin-bottom: -5px;
   }
 }

@@ -20,7 +20,7 @@
       height: 30px;
       cursor: pointer;
       color: var(--text-secondary);
-      margin-bottom: -8px;
+      margin-bottom: -4px;
     }
 
     .close {
@@ -32,6 +32,7 @@
 
     .image {
       width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -39,8 +40,8 @@
       img {
         width: auto;
         height: auto;
-        max-width: 80%;
-        max-height: 50vh;
+        max-width: 90%;
+        max-height: 60vh;
         object-fit: contain;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 5px;
       }
