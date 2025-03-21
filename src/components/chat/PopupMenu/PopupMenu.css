@@ -1,6 +1,11 @@
+:root {
+  --attachment-type-photos-color: #007bfc;
+  --attachment-type-documents-color: #8377fd;
+  --attachment-type-camera-color: #e85873;
+}
 .popup-menu {
   position: absolute;
-  bottom: 50px;
+  bottom: 70px;
   left: 0;
   z-index: 10;
   background-color: var(--menu-bg-color);
@@ -57,8 +62,8 @@
       }
 
       svg {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         margin-bottom: -5px;
         color: var(--text-six);
       }

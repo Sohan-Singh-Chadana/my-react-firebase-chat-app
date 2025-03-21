@@ -1,7 +1,7 @@
 import { MdClose } from "react-icons/md";
 import ChatInput from "../ChatInput";
-import "./ImagePreviewPopup.css";
 import SendButton from "../SendButton";
+import "./ImagePreviewPopup.css";
 
 const ImagePreviewPopup = ({
   img,

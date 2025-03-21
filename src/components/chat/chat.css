@@ -1,3 +1,10 @@
+:root {
+  --topToBottomBtn-bg-color: #ffffff;
+}
+[data-theme="dark"]{
+  --topToBottomBtn-bg-color: #202c33;
+}
+
 .chat {
   position: relative;
 
@@ -12,10 +19,10 @@
     .topToBottomBtn {
       all: unset;
       position: absolute;
-      bottom: 80px;
+      bottom: 100px;
       right: 10px;
       border-radius: 50%;
-      background-color: var(--bg-secondary);
+      background-color: var(--topToBottomBtn-bg-color);
       width: 0px;
       height: 0px;
       display: flex;

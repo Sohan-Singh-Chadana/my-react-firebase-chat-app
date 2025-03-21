@@ -13,7 +13,7 @@ const ChatInfo = ({ chat, currentUser }) => {
   const { chatId } = useChatStore();
 
   const lastMessage = lastMessageData?.[chat.chatId];
-  const lastMessageTime = formatTimestamp(lastMessage?.timestamp?.seconds);
+  const lastMessageTime = formatTimestamp(lastMessageData?.[chat.chatId]?.timestamp?.seconds);
   const firstTimeChatAddTime = formatTimestamp(chat.updatedAt?.seconds);
 
   // ✅ Get chat user name (handle blocked users)
@@ -30,6 +30,8 @@ const ChatInfo = ({ chat, currentUser }) => {
 
   const userNameText = getChatUserName(chat, currentUser);
 
+  console.log(lastMessage)
+
   return (
     <div className="chat-info">
       <div className="chat-header">
@@ -39,7 +41,7 @@ const ChatInfo = ({ chat, currentUser }) => {
 
       <p
         className={`${getMessagePreviewClass()} ${
-          chat.lastMessage ? "" : "messagePadding"
+          lastMessageData?.[chat.chatId] ? "" : "noLastMsg"
         }`}
       >
         <MessagePreview lastMessage={lastMessage} currentUser={currentUser} />

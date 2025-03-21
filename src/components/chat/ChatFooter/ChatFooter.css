@@ -15,15 +15,13 @@
   z-index: 1;
   width: 100%;
 
-  svg {
-    margin-bottom: 0px;
-  }
+  
   svg {
     width: 30px;
     height: 30px;
     cursor: pointer;
     color: var(--text-secondary);
-    /* margin-bottom: -8px; */
+    margin-bottom: 4px;
   }
 
   .icons {

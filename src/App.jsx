@@ -1,15 +1,8 @@
-import Chat from "./components/chat/Chat";
-import Detail from "./components/detail/Detail";
-import Login from "./components/auth/login/Login";
-import Notification from "./components/notification/Notification";
-import Home from "./components/home/Home";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-
-import { Sidebar } from "./components/sidebar/Sidebar";
 import { auth } from "./lib/firebase/firebase";
 import { setUserOffline, setUserOnline } from "./services/userStatusService";
-import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/WallpaperPreview";
+
 import {
   useChatStore,
   useGlobalStateStore,
@@ -18,6 +11,14 @@ import {
   useUserStore,
 } from "./store";
 import { markAllMessagesAsSent } from "./utils";
+
+import Chat from "./components/chat/Chat";
+import Detail from "./components/detail/Detail";
+import Login from "./components/auth/login/Login";
+import Notification from "./components/notification/Notification";
+import Home from "./components/home/Home";
+import Sidebar from "./components/sidebar/Sidebar";
+import WallpaperPreview from "./components/sidebar/Setting/ChatSetting/WallpaperPreview";
 
 const App = () => {
   const { currentUser, isLoading } = useUserStore();

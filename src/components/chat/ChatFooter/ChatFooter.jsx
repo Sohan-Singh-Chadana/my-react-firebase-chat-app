@@ -28,7 +28,7 @@ const ChatFooter = ({
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-    setText("")
+    setText("");
 
     await handleSend(); // ✅ Wait for message to be sent
   };
@@ -40,14 +40,31 @@ const ChatFooter = ({
   );
 
   const handleImg = (e) => {
-    if (e.target.files[0]) {
+    const file = e.target.files[0];
+
+    // ✅ Allowed File Types: Images + Videos
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/webp",
+      "image/gif",
+      "video/mp4",
+      "video/quicktime", // .mov
+      "video/x-msvideo", // .avi
+    ];
+
+    if (file && allowedTypes.includes(file.type)) {
       setImg({
-        file: e.target.files[0],
-        url: URL.createObjectURL(e.target.files[0]),
+        file: file,
+        url: URL.createObjectURL(file),
       });
 
       // ✅ Reset file input to allow selecting the same file again
       e.target.value = "";
+    } else {
+      alert("❌ Only images are allowed!"); // ❗ Alert for invalid files
+      e.target.value = ""; // ❌ Reset input value
     }
   };
 
@@ -73,6 +90,7 @@ const ChatFooter = ({
             ref={fileInputRef}
             style={{ display: "none" }}
             onChange={handleImg}
+            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp, video/mp4, video/quicktime, video/x-msvideo"
           />
 
           <ChatInput

@@ -42,10 +42,9 @@
       background: var(--bg-secondary);
       color: var(--text-secondary);
       padding: 7px 15px;
-      font-weight: 500;
       cursor: pointer;
       border-radius: 25px;
-      font-size: smaller;
+      font-size: 14px;
       font-weight: 500;
 
       &:hover {

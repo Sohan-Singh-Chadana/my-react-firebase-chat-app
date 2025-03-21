@@ -30,13 +30,19 @@
     }
 
     &.emoji-text {
-    font-size: 18px !important;
-    line-height: 1.4;
-  }
+      font-size: 18px !important;
+      line-height: 1.4;
+    }
   }
 
   .emoji {
     position: relative;
+
+    svg {
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+    }
 
     .picker {
       position: absolute;
@@ -46,9 +52,10 @@
   }
 }
 
+/* use the image preview style for the image input */
 .image-preview .input-box {
   margin-top: 48px;
-  width: 90%;
+  width: 100%;
   padding: 0 12px;
   margin-inline: auto;
   align-items: center;
@@ -56,12 +63,14 @@
   .message-input {
     width: 100%;
     color: var(--text-color);
+    padding: 12px 0px;
   }
 }
 
+/* user this main input style */
 .bottom .input-box {
   align-items: center;
-  padding: 0 12px;
+  padding: 8px 12px;
 
   .emoji {
     align-self: flex-end;

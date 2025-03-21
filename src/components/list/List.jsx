@@ -1,5 +1,5 @@
-import ChatList from "./chatList/ChatList";
 import ChatListHeader from "./chatListHeader/ChatListHeader";
+import ChatList from "./chatList/ChatList";
 import "./list.css";
 
 const List = () => {
