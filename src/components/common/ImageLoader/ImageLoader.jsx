@@ -5,12 +5,17 @@ const ImageLoader = ({
   height = "100px",
   spinnerSize = "24px",
   borderRadius = "50%",
+  className = "",
+  classNameSpinner = "",
 }) => {
   return (
-    <div className="image-container-loader" style={{ width, height, borderRadius }}>
-      <div className="loading-spinner">
+    <div
+      className="image-container-loader"
+      style={{ width, height, borderRadius }}
+    >
+      <div className={`loading-spinner ${className}`}>
         <span
-          className="spinner"
+          className={`spinner ${classNameSpinner}`}
           style={{ width: spinnerSize, height: spinnerSize }}
         ></span>
       </div>

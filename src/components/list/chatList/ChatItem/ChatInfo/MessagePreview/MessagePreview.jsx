@@ -1,53 +1,59 @@
-import { MdBlock, MdPhoto } from "react-icons/md";
+import { MdBlock } from "react-icons/md";
 import { getStatusIcon, isEmojiOnly } from "../../../../../../utils/messages";
+import { FaCamera, FaFileAlt, FaVideo } from "react-icons/fa";
 
 // ✅ Wrap emojis in span for larger font size
 const formatEmojisInText = (text) => {
-  const emojiRegex = /[\p{Emoji}]/gu;
-  const numberRegex = /^[0-9\s+-.]+$/; // ✅ Detects only numbers and valid chars
+  const emojiRegex = /\p{Extended_Pictographic}/gu; // ✅ Emojis only
+  const numberRegex = /^[0-9\s+-.]+$/; // ✅ Pure number strings only
+  const mixedNumberRegex = /[0-9]+/g; // ✅ Detect numbers anywhere in the text
 
-  // ✅ Check if the text is only numbers or numeric characters
-  const isOnlyNumbers = numberRegex.test(text.trim());
-
-  // ✅ Handle numbers separately
-  if (isOnlyNumbers) {
+  // ✅ Check if the whole text is only numbers (pure numeric string)
+  if (numberRegex.test(text.trim())) {
     return (
-      <span key="number-text" className="normal-text">
+      <span key="number-text" className="number-text">
         {text}
       </span>
     );
   }
 
-  // ✅ Check for only emojis without any text or numbers
-  const cleanedText = text.replace(/[0-9\s+-.]/g, "").trim();
-  const onlyEmojis = cleanedText.replace(emojiRegex, "").trim().length === 0;
+  // ✅ Split text properly into parts (numbers, emojis, and text)
+  const parts = splitWithEmojisAndMixedNumbers(text);
 
-  if (onlyEmojis && cleanedText.length > 0) {
-    // ✅ Render only emojis with no extra text
-    return cleanedText.match(emojiRegex)?.map((emoji, index) => (
-      <span key={`emoji-${index}`} className="large-emoji">
-        {emoji}
-      </span>
-    ));
-  }
-
-  // ✅ Split text with emoji regex and get emoji parts
-  const parts = text.split(emojiRegex);
-  const emojis = text.match(emojiRegex) || [];
-
-  return parts.flatMap((part, index) => [
-    part && (
-      <span key={`text-${index}`} className="normal-text">
-        {part}
-      </span>
-    ),
-    emojis[index] && (
-      <span key={`emoji-${index}`} className="large-emoji">
-        {emojis[index]}
-      </span>
-    ),
-  ]);
+  // ✅ Correctly map through parts and apply respective classes
+  return parts.map((part, index) => {
+    if (emojiRegex.test(part)) {
+      // 🎉 Emoji part
+      return (
+        <span key={`emoji-${index}`} className="large-emoji">
+          {part}
+        </span>
+      );
+    } else if (mixedNumberRegex.test(part.trim()) && !isNaN(part.trim())) {
+      // 🔢 Properly handle numeric part (number-text)
+      return (
+        <span key={`number-${index}`} className="number-text">
+          {part}
+        </span>
+      );
+    } else {
+      // 📚 Normal text part
+      return (
+        <span key={`text-${index}`} className="normal-text">
+          {part}
+        </span>
+      );
+    }
+  });
 };
+
+// ✅ Enhanced splitting function that handles text, numbers, and emojis properly
+const splitWithEmojisAndMixedNumbers = (text) => {
+  const regex = /(\p{Extended_Pictographic}+|[0-9]+(?:\.\d+)?|[^\p{Extended_Pictographic}0-9]+)/gu;
+  return text.match(regex) || [];
+};
+
+
 
 const MessagePreview = ({ lastMessage, currentUser }) => {
   // ✅ Updated getLastMessageText to return JSX properly
@@ -92,6 +98,23 @@ const MessagePreview = ({ lastMessage, currentUser }) => {
       return formatEmojisInText(truncatedText);
     }
 
+    // ✅ Handle document or  attachments
+    if (message?.docName) {
+      const truncatedDocName =
+        message.docName.length > 40
+          ? message.docName.slice(0, 40) + "..."
+          : message.docName;
+
+      return (
+        <>
+          <FaFileAlt style={{ marginRight: "0px" }} />
+          <span className="attachment-text" title={message.docName}>
+            {truncatedDocName}
+          </span>
+        </>
+      );
+    }
+
     // ✅ Handle space-separated words (fallback for mixed content)
     const words = messageText.split(/\s+/);
     const truncatedText =
@@ -131,13 +154,28 @@ const MessagePreview = ({ lastMessage, currentUser }) => {
     );
   }
 
-  if (lastMessage?.img) {
+  if (lastMessage?.docUrl) {
     return (
       <>
         {getLastMessageStatusIcon()}
-        <span>
-          <MdPhoto style={{ marginRight: "0px" }} /> Photo
-        </span>
+        {getLastMessageText()}
+      </>
+    );
+  }
+
+  if (lastMessage?.media) {
+    return (
+      <>
+        {getLastMessageStatusIcon()}
+        {lastMessage.mediaType === "image" ? (
+          <span title="Photo">
+            <FaCamera style={{ marginRight: "0px" }} /> Photo
+          </span>
+        ) : lastMessage.mediaType === "video" ? (
+          <span title="Video">
+            <FaVideo style={{ marginRight: "0px" }} /> Video
+          </span>
+        ) : null}
       </>
     );
   }

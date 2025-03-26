@@ -9,13 +9,17 @@ import { useOutsideClick } from "../../../hooks";
 import "./ChatFooter.css";
 
 const ChatFooter = ({
-  handleImagePreview,
-  fileInputRef,
+  handleMediaPreview,
+  handleDocumentPreview,
+  fileInputMediaRef,
+  fileInputDocumentRef,
   handleSend,
   text,
   setText,
-  img,
-  setImg,
+  media,
+  setMedia,
+  document,
+  setDocument,
   sendingMessage,
 }) => {
   const { user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
@@ -39,8 +43,10 @@ const ChatFooter = ({
     ".mdOutlineAdd"
   );
 
-  const handleImg = (e) => {
+  const handleMediaChange = (e) => {
     const file = e.target.files[0];
+
+    if (!file) return;
 
     // ✅ Allowed File Types: Images + Videos
     const allowedTypes = [
@@ -55,17 +61,39 @@ const ChatFooter = ({
     ];
 
     if (file && allowedTypes.includes(file.type)) {
-      setImg({
-        file: file,
+      const fileType = file.type.split("/")[0];
+
+      setMedia({
+        file,
         url: URL.createObjectURL(file),
+        type: fileType,
       });
 
-      // ✅ Reset file input to allow selecting the same file again
-      e.target.value = "";
+      // console.log(`✅ ${fileType} selected: ${file.name}`);
     } else {
-      alert("❌ Only images are allowed!"); // ❗ Alert for invalid files
-      e.target.value = ""; // ❌ Reset input value
+      alert("❌ Invalid file type! Only images and videos are allowed.");
     }
+
+    // ✅ Reset file input to allow selecting the same file again
+    e.target.value = "";
+  };
+
+  const handleDocumentChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // ✅ Get file extension safely
+    // const fileExtension = file.name.split(".").pop().toLowerCase();
+
+    // ✅ Create a preview URL for all file types
+    setDocument({
+      file,
+      url: URL.createObjectURL(file), // ✅ Create URL for preview/download
+      name: file.name,
+    });
+
+    // ✅ Reset file input to allow selecting the same file again
+    e.target.value = "";
   };
 
   return (
@@ -79,7 +107,8 @@ const ChatFooter = ({
             />
 
             <PopupMenu
-              onImagePreview={handleImagePreview}
+              onMediaPreview={handleMediaPreview}
+              onDocumentPreview={handleDocumentPreview}
               menuRef={menuRef}
               menuOpen={menuOpen}
             />
@@ -87,10 +116,18 @@ const ChatFooter = ({
 
           <input
             type="file"
-            ref={fileInputRef}
+            ref={fileInputMediaRef}
             style={{ display: "none" }}
-            onChange={handleImg}
-            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp, video/mp4, video/quicktime, video/x-msvideo"
+            onChange={handleMediaChange}
+            accept="image/*,video/*"
+          />
+
+          <input
+            type="file"
+            ref={fileInputDocumentRef}
+            accept="*" // ✅ Allow all file types
+            onChange={handleDocumentChange}
+            style={{ display: "none" }}
           />
 
           <ChatInput
@@ -102,7 +139,9 @@ const ChatFooter = ({
           <SendButton
             onClick={handleButtonClick}
             disabled={isCurrentUserBlocked || isReceiverBlocked}
-            hasContent={(text || img.file) && !sendingMessage}
+            hasContent={
+              (text || media.file || document.file) && !sendingMessage
+            }
             className="sendButton"
           />
         </>
@@ -117,16 +156,25 @@ const ChatFooter = ({
 
 // Props validation
 ChatFooter.propTypes = {
-  handleImagePreview: PropTypes.func.isRequired,
-  fileInputRef: PropTypes.object.isRequired,
+  handleMediaPreview: PropTypes.func.isRequired,
+  handleDocumentPreview: PropTypes.func.isRequired,
+  fileInputMediaRef: PropTypes.object.isRequired,
+  fileInputDocumentRef: PropTypes.object.isRequired,
   handleSend: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
   setText: PropTypes.func.isRequired,
-  img: PropTypes.shape({
+  media: PropTypes.shape({
     file: PropTypes.object,
     url: PropTypes.string,
+    type: PropTypes.string,
   }).isRequired,
-  setImg: PropTypes.func.isRequired,
+  setMedia: PropTypes.func.isRequired,
+  document: PropTypes.shape({
+    file: PropTypes.object,
+    url: PropTypes.string,
+    name: PropTypes.string,
+  }).isRequired,
+  setDocument: PropTypes.func.isRequired,
 };
 
 export default memo(ChatFooter);

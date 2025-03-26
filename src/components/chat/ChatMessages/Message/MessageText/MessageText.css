@@ -33,8 +33,13 @@
   }
 
   /* ✅ Emoji only messages (large size) */
-  &.emoji-text {
+  &.single-emoji {
     font-size: 54px;
+    line-height: 1.5;
+  }
+
+  &.multi-emoji-text{
+    font-size: 24px;
     line-height: 1.5;
   }
 
@@ -72,6 +77,13 @@
   /* ✅ Bold for long messages */
   &.bold-text {
     font-weight: 500 !important;
+  }
+
+  /* ✅ document text styles */
+  &.doc-text{
+    font-size: 0.9rem;
+    font-weight: 400 !important;
+    padding: 6px 5px;
   }
 
   pre {

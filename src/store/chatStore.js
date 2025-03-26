@@ -114,7 +114,7 @@ const useChatStore = create((set) => ({
       const messagesSnap = await getDocs(messagesRef);
 
       const batch = writeBatch(db);
-      const imagesToDelete = [];
+      const mediaToDelete = [];
 
       messagesSnap.forEach((docSnap) => {
         const messageData = docSnap.data();
@@ -124,16 +124,20 @@ const useChatStore = create((set) => ({
 
         const updatedDeletedFor = Array.from(deletedFor);
 
+        // ✅ If both users have deleted the message, delete it and media from storage
         if (
           updatedDeletedFor.includes(messageData.senderId) &&
           updatedDeletedFor.includes(messageData.receiverId)
         ) {
-          if (messageData.img) {
-            imagesToDelete.push(messageData.img);
+          // ✅ Push media or document URL to delete
+          if (messageData.media || messageData.docUrl) {
+            mediaToDelete.push(messageData.media || messageData.docUrl);
           }
 
+          // ✅ Delete message from Firestore
           batch.delete(messageRef);
         } else {
+          // ✅ Only update 'deletedFor' if one user deletes
           batch.update(messageRef, { deletedFor: updatedDeletedFor });
         }
       });
@@ -141,12 +145,12 @@ const useChatStore = create((set) => ({
       await batch.commit();
 
       await Promise.all(
-        imagesToDelete.map(async (imageUrl) => {
-          const storagePath = extractStoragePath(imageUrl);
+        mediaToDelete.map(async (mediaUrl) => {
+          const storagePath = extractStoragePath(mediaUrl);
           if (storagePath) {
-            const imageRef = ref(storage, storagePath);
-            await deleteObject(imageRef);
-            console.log("Image deleted for storage : ", storagePath);
+            const mediaRef = ref(storage, storagePath);
+            await deleteObject(mediaRef);
+            console.log("Media deleted for storage : ", storagePath);
           }
         })
       );

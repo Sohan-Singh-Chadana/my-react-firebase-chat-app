@@ -11,14 +11,14 @@ const ImageNavigation = ({
   return (
     <>
       <button
-        className="prevBtn"
+        className="nav-btn prevBtn"
         onClick={handlePrevImage}
         disabled={imageIndex === 0}
       >
         <FaAngleLeft size={24} />
       </button>
       <button
-        className="nextBtn"
+        className="nav-btn nextBtn"
         onClick={handleNextImage}
         disabled={imageIndex === totalImages - 1}
       >

@@ -1,15 +1,16 @@
 :root {
-  --chat_item-skeleton-bg: #f0f2f5; /*#7b818b*/
+  --chat_item-skeleton-bg: #f0f2f5; /* Light mode background */
 }
 
+/* 🌙 Dark Mode Skeleton */
 [data-theme="dark"] {
-  --chat_item-skeleton-bg: #1c222d; /*#7b818b*/
+  --chat_item-skeleton-bg: #1c222d; /* Dark background */
 }
 
 .chat-item-skeleton {
   display: flex;
   align-items: center;
-  cursor: pointer;
+  cursor: default;
   gap: 15px; /* Default gap */
   width: 100%;
   /* background-color: var(--chat_item-skeleton-bg); */

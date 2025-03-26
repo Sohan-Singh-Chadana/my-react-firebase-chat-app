@@ -73,19 +73,19 @@ export const deleteChatHandler = async (chatIdList) => {
             updatedDeletedFor.includes(messageData.senderId) &&
             updatedDeletedFor.includes(messageData.receiverId)
           ) {
-            // ✅ If message contains an image, delete it from Firebase Storage
-            if (messageData.img) {
+            // ✅ If message contains an media, delete it from Firebase Storage
+            if (messageData.media || messageData.docUrl) {
               try {
-                const imageUrl = messageData.img;
-                const storagePath = extractStoragePath(imageUrl);
+                const mediaUrl = messageData.media || messageData.docUrl;
+                const storagePath = extractStoragePath(mediaUrl);
 
                 if (storagePath) {
-                  const imageRef = ref(storage, storagePath);
-                  await deleteObject(imageRef);
+                  const mediaRef = ref(storage, storagePath);
+                  await deleteObject(mediaRef);
                 }
               } catch (error) {
                 console.error(
-                  "Error deleting image from Firebase Storage:",
+                  "Error deleting media from Firebase Storage:",
                   error
                 );
               }

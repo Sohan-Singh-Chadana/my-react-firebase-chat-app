@@ -1,14 +1,14 @@
-export const handleImageDownload = async (imgUrl) => {
+export const handleMediaDownload = async (mediaUrl, mediaType) => {
   try {
-    if (!imgUrl) {
-      console.error("❌ No image URL found!");
+    if (!mediaUrl) {
+      console.error("❌ No media URL found!");
       return;
     }
 
-    // ✅ Fetch the image as a blob
-    const response = await fetch(imgUrl);
+    // ✅ Fetch the media as a blob
+    const response = await fetch(mediaUrl);
     if (!response.ok) {
-      throw new Error("❌ Failed to fetch image");
+      throw new Error("❌ Failed to fetch media");
     }
 
     const blob = await response.blob();
@@ -27,8 +27,12 @@ export const handleImageDownload = async (imgUrl) => {
       .replace(/\./g, "")
       .replace(/:/g, ".")
       .replace(/ /g, "");
-    // ✅ Custom file name format: ChatName_Date_Time.jpg
-    const fileName = `MyChatApp Image ${formattedDate} at ${formattedTimeCleaned}.jpg`;
+
+    // ✅ Determine file extension based on media type
+    const extension = mediaType === "video" ? "mp4" : "jpg";
+
+    // ✅ Custom file name format: ChatName_Date_Time.fileExtension
+    const fileName = `MyChatApp Image ${formattedDate} at ${formattedTimeCleaned}.${extension}`;
 
     // ✅ Create a download link and trigger download
     const blobUrl = URL.createObjectURL(blob);
@@ -44,7 +48,7 @@ export const handleImageDownload = async (imgUrl) => {
     document.body.removeChild(link);
     URL.revokeObjectURL(blobUrl);
 
-    console.log(`✅ Image downloaded successfully: ${fileName}`);
+    // console.log(`✅ Image downloaded successfully: ${fileName}`);
   } catch (error) {
     console.error("❌ Error downloading image:", error);
   }

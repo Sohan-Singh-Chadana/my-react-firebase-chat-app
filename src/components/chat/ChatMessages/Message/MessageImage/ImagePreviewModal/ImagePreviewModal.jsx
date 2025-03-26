@@ -1,11 +1,13 @@
 import ImagePreviewHeader from "./ImagePreviewHeader";
 import ImageNavigation from "./ImageNavigation";
 import ImageList from "./ImageList";
+import MediaPreview from "./MediaPreview";
 import "./ImagePreviewModal.css";
+
 
 const ImagePreviewModal = ({
   setImageIndex,
-  images,
+  medias,
   currentImage,
   setIsPreviewOpen,
   handleDownload,
@@ -18,11 +20,11 @@ const ImagePreviewModal = ({
   };
 
   const handleNextImage = () => {
-    setImageIndex((prev) => (prev + 1) % images.length);
+    setImageIndex((prev) => (prev + 1) % medias.length);
   };
 
   const handlePrevImage = () => {
-    setImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setImageIndex((prev) => (prev - 1 + medias.length) % medias.length);
   };
 
   const handlePreviewClose = (e) => {
@@ -55,13 +57,10 @@ const ImagePreviewModal = ({
             className={`preview-image ${captionText ? "has-caption" : ""}`}
             onClick={() => setIsPreviewOpen(false)}
           >
-            <figure>
-              <img
-                src={currentImage.img}
-                alt="Preview"
-                onClick={handleImageZoomOpen}
-              />
-            </figure>
+            <MediaPreview
+              currentImage={currentImage}
+              handleImageZoomOpen={handleImageZoomOpen}
+            />
             <span className="caption-text text-selection-not-allow">
               {captionText}
             </span>
@@ -72,13 +71,13 @@ const ImagePreviewModal = ({
             handleNextImage={handleNextImage}
             handlePrevImage={handlePrevImage}
             imageIndex={imageIndex}
-            totalImages={images.length}
+            totalImages={medias.length}
           />
         </div>
 
         {/* ✅ Thumbnail List */}
         <ImageList
-          images={images}
+          medias={medias}
           currentImage={currentImage}
           handleImageClick={handleImageClick}
           handleDownload={handleDownload}

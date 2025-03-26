@@ -1,6 +1,6 @@
 // ✅ Utility to detect message type, emoji, and numbers
 export const detectMessageType = (text) => {
-  const emojiRegex = /^[\p{Emoji}\s]+$/gu; // ✅ Detects only emoji or spaces
+  const emojiRegex = /^[\p{Extended_Pictographic}\s]+$/gu; // ✅ Detects only emoji or spaces
   const mixedEmojiRegex = /[\p{Emoji}]/gu; // ✅ Detect emoji anywhere
   const hindiRegex = /[\u0900-\u097F]/; // ✅ Detect Hindi characters
   const numberRegex = /^\+?[0-9\s-]+$/; // ✅ Detect numbers, including +, -, and spaces
@@ -33,7 +33,7 @@ export const detectMessageType = (text) => {
 
 // ✅ Function to render text with increased emoji size and normal size for numbers
 export const formatMixedText = (text) => {
-  const emojiRegex = /[\p{Emoji}]/gu;
+  const emojiRegex = /[\p{Extended_Pictographic}]/gu;
   const numberRegex = /\d/; // Detect numbers in the message
   const parts = text.split(emojiRegex);
   const emojis = text.match(emojiRegex) || [];

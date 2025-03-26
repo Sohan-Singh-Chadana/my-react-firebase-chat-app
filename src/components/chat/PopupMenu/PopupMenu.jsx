@@ -2,11 +2,16 @@ import PropTypes from "prop-types";
 import { MdInsertDriveFile, MdImage, MdCameraAlt } from "react-icons/md";
 import "./PopupMenu.css";
 
-const PopupMenu = ({ onImagePreview, menuRef, menuOpen }) => {
+const PopupMenu = ({
+  onMediaPreview,
+  onDocumentPreview,
+  menuRef,
+  menuOpen,
+}) => {
   return (
     <div className={menuOpen ? "popup-menu open" : "popup-menu"} ref={menuRef}>
       <ul>
-        <li>
+        <li onClick={onDocumentPreview}>
           {/* <MdInsertDriveFile /> */}
           <svg
             height="20"
@@ -23,7 +28,7 @@ const PopupMenu = ({ onImagePreview, menuRef, menuOpen }) => {
           </svg>
           <p>Document</p>
         </li>
-        <li onClick={onImagePreview}>
+        <li onClick={onMediaPreview}>
           {/* <MdImage /> */}
           <svg
             width="20"
@@ -70,7 +75,7 @@ const PopupMenu = ({ onImagePreview, menuRef, menuOpen }) => {
 
 // Props validation
 PopupMenu.propTypes = {
-  onImagePreview: PropTypes.func.isRequired,
+  onMediaPreview: PropTypes.func.isRequired,
   menuRef: PropTypes.object.isRequired,
   menuOpen: PropTypes.bool.isRequired,
 };

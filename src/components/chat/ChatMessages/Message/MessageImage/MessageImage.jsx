@@ -12,7 +12,7 @@ import { downloadMessageImage } from "../../../../../utils/firebase/downloads/im
 import "./MessageImage.css";
 
 const MessageImage = ({
-  imageLoading,
+  mediaLoading,
   isSending,
   hasText,
   imageError,
@@ -26,7 +26,7 @@ const MessageImage = ({
   const { messages } = useMessagesStore();
   const chatMessages = messages[chatId] || [];
 
-  const images = chatMessages.filter((message) => message.img);
+  const medias = chatMessages.filter((message) => message.media);
   const [imageIndex, setImageIndex] = useState(0);
 
   const isOwnMessage = message.senderId === currentUser.userId; // ✅ Check if sender
@@ -54,7 +54,7 @@ const MessageImage = ({
   const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const imageListRef = useRef([]);
 
-  const currentImage = images[imageIndex]; // ✅ Get current image
+  const currentImage = medias[imageIndex]; // ✅ Get current image
 
   useEffect(() => {
     if (imageListRef.current[imageIndex]) {
@@ -69,11 +69,11 @@ const MessageImage = ({
   return (
     <>
       {/* ✅ Show loader for ALL images while fetching */}
-      {imageLoading && <MessageImageLoader />}
+      {mediaLoading && <MessageImageLoader />}
 
       <MessageImageContainer
         imageProps={{
-          imageLoading,
+          mediaLoading,
           imageError,
           src,
           onLoad,
@@ -89,7 +89,7 @@ const MessageImage = ({
           setImageIndex,
           setIsPreviewOpen,
           message,
-          images,
+          medias,
           isOwnMessage,
         }}
       />
@@ -98,7 +98,7 @@ const MessageImage = ({
       {isPreviewOpen && (
         <ImagePreviewModal
           setImageIndex={setImageIndex}
-          images={images}
+          medias={medias}
           currentImage={currentImage}
           setIsPreviewOpen={setIsPreviewOpen}
           handleDownload={handleDownload}
@@ -110,7 +110,7 @@ const MessageImage = ({
 
       {isZoomModalOpen && (
         <ZoomableImage
-          src={currentImage.img}
+          src={currentImage.media}
           onClose={() => setIsZoomModalOpen(false)}
         />
       )}

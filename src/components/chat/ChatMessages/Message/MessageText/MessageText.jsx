@@ -6,7 +6,7 @@ import {
 } from "../../../../../utils/messages";
 import "./MessageText.css";
 
-const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
+const MessageText = ({ hasText, hasDoc, hasImageAndText, text, isDeleted }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [messageType, setMessageType] = useState("english");
   const maxTextLength = 800;
@@ -35,6 +35,10 @@ const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
     const numberRegex = /^\+?[0-9\s-]+$/; // ✅ Check for numbers, including +, -
     const hasNumbers = numberRegex.test(hasText.trim());
 
+    // ✅ Emoji detection with proper count
+    const emojiRegex = /\p{Extended_Pictographic}/gu;
+    const emojis = hasText.match(emojiRegex) || [];
+
     const longTextLimit = isHindiText ? 180 : 120; // Higher limit for Hindi
     const mediumTextLimit = isHindiText ? 100 : 60; // Higher limit for Hindi
 
@@ -51,9 +55,17 @@ const MessageText = ({ hasText, hasImageAndText, text, isDeleted }) => {
       classes += "image-text ";
     }
 
+    if (hasDoc) {
+      classes += "doc-text ";
+    }
+
     // ✅ Add class based on detected message type
     if (messageType === "emoji") {
-      classes += " emoji-text";
+      if (emojis.length === 1) {
+        classes += " single-emoji";
+      } else if (emojis.length > 1) {
+        classes += " multi-emoji-text";
+      }
     } else if (messageType === "hindi") {
       classes += " hindi-text";
     } else if (messageType === "mixed") {
