@@ -1,6 +1,6 @@
 .preview-container {
   .preview-content {
-    button {
+    .nav-btn {
       all: unset;
       width: 50px;
       height: 50px;
@@ -18,25 +18,25 @@
       cursor: pointer;
     }
 
-    button:hover {
+    .nav-btn:hover {
       background-color: #8e9194; /* ✅ Slightly darker on hover */
       box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3); /* ✅ Stronger shadow on hover */
     }
 
-    button:active {
+    .nav-btn:active {
       transform: translateY(-50%) scale(0.95); /* ✅ Click effect */
     }
 
-    button:disabled {
+    .nav-btn:disabled {
       background-color: var(--preview-disabled-btn-color);
       cursor: not-allowed;
     }
 
-    button:disabled svg {
+    .nav-btn:disabled svg {
       fill: var(--preview-button-next-back-color);
     }
 
-    svg {
+    .nav-btn svg {
       width: 25px;
       height: 25px;
       fill: #fff;

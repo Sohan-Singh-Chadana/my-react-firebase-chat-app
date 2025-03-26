@@ -7,6 +7,7 @@ import MessageTimestamp from "./MessageTimestamp";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
 import BlurredImagePreview from "./BlurredImagePreview";
+import MessageDocument from "./MessageDocument";
 import "./Message.css";
 
 const Message = ({ message, index, messages }) => {
@@ -15,11 +16,14 @@ const Message = ({ message, index, messages }) => {
     useMessageSelectionStore();
 
   const isOwnMessage = message.senderId === currentUser.userId;
-  const hasImage = Boolean(message.img);
+  const hasMedia = Boolean(message.media);
   const hasText = Boolean(message.text);
-  const hasImageAndText = hasImage && hasText;
+  const hasDoc = Boolean(message.docUrl);
+  const hasImageAndText = hasMedia && hasText;
 
-  const [imageLoading, setImageLoading] = useState(message?.img ? true : false);
+  const [mediaLoading, setMediaLoading] = useState(
+    message?.media ? true : false
+  );
   const [imageError, setImageError] = useState(false);
 
   // ✅ isSending flag Firebase se use karo
@@ -32,18 +36,19 @@ const Message = ({ message, index, messages }) => {
   // ✅ Updated to handle emoji-only messages
   const getMessageContainerClass = () => {
     if (hasImageAndText) return "image-container";
-    if (hasImage) return "image-container";
+    if (hasMedia) return "image-container";
     if (onlyEmojis) return "emoji-container"; // ✅ Special class for emoji-only
+    if (hasDoc) return "document-container";
     return "texts-container";
   };
 
   const handleImageLoad = () => {
-    setImageLoading(false);
+    setMediaLoading(false);
     setImageError(false);
   };
 
   const handleImageError = () => {
-    setImageLoading(false);
+    setMediaLoading(false);
     setImageError(true);
   };
 
@@ -76,9 +81,9 @@ const Message = ({ message, index, messages }) => {
       <SelectableCheckbox messageId={message.id} />
       <div className="messageContainer">
         <div
-          className={`text-selection-allow ${isOwnMessage ? "message own" : "message"} ${
-            onlyEmojis ? "emoji-only" : ""
-          } `}
+          className={`text-selection-allow ${
+            isOwnMessage ? "message own" : "message"
+          } ${onlyEmojis ? "emoji-only" : ""} `}
         >
           {isFirstMessageOfSender && <span className="pointer"></span>}
 
@@ -89,20 +94,30 @@ const Message = ({ message, index, messages }) => {
 
             <div className={getMessageContainerClass()}>
               {/* ✅ Show Blurred Preview while Image is Uploading */}
-              {isSending && hasImage && (
-                <BlurredImagePreview imgSrc={message.img} />
+              {isSending && hasMedia && (
+                <BlurredImagePreview
+                  mediaSrc={message.media}
+                  mediaType={message.mediaType}
+                />
               )}
 
               {/* ✅ Jab image upload ho jaye (isSending false ho), tab image show ho */}
-              {!isSending && hasImage && (
+              {!isSending && hasMedia && (
                 <MessageImage
-                  imageLoading={imageLoading}
+                  mediaLoading={mediaLoading}
                   imageError={imageError}
                   hasText={hasText}
-                  src={message.img}
+                  src={message.media}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                   message={message}
+                />
+              )}
+
+              {hasDoc && (
+                <MessageDocument
+                  message={message}
+                  isOwnMessage={isOwnMessage}
                 />
               )}
 
@@ -111,18 +126,23 @@ const Message = ({ message, index, messages }) => {
                 <MessageText
                   hasText={message.text}
                   hasImageAndText={hasImageAndText}
+                  hasDoc={message.docUrl}
                   text={renderedText}
                   isDeleted={isDeletedMessage}
                 />
               )}
 
               {/* ✅ Timestamp & Status &  Emoji */}
-              {(!imageLoading || isSending) && (
+              {(!mediaLoading || isSending) && (
                 <MessageTimestamp
                   message={message}
                   isOwnMessage={isOwnMessage}
                   className={`${
-                    hasText ? "messageTimeStamp" : "imgMessageTimeStamp"
+                    hasText
+                      ? "messageTimeStamp"
+                      : message.docName
+                      ? "messageTimeStamp docMessageTimeStamp"
+                      : "imgMessageTimeStamp"
                   } ${onlyEmojis ? "emoji-timestamp" : ""}`}
                 />
               )}

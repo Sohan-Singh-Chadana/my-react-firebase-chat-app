@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useChatStore, useUserStore } from "../../../../../../../store";
 import {
   formatChatImagePreviewTimestamp,
-  handleImageDownload,
+  handleMediaDownload,
 } from "../../../../../../../utils";
 import "./ImagePreviewHeader.css";
 
@@ -37,7 +37,9 @@ const ImagePreviewHeader = ({ currentImage, setIsPreviewOpen }) => {
       <div className="actions-btn">
         <button
           className="download-btn"
-          onClick={() => handleImageDownload(currentImage?.img)}
+          onClick={() =>
+            handleMediaDownload(currentImage?.media, currentImage?.mediaType)
+          }
         >
           <MdDownload size={24} />
         </button>

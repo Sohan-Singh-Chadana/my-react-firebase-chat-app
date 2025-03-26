@@ -3,7 +3,7 @@ import { formatMessageTime } from "../../../../../utils";
 import "./MessageTimestamp.css";
 
 const MessageTimestamp = ({ message, isOwnMessage, className }) => {
-  const hasImage = message.img;
+  const hasImage = message.media;
   const hasText = message.text;
   const hasImageAndText = hasImage && hasText;
   const time = formatMessageTime(message.timestamp);

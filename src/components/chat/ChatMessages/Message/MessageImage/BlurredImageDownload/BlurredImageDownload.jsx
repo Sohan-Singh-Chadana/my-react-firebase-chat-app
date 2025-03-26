@@ -6,21 +6,35 @@ const BlurredImageDownload = ({
   message,
   onLoad,
   onError,
-  imageLoading,
+  mediaLoading,
 }) => {
   return (
-    <div className="blurred-image-container" onClick={() => handleDownload(message.id)}>
-      <img
-        src={message.img}
-        alt="Message"
-        className={`blurred-image ${imageLoading ? "loaded" : ""}`}
-        onLoad={onLoad}
-        onError={onError}
-        style={{ display: imageLoading ? "none" : "block" }}
-      />
+    <div
+      className="blurred-image-container"
+      onClick={() => handleDownload(message.id)}
+    >
+      {message.mediaType === "image" ? (
+        <img
+          src={message.media}
+          alt="Message"
+          className={`blurred-image ${mediaLoading ? "loaded" : ""}`}
+          onLoad={onLoad}
+          onError={onError}
+          style={{ display: mediaLoading ? "none" : "block" }}
+        />
+      ) : message.mediaType === "video" ? (
+        <video
+          src={message.media}
+          alt="Message"
+          className={`blurred-image ${mediaLoading ? "loaded" : ""}`}
+          onLoadedData={onLoad}
+          onError={onError}
+          style={{ display: mediaLoading ? "none" : "block" }}
+        />
+      ) : null}
       <div className="download-button">
         <MdDownload className="download-icon" />
-        <span className="image-size">{message.imgSize} KB</span>
+        <span className="image-size">{message.mediaSize}</span>
       </div>
     </div>
   );

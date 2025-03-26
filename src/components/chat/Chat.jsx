@@ -10,10 +10,11 @@ import {
 
 // * Chat-related UI components
 import ChatMessages from "./ChatMessages";
-import ImagePreviewPopup from "./ImagePreviewPopup";
 import ChatFooter from "./ChatFooter";
 import ChatHeader from "./ChatHeader";
 import ScrollToBottomButton from "./ScrollToBottomButton/ScrollToBottomButton.jsx";
+import SelectionFooter from "./SelectionFooter";
+import MediaDocPreviewPopup from "./MediaDocPreviewPopup";
 
 // * Utility function to get wallpaper color for chat background
 import { getWallpaperColor } from "../../utils";
@@ -31,22 +32,30 @@ import {
   useTypingStatus, // ✅ Tracks and updates typing status
   useVisibilityChange, // ✅ Detects visibility changes (active/inactive tab)
 } from "../../hooks";
-import SelectionFooter from "./SelectionFooter";
 
 const Chat = () => {
-  const [imagePreview, setImagePreview] = useState(false);
+  const [mediaDocPreview, setMediaDocPreview] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const { chatId, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
   const { messages } = useMessagesStore();
-  const { sendMessage, text, setText, img, setImg, sendingMessage } =
-    useMessageSender();
+  const {
+    sendMessage,
+    text,
+    setText,
+    media,
+    setMedia,
+    document,
+    setDocument,
+    sendingMessage,
+  } = useMessageSender();
   const { showCheckboxes } = useMessageSelectionStore();
   const { hoveredWallpaper, selectedWallpaper, showWallpaperImage } =
     useWallpaperStore();
   const chatMessages = messages[chatId] || [];
 
-  const fileInputRef = useRef(null);
+  const fileInputMediaRef = useRef(null);
+  const fileInputDocumentRef = useRef(null);
 
   // fetch Messages
   useChatMessages();
@@ -65,9 +74,10 @@ const Chat = () => {
   const handleSend = async () => {
     if (isCurrentUserBlocked || isReceiverBlocked) return;
 
-    setImagePreview(false);
+    setMediaDocPreview(false);
     const success = await sendMessage();
 
+    
     if (success) {
       await updateChatLists(text);
     } else {
@@ -79,22 +89,38 @@ const Chat = () => {
     }
   };
 
-  const handleImagePreview = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // ✅ Reset file input before selecting new file
+  const handleMediaPreview = () => {
+    if (fileInputMediaRef.current) {
+      fileInputMediaRef.current.value = ""; // ✅ Reset file input before selecting new file
     }
 
-    fileInputRef.current.click();
-    setImagePreview(true);
+    fileInputMediaRef.current.click();
+    setMediaDocPreview(true);
   };
 
-  const handleImageRemove = () => {
-    setImg({ file: null, url: "" });
-    setImagePreview(false);
+  const handleMediaDocumentRemove = () => {
+    setMedia({ file: null, url: "", type: "" });
+    setDocument({ file: null, url: "", name: "" });
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // ✅ Reset file input
+    // ✅ Reset media/document preview if required
+    if (typeof setMediaDocPreview === "function") {
+      setMediaDocPreview(false);
     }
+
+    if (fileInputMediaRef.current) {
+      fileInputMediaRef.current.value = ""; // ✅ Reset file input
+    }
+    if (fileInputDocumentRef.current) {
+      fileInputDocumentRef.current.value = "";
+    }
+  };
+
+  const handleDocumentPreview = () => {
+    if (fileInputDocumentRef.current) {
+      fileInputDocumentRef.current.value = "";
+    }
+    fileInputDocumentRef.current.click();
+    setMediaDocPreview(true);
   };
 
   // Typing status
@@ -119,13 +145,14 @@ const Chat = () => {
           style={centerElementStyle}
         >
           <ChatMessages messages={chatMessages} unreadCount={unreadCount} />
-          {imagePreview && img.url && (
-            <ImagePreviewPopup
-              img={img}
+          {mediaDocPreview && (media.url || document.url) && (
+            <MediaDocPreviewPopup
+              media={media}
+              document={document}
               text={text}
               setText={setText}
               onSend={handleSend}
-              onRemove={handleImageRemove}
+              onRemove={handleMediaDocumentRemove}
               isCurrentUserBlocked={isCurrentUserBlocked}
               isReceiverBlocked={isReceiverBlocked}
             />
@@ -137,13 +164,17 @@ const Chat = () => {
           <SelectionFooter />
         ) : (
           <ChatFooter
-            handleImagePreview={handleImagePreview}
-            fileInputRef={fileInputRef}
+            handleMediaPreview={handleMediaPreview}
+            handleDocumentPreview={handleDocumentPreview}
+            fileInputMediaRef={fileInputMediaRef}
+            fileInputDocumentRef={fileInputDocumentRef}
             handleSend={handleSend}
             text={text}
             setText={setText}
-            img={img}
-            setImg={setImg}
+            media={media}
+            setMedia={setMedia}
+            document={document}
+            setDocument={setDocument}
             sendingMessage={sendingMessage} // ✅ Pass sendingMessage to ChatFooter
           />
         )}

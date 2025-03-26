@@ -16,11 +16,20 @@
   position: absolute;
 }
 
+.loading-spinner.bg-transparent {
+  background: transparent !important;
+}
+
 .spinner {
   border: 3px solid var(--border-bottom-color);
   border-top: 3px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+.spinner.spinner_custom {
+  border-width: 10px;
+  border-top-width: 10px;
 }
 
 @keyframes spin {

@@ -1,0 +1,115 @@
+:root {
+  --outgoing-bg: #d1f4cc;
+  --incoming-bg: #fafafa;
+  --icon-color: #79909b;
+}
+
+[data-theme="dark"] {
+  --outgoing-bg: #265245;
+  --incoming-bg: #182c36;
+}
+
+.document-container {
+  .doc-content {
+    padding: 12px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    cursor: pointer;
+    border-radius: 6px;
+
+    &.outgoing {
+      background-color: var(--outgoing-bg);
+    }
+
+    &.incoming {
+      background-color: var(--incoming-bg);
+    }
+
+    .docInfo {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 400;
+
+      .doc-icon {
+        width: 50px;
+        height: 50px;
+        fill: var(--icon-color);
+        color: var(--icon-color);
+
+        &.pdf {
+          fill: #e74c3c;
+        }
+        &.doc {
+          fill: #61a0ed;
+        }
+        &.zip {
+          fill: #f8ce79;
+        }
+        &.xls {
+          fill: #5fab7e;
+        }
+        &.ppt {
+          fill: #fa2053;
+        }
+        &.text {
+          fill: #f39c12;
+        }
+        &.image {
+          fill: #2ecc71;
+        }
+        &.video {
+          fill: #3498db;
+        }
+      }
+
+      .docText {
+        font-size: 14px;
+        font-weight: 400;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+
+        .docName {
+          width: 100%;
+        }
+
+        .docSizeTypeInfo {
+          display: flex;
+          gap: 4px;
+          font-size: 12px;
+          font-weight: 400;
+          color: var(--icon-color);
+
+          .dot {
+            line-height: 0.9; /* ✅ Make dot vertically aligned */
+            font-weight: bold;
+          }
+        }
+      }
+    }
+
+    .docDownloadIcon {
+      all: unset;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--icon-color);
+      cursor: pointer;
+
+      svg {
+        width: 25px;
+        height: 25px;
+        fill: var(--icon-color);
+      }
+    }
+  }
+}

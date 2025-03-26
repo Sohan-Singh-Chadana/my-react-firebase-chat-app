@@ -162,6 +162,8 @@ const useAddUser = () => {
       const chatsRef = collection(db, "chats");
       const usersRef = collection(db, "users");
 
+      setExistingChats((prev) => new Set([...prev, user.userId]));
+
       // ✅ Check if chat already exists
       const existingChat = await getExistingChat(chatsRef, user.userId);
       const chatId = existingChat
@@ -180,10 +182,13 @@ const useAddUser = () => {
         updateChatList(currentUserRef, user, chatId),
         updateChatList(receiverUserRef, currentUser, chatId),
       ]);
-
-      setExistingChats((prev) => new Set([...prev, user.userId]));
     } catch (err) {
       console.error("❌ Error adding user to chat:", err);
+      setExistingChats((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(user.userId);
+        return newSet;
+      });
     }
   };
 

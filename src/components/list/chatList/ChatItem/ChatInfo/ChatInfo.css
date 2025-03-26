@@ -36,8 +36,8 @@
     color: var(--text-secondary);
     font-weight: 500;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
+    height: 20px;
 
     svg {
       width: 18px;
@@ -56,6 +56,11 @@
       vertical-align: middle;
     }
 
+    .number-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
     .emoji-only-text .large-emoji {
       font-size: 24px; /* ✅ Increase size for only emoji messages */
       display: inline-block;
@@ -64,7 +69,7 @@
 
   .message-preview.noLastMsg {
     /* padding: 8px 0px; */
-    height: 17px;
+    height: 20px;
   }
 
   .deleted {
