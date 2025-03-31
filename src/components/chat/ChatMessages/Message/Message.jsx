@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useMessageSelectionStore, useUserStore } from "../../../../store";
 import { isEmojiOnly } from "../../../../utils/messages";
@@ -94,7 +94,7 @@ const Message = ({ message, index, messages }) => {
 
             <div className={getMessageContainerClass()}>
               {/* ✅ Show Blurred Preview while Image is Uploading */}
-              {isSending && hasMedia && (
+              {isSending && hasMedia && isOwnMessage && (
                 <BlurredImagePreview
                   mediaSrc={message.media}
                   mediaType={message.mediaType}
@@ -164,4 +164,4 @@ const renderMessage = (message, currentUser) => {
   return message.text;
 };
 
-export default Message;
+export default memo(Message);
